@@ -1,35 +1,41 @@
+# docker-compose.yml
+
 services:
-  db:
-    image: postgres:13
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=nightingale_db
-
-  redis:
-    image: redis:6-alpine
-
   backend:
-    build: ./backend
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-    volumes:
-      - ./backend:/app
+    build:
+      context: ./scanner-backend
+      dockerfile: Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
     depends_on:
       - db
       - redis
 
-  worker:
-    build: ./backend
-    command: celery -A app.core.celery_app worker --loglevel=info
+  celery:
+    build:
+      context: ./scanner-backend
+      dockerfile: Dockerfile
+    command: celery -A app.worker.celery worker --loglevel=info
     volumes:
-      - ./backend:/app
+      - ./scanner-backend:/app
     depends_on:
-      - redis
       - db
+      - redis
 
-volumes:
-  postgres_data:
+  frontend:
+    build:
+      context: ./scanner-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ptaas
+
+  redis:
+    image: redis:7

@@ -1,8 +1,0 @@
-fastapi
-uvicorn[standard]
-celery
-redis
-sqlalchemy
-psycopg2-binary
-pydantic[email]
-python-dotenv
