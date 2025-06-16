@@ -1,41 +1,49 @@
-# docker-compose.yml
-
 services:
   backend:
     build:
-      context: ./scanner-backend
-      dockerfile: Dockerfile
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: security_scanner_backend
+    volumes:
+      - ./backend:/app/backend
+    working_dir: /app/backend
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
-    depends_on:
-      - db
-      - redis
-
-  celery:
-    build:
-      context: ./scanner-backend
-      dockerfile: Dockerfile
-    command: celery -A app.worker.celery worker --loglevel=info
-    volumes:
-      - ./scanner-backend:/app
-    depends_on:
-      - db
-      - redis
+    environment:
+      - DEBUG=True
+      - BACKEND_HOST=0.0.0.0
+      - BACKEND_PORT=8000
+    networks:
+      - app_network
 
   frontend:
     build:
-      context: ./scanner-frontend
+      context: ./frontend
       dockerfile: Dockerfile
+    container_name: security_scanner_frontend
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    working_dir: /app
+    command: npm start
     ports:
       - "3000:3000"
-
-  db:
-    image: postgres:15
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ptaas
+      - REACT_APP_API_URL=http://localhost:8000
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    depends_on:
+      - backend
+    networks:
+      - app_network
 
-  redis:
-    image: redis:7
+# Define volumes for persistent data (e.g., ZAP data, nuclei templates)
+volumes:
+  zap_data:
+  nuclei_templates:
+
+# Define a network for services to communicate with each other
+networks:
+  app_network:
+    driver: bridge

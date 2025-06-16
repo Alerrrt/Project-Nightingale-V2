@@ -1,4 +1,0 @@
-node_modules
-scanner-frontend/node_modules
-scanner-frontend/postcss.config.js
-*.log 
