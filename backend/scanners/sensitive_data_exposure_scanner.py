@@ -3,11 +3,15 @@ import uuid
 import re
 from typing import List, Dict, Any
 import httpx
+from datetime import datetime
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
 from backend.types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
 
+logger = get_context_logger(__name__)
 
 class SensitiveDataExposureScanner(BaseScanner):
     """
@@ -34,7 +38,37 @@ class SensitiveDataExposureScanner(BaseScanner):
         "private_key": r"-----BEGIN (?:RSA|DSA|EC|OPENSSH) PRIVATE KEY-----"
     }
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="sensitive_data_exposure_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        try:
+            logger.info("Scan started", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "options": scan_input.options
+            })
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            self._update_metrics(True, start_time)
+            logger.info("Scan completed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "result_count": len(results)
+            })
+            return results
+        except Exception as e:
+            self._update_metrics(False, start_time)
+            logger.error("Scan failed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "error": str(e)
+            }, exc_info=True)
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
         Asynchronously checks for sensitive data exposure vulnerabilities.
 
@@ -43,11 +77,11 @@ class SensitiveDataExposureScanner(BaseScanner):
             options: Additional options for the scan.
 
         Returns:
-            A list of Finding objects for detected sensitive data exposures.
+            A list of findings for detected sensitive data exposures.
         """
-        findings: List[Finding] = []
+        findings: List[Dict] = []
         target_url = target
-        print(f"[*] Starting Sensitive Data Exposure scan for {target_url}...")
+        logger.info(f"Starting Sensitive Data Exposure scan for {target_url}.")
 
         async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
             try:
@@ -63,22 +97,20 @@ class SensitiveDataExposureScanner(BaseScanner):
                         sensitive_data = match.group(0)
                         masked_data = self._mask_sensitive_data(sensitive_data, pattern_name)
                         
-                        findings.append(
-                            Finding(
-                                id=str(uuid.uuid4()),
-                                vulnerability_type="Sensitive Data Exposure",
-                                description=f"Potential {pattern_name.replace('_', ' ').title()} exposure detected in the response.",
-                                severity=Severity.HIGH,
-                                affected_url=target_url,
-                                remediation="Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
-                                owasp_category=OwaspCategory.A04_INSECURE_DESIGN,
-                                proof={
-                                    "pattern_type": pattern_name,
-                                    "masked_data": masked_data,
-                                    "context": content[max(0, match.start()-20):min(len(content), match.end()+20)]
-                                }
-                            )
-                        )
+                        findings.append({
+                            "type": "sensitive_data_exposure",
+                            "severity": Severity.HIGH,
+                            "title": "Sensitive Data Exposure",
+                            "description": f"Potential {pattern_name.replace('_', ' ').title()} exposure detected in the response.",
+                            "evidence": {
+                                "pattern_type": pattern_name,
+                                "masked_data": masked_data,
+                                "context": content[max(0, match.start()-20):min(len(content), match.end()+20)]
+                            },
+                            "owasp_category": OwaspCategory.INSECURE_DESIGN,
+                            "recommendation": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+                            "affected_url": target_url
+                        })
 
                 # Check response headers for sensitive information
                 headers = response.headers
@@ -91,28 +123,26 @@ class SensitiveDataExposureScanner(BaseScanner):
 
                 for header, description in sensitive_headers.items():
                     if header in headers:
-                        findings.append(
-                            Finding(
-                                id=str(uuid.uuid4()),
-                                vulnerability_type="Information Disclosure",
-                                description=f"Server is revealing {description} in response headers.",
-                                severity=Severity.MEDIUM,
-                                affected_url=target_url,
-                                remediation="Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
-                                owasp_category=OwaspCategory.A04_INSECURE_DESIGN,
-                                proof={
-                                    "header": header,
-                                    "value": headers[header]
-                                }
-                            )
-                        )
+                        findings.append({
+                            "type": "information_disclosure",
+                            "severity": Severity.MEDIUM,
+                            "title": "Information Disclosure",
+                            "description": f"Server is revealing {description} in response headers.",
+                            "evidence": {
+                                "header": header,
+                                "value": headers[header]
+                            },
+                            "owasp_category": OwaspCategory.INSECURE_DESIGN,
+                            "recommendation": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+                            "affected_url": target_url
+                        })
 
             except httpx.RequestError as e:
-                print(f"Error during sensitive data exposure scan: {e}")
+                logger.error(f"Error during sensitive data exposure scan", extra={"error": str(e)})
             except Exception as e:
-                print(f"An unexpected error occurred during sensitive data exposure scan: {e}")
+                logger.error(f"An unexpected error occurred during sensitive data exposure scan", extra={"error": str(e)})
 
-        print(f"[*] Finished Sensitive Data Exposure scan for {target_url}.")
+        logger.info(f"Finished Sensitive Data Exposure scan for {target_url}.")
         return findings
 
     def _mask_sensitive_data(self, data: str, pattern_type: str) -> str:

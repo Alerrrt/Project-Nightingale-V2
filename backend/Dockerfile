@@ -1,30 +1,34 @@
 FROM python:3.9-slim
 
-WORKDIR /app/backend
+WORKDIR /app
 
-# Install Node.js and npm
-RUN apt-get update && \
-    apt-get install -y nodejs npm && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    gfortran \
+    libatlas-base-dev \
+    libc-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install retire globally
-RUN npm install -g retire
+# Upgrade pip
+RUN pip install --upgrade pip
 
 # Copy requirements first to leverage Docker cache
-COPY backend/requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the whole project
-COPY . /app
+# Copy the rest of the application
+COPY backend /app/backend
 
-# Set PYTHONPATH so 'backend' is importable
+# Set environment variables
 ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+ENV DEBUG=true
 
-# Create necessary directories
-RUN mkdir -p /app/logs
-
+# Expose the port
 EXPOSE 8000
 
 # Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"] 
+# For production, remove --reload and set DEBUG=false
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"] 

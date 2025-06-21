@@ -1,17 +1,59 @@
 import asyncio
-import uuid
 from typing import List, Dict, Any
+from datetime import datetime
 import httpx
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
 from .base_scanner import BaseScanner
-from ..types.models import ScanInput, Finding, Severity, OwaspCategory
+from ..types.models import ScanInput, Severity, OwaspCategory
+
+logger = get_context_logger(__name__)
 
 class RateLimitingBruteforceScanner(BaseScanner):
     """
     A scanner module for detecting rate limiting and bruteforce vulnerabilities.
     """
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    metadata = {
+        "name": "Rate Limiting & Bruteforce Scanner",
+        "description": "Detects missing rate limiting and bruteforce protection mechanisms.",
+        "owasp_category": "A07:2021 - Identification and Authentication Failures",
+        "author": "Project Nightingale Team",
+        "version": "1.0"
+    }
+
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="rate_limiting_bruteforce_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        try:
+            logger.info("Scan started", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "options": scan_input.options
+            })
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            self._update_metrics(True, start_time)
+            logger.info("Scan completed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "result_count": len(results)
+            })
+            return results
+        except Exception as e:
+            self._update_metrics(False, start_time)
+            logger.error("Scan failed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "error": str(e)
+            }, exc_info=True)
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
         Asynchronously attempts rapid sequences of login attempts (or password resets)
         to detect missing throttling.
@@ -21,11 +63,11 @@ class RateLimitingBruteforceScanner(BaseScanner):
             options: Additional options for the scan.
 
         Returns:
-            A list of Finding objects for detected rate limiting/bruteforce vulnerabilities.
+            A list of findings for detected rate limiting/bruteforce vulnerabilities.
         """
-        findings: List[Finding] = []
+        findings: List[Dict] = []
         target_url = target
-        print(f"[*] Starting Rate Limiting & Bruteforce scan for {target_url}...")
+        logger.info(f"Starting Rate Limiting & Bruteforce scan for {target_url}")
 
         # This is a conceptual placeholder. A real scanner would:
         # 1. Identify login forms or password reset forms.
@@ -37,7 +79,7 @@ class RateLimitingBruteforceScanner(BaseScanner):
         test_username = "testuser"
         common_passwords = ["password", "123456", "admin", "qwerty"]
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=5) as client:
+        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
             for password in common_passwords:
                 try:
                     data = {"username": test_username, "password": password}
@@ -47,29 +89,37 @@ class RateLimitingBruteforceScanner(BaseScanner):
                     # This is very basic; real detection would involve looking for lack of delays,
                     # generic error messages, or absence of CAPTCHAs after multiple attempts.
                     if response.status_code == 200 and "Login Failed" in response.text:
-                        print(f"Attempted login with {test_username}:{password} - Failed (expected).")
+                        logger.debug(f"Attempted login with {test_username}:{password} - Failed (expected)")
                         # No rate limiting found if response is quick and consistent
                     elif response.status_code == 200 and "Welcome" in response.text:
-                        findings.append(
-                            Finding(
-                                id=str(uuid.uuid4()),
-                                vulnerability_type="Weak Credentials / No Account Lockout",
-                                description=f"Successful login with common credentials ({test_username}:{password}). This may indicate weak credentials or a missing account lockout policy.",
-                                severity=Severity.CRITICAL,
-                                affected_url=login_endpoint,
-                                remediation="Implement strong password policies, account lockout mechanisms, and multi-factor authentication. Enforce rate limiting on login attempts.",
-                                owasp_category=OwaspCategory.A07_IDENTIFICATION_AND_AUTHENTICATION_FAILURES,
-                                proof={
-                                    "username": test_username,
-                                    "password_attempted": password,
-                                    "response_status": response.status_code,
-                                    "response_snippet": response.text[:200]
-                                }
-                            )
-                        )
+                        findings.append({
+                            "type": "weak_credentials_no_lockout",
+                            "severity": Severity.CRITICAL,
+                            "title": "Weak Credentials / No Account Lockout",
+                            "description": f"Successful login with common credentials ({test_username}:{password}). This may indicate weak credentials or a missing account lockout policy.",
+                            "evidence": {
+                                "username": test_username,
+                                "password_attempted": password,
+                                "response_status": response.status_code,
+                                "response_snippet": response.text[:200]
+                            },
+                            "owasp_category": OwaspCategory.IDENTIFICATION_AND_AUTHENTICATION_FAILURES,
+                            "recommendation": "Implement strong password policies, account lockout mechanisms, and multi-factor authentication. Enforce rate limiting on login attempts.",
+                            "affected_url": login_endpoint
+                        })
 
                 except httpx.RequestError as e:
-                    print(f"Error during bruteforce attempt on {login_endpoint}: {e}")
+                    logger.error(f"Error during bruteforce attempt", extra={
+                        "url": login_endpoint,
+                        "username": test_username,
+                        "error": str(e)
+                    })
+                except Exception as e:
+                    logger.error(f"Unexpected error during bruteforce attempt", extra={
+                        "url": login_endpoint,
+                        "username": test_username,
+                        "error": str(e)
+                    }, exc_info=True)
 
-        print(f"[*] Finished Rate Limiting & Bruteforce scan for {target_url}.")
+        logger.info(f"Completed Rate Limiting & Bruteforce scan for {target_url}. Found {len(findings)} issues.")
         return findings 

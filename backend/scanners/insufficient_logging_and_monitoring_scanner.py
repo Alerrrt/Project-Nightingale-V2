@@ -1,12 +1,15 @@
 import asyncio
-import uuid
 from typing import List, Dict, Any
+from datetime import datetime
 import httpx
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
-from backend.types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
+from backend.types.models import ScanInput, Severity, OwaspCategory
 
+logger = get_context_logger(__name__)
 
 class InsufficientLoggingAndMonitoringScanner(BaseScanner):
     """
@@ -21,7 +24,37 @@ class InsufficientLoggingAndMonitoringScanner(BaseScanner):
         "version": "1.0"
     }
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="insufficient_logging_and_monitoring_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        try:
+            logger.info("Scan started", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "options": scan_input.options
+            })
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            self._update_metrics(True, start_time)
+            logger.info("Scan completed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "result_count": len(results)
+            })
+            return results
+        except Exception as e:
+            self._update_metrics(False, start_time)
+            logger.error("Scan failed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "error": str(e)
+            }, exc_info=True)
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
         Asynchronously checks for insufficient logging and monitoring vulnerabilities.
 
@@ -30,11 +63,11 @@ class InsufficientLoggingAndMonitoringScanner(BaseScanner):
             options: Additional options for the scan.
 
         Returns:
-            A list of Finding objects for detected insufficient logging and monitoring issues.
+            A list of findings for detected insufficient logging and monitoring issues.
         """
-        findings: List[Finding] = []
+        findings: List[Dict] = []
         target_url = target
-        print(f"[*] Starting Insufficient Logging and Monitoring scan for {target_url}...")
+        logger.info(f"Starting Insufficient Logging and Monitoring scan for {target_url}")
 
         # Test cases for insufficient logging
         test_cases = [
@@ -61,7 +94,7 @@ class InsufficientLoggingAndMonitoringScanner(BaseScanner):
             }
         ]
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
+        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
             for test_case in test_cases:
                 try:
                     url = f"{target_url.rstrip('/')}/{test_case['path'].lstrip('/')}"
@@ -88,29 +121,35 @@ class InsufficientLoggingAndMonitoringScanner(BaseScanner):
                                 missing_headers.append(header)
 
                         if missing_headers:
-                            findings.append(
-                                Finding(
-                                    id=str(uuid.uuid4()),
-                                    vulnerability_type="Insufficient Security Headers",
-                                    description=f"Missing security headers for {test_case['description']}.",
-                                    severity=Severity.MEDIUM,
-                                    affected_url=url,
-                                    remediation="Implement proper security headers and ensure all security events are logged. Consider implementing a Web Application Firewall (WAF) for additional monitoring.",
-                                    owasp_category=OwaspCategory.A09_LOGGING_AND_MONITORING_FAILURES,
-                                    proof={
-                                        "test_case": test_case['description'],
-                                        "missing_headers": missing_headers,
-                                        "response_status": response.status_code
-                                    }
-                                )
-                            )
+                            findings.append({
+                                "type": "insufficient_security_headers",
+                                "severity": Severity.MEDIUM,
+                                "title": "Insufficient Security Headers",
+                                "description": f"Missing security headers for {test_case['description']}.",
+                                "evidence": {
+                                    "test_case": test_case['description'],
+                                    "missing_headers": missing_headers,
+                                    "response_status": response.status_code
+                                },
+                                "owasp_category": OwaspCategory.LOGGING_AND_MONITORING_FAILURES,
+                                "recommendation": "Implement proper security headers and ensure all security events are logged. Consider implementing a Web Application Firewall (WAF) for additional monitoring.",
+                                "affected_url": url
+                            })
 
                 except httpx.RequestError as e:
-                    print(f"Error testing logging for {url}: {e}")
+                    logger.error(f"Error testing logging", extra={
+                        "url": url,
+                        "test_case": test_case['description'],
+                        "error": str(e)
+                    })
                 except Exception as e:
-                    print(f"An unexpected error occurred during logging scan: {e}")
+                    logger.error(f"Unexpected error during logging scan", extra={
+                        "url": url,
+                        "test_case": test_case['description'],
+                        "error": str(e)
+                    }, exc_info=True)
 
-        print(f"[*] Finished Insufficient Logging and Monitoring scan for {target_url}.")
+        logger.info(f"Completed Insufficient Logging and Monitoring scan for {target_url}. Found {len(findings)} issues.")
         return findings
 
 

@@ -6,11 +6,11 @@ import inspect
 import os
 from typing import Dict, Type, List, Optional, Set
 from functools import lru_cache
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from threading import Lock
 from backend.scanners.base_scanner import BaseScanner
 from backend.types.scanner_config import ScannerRegistryConfig, ScannerConfig, ScannerIntensity
 from backend.utils.logging_config import get_context_logger
-from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.resource_monitor import ResourceMonitor
 from backend.config import AppConfig
 
@@ -23,29 +23,35 @@ class ScannerRegistryConfig:
     default_max_retries: int = 3
     batch_size: int = 5
     max_concurrent_scans: int = 10
-    resource_limits: Dict[str, float] = None
+    resource_limits: Dict[str, float] = field(default_factory=dict)
 
 class ScannerRegistry:
     """
     A registry for managing scanner modules.
     """
     _instance: Optional['ScannerRegistry'] = None
+    _lock = Lock()
     _scanners: Dict[str, Type[BaseScanner]] = {}
     _scanner_metadata_cache: Dict[str, dict] = {}
     _enabled_scanners_cache: Optional[List[str]] = None
     _resource_monitor: Optional[ResourceMonitor] = None
+    _initialized: bool = False
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
-            cls._instance = super().__new__(cls)
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
         return cls._instance
 
     def __init__(self, config: Optional[AppConfig] = None):
-        if not hasattr(self, '_initialized'):
-            self._config = config or AppConfig.load_from_env()
-            self._resource_monitor = ResourceMonitor(self._config.resource_limits)
-            self._scanner_configs: Dict[str, ScannerConfig] = {}
-            self._initialized = True
+        if not self._initialized:
+            with self._lock:
+                if not self._initialized:
+                    self._config = config or AppConfig.load_from_env()
+                    self._resource_monitor = ResourceMonitor(self._config.resource_limits)
+                    self._scanner_configs: Dict[str, ScannerConfig] = {}
+                    self._initialized = True
 
     @classmethod
     def get_instance(cls, config: Optional[AppConfig] = None) -> 'ScannerRegistry':
@@ -143,46 +149,43 @@ class ScannerRegistry:
         self._enabled_scanners_cache = enabled
         return enabled
 
-    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="scanner_registry")
     async def load_scanners(self):
         """Load all available scanners."""
         try:
-            # Import scanner modules
-            import backend.scanners
+            scanners_dir = os.path.dirname(os.path.abspath(__file__))
+            loaded_count = 0
             
-            # Find all scanner modules
-            for _, name, _ in pkgutil.iter_modules(backend.scanners.__path__):
-                if name != "base_scanner":
+            for filename in os.listdir(scanners_dir):
+                if filename.endswith('_scanner.py') and not filename.startswith('__'):
+                    module_name = filename[:-3]  # Remove .py extension
                     try:
                         # Import module
-                        module = importlib.import_module(f"backend.scanners.{name}")
+                        module = importlib.import_module(f'backend.scanners.{module_name}')
                         
-                        # Find scanner class
-                        for item_name in dir(module):
-                            item = getattr(module, item_name)
-                            if (
-                                isinstance(item, type)
-                                and issubclass(item, BaseScanner)
-                                and item != BaseScanner
-                            ):
-                                # Register scanner
-                                self._scanners[name] = item
-                                logger.info(
-                                    "Scanner registered",
-                                    extra={
-                                        "scanner_name": name,
-                                        "class": item.__name__
-                                    }
-                                )
+                        # Find scanner classes in the module
+                        for name, obj in inspect.getmembers(module):
+                            if (inspect.isclass(obj) and 
+                                issubclass(obj, BaseScanner) and 
+                                obj != BaseScanner):
+                                
+                                # Use the class name as the scanner name
+                                scanner_name = name.lower().replace('scanner', '')
+                                self.register(scanner_name, obj)
+                                loaded_count += 1
+                                
                     except Exception as e:
                         logger.error(
-                            f"Error loading scanner module: {name}",
+                            f"Error loading scanner module: {module_name}",
+                            extra={"error": str(e)},
                             exc_info=True
                         )
             
             logger.info(
                 "Scanners loaded",
-                extra={"scanner_count": len(self._scanners)}
+                extra={
+                    "scanner_count": len(self._scanners),
+                    "loaded_count": loaded_count
+                }
             )
             
         except Exception as e:
@@ -191,33 +194,11 @@ class ScannerRegistry:
 
     def discover_and_register_scanners(self) -> None:
         """
-        Discovers and registers all scanner modules in the scanners directory.
+        Deprecated: Use load_scanners() instead.
+        This method is kept for backward compatibility.
         """
-        scanners_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        for filename in os.listdir(scanners_dir):
-            if filename.endswith('_scanner.py') and not filename.startswith('__'):
-                module_name = filename[:-3]  # Remove .py extension
-                try:
-                    module = importlib.import_module(f'backend.scanners.{module_name}')
-                    
-                    # Find scanner classes in the module
-                    for name, obj in inspect.getmembers(module):
-                        if (inspect.isclass(obj) and 
-                            issubclass(obj, BaseScanner) and 
-                            obj != BaseScanner):
-                            
-                            # Use the class name as the scanner name
-                            scanner_name = name.lower().replace('scanner', '')
-                            self.register(scanner_name, obj)
-                            
-                            # Look for register function
-                            register_func = getattr(module, 'register', None)
-                            if register_func and callable(register_func):
-                                register_func(self)
-                
-                except Exception as e:
-                    logger.error(f"Error loading scanner module {module_name}: {str(e)}", exc_info=True)
+        logger.warning("discover_and_register_scanners is deprecated, use load_scanners() instead")
+        asyncio.create_task(self.load_scanners())
 
     def clear(self) -> None:
         """
@@ -261,7 +242,7 @@ class ScannerRegistry:
             instance = scanner()
             
             # Get metrics
-            return await instance.get_metrics()
+            return instance.get_metrics()
             
         except Exception as e:
             logger.error(

@@ -1,15 +1,18 @@
 import asyncio
-import uuid
 import json
 import pickle
 import base64
 from typing import List, Dict, Any
+from datetime import datetime
 import httpx
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
-from backend.types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
+from backend.types.models import ScanInput, Severity, OwaspCategory
 
+logger = get_context_logger(__name__)
 
 class InsecureDeserializationScanner(BaseScanner):
     """
@@ -24,7 +27,37 @@ class InsecureDeserializationScanner(BaseScanner):
         "version": "1.0"
     }
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="insecure_deserialization_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        try:
+            logger.info("Scan started", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "options": scan_input.options
+            })
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            self._update_metrics(True, start_time)
+            logger.info("Scan completed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "result_count": len(results)
+            })
+            return results
+        except Exception as e:
+            self._update_metrics(False, start_time)
+            logger.error("Scan failed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "error": str(e)
+            }, exc_info=True)
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
         Asynchronously checks for insecure deserialization vulnerabilities by sending crafted payloads.
 
@@ -33,11 +66,11 @@ class InsecureDeserializationScanner(BaseScanner):
             options: Additional options for the scan.
 
         Returns:
-            A list of Finding objects for detected insecure deserialization vulnerabilities.
+            A list of findings for detected insecure deserialization vulnerabilities.
         """
-        findings: List[Finding] = []
+        findings: List[Dict] = []
         target_url = target
-        print(f"[*] Starting Insecure Deserialization scan for {target_url}...")
+        logger.info(f"Starting Insecure Deserialization scan for {target_url}")
 
         # Test payloads for different deserialization formats
         test_payloads = [
@@ -59,7 +92,7 @@ class InsecureDeserializationScanner(BaseScanner):
             }
         ]
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
+        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
             for payload in test_payloads:
                 try:
                     # Try different content types
@@ -76,40 +109,52 @@ class InsecureDeserializationScanner(BaseScanner):
                         
                         # Send the appropriate payload based on content type
                         if content_type == "application/json":
-                            data = payload["json"]
+                            data = payload.get("json")
+                            if not data:
+                                continue
                         elif content_type == "application/x-python-serialize":
-                            data = payload["pickle"]
+                            data = payload.get("pickle")
+                            if not data:
+                                continue
                         else:
-                            data = payload["php"]
+                            data = payload.get("php")
+                            if not data:
+                                continue
 
                         response = await client.post(target_url, content=data, headers=headers)
                         
                         # Check for indicators of successful deserialization
                         if response.status_code != 400 and response.status_code != 500:
-                            findings.append(
-                                Finding(
-                                    id=str(uuid.uuid4()),
-                                    vulnerability_type="Insecure Deserialization",
-                                    description="Potential insecure deserialization vulnerability detected. The application appears to be processing serialized data without proper validation.",
-                                    severity=Severity.HIGH,
-                                    affected_url=target_url,
-                                    remediation="Implement strict input validation for all deserialized data. Use safe deserialization methods and avoid using native deserialization functions when possible. Consider using a whitelist of allowed classes/types.",
-                                    owasp_category=OwaspCategory.A08_SOFTWARE_AND_DATA_INTEGRITY_FAILURES,
-                                    proof={
-                                        "content_type": content_type,
-                                        "payload": data,
-                                        "response_status": response.status_code,
-                                        "response_length": len(response.text)
-                                    }
-                                )
-                            )
+                            findings.append({
+                                "type": "insecure_deserialization",
+                                "severity": Severity.HIGH,
+                                "title": "Insecure Deserialization",
+                                "description": "Potential insecure deserialization vulnerability detected. The application appears to be processing serialized data without proper validation.",
+                                "evidence": {
+                                    "content_type": content_type,
+                                    "payload": data,
+                                    "response_status": response.status_code,
+                                    "response_length": len(response.text)
+                                },
+                                "owasp_category": OwaspCategory.SOFTWARE_AND_DATA_INTEGRITY_FAILURES,
+                                "recommendation": "Implement strict input validation for all deserialized data. Use safe deserialization methods and avoid using native deserialization functions when possible. Consider using a whitelist of allowed classes/types.",
+                                "affected_url": target_url
+                            })
 
                 except httpx.RequestError as e:
-                    print(f"Error testing deserialization for {target_url}: {e}")
+                    logger.error(f"Error testing deserialization", extra={
+                        "target": target_url,
+                        "content_type": content_type,
+                        "error": str(e)
+                    })
                 except Exception as e:
-                    print(f"An unexpected error occurred during deserialization scan: {e}")
+                    logger.error(f"Unexpected error during deserialization scan", extra={
+                        "target": target_url,
+                        "content_type": content_type,
+                        "error": str(e)
+                    }, exc_info=True)
 
-        print(f"[*] Finished Insecure Deserialization scan for {target_url}.")
+        logger.info(f"Completed Insecure Deserialization scan for {target_url}. Found {len(findings)} issues.")
         return findings
 
 

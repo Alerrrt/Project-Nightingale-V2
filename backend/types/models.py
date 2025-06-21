@@ -1,6 +1,7 @@
 from pydantic import BaseModel, HttpUrl, Field
 from typing import Dict, List, Optional, Union, Any
 from enum import Enum
+from datetime import datetime
 
 class Severity(str, Enum):
     """Severity levels for findings."""
@@ -13,16 +14,28 @@ class Severity(str, Enum):
 class OwaspCategory(str, Enum):
     """OWASP Top 10 2021 categories."""
     A01_BROKEN_ACCESS_CONTROL = "A01:2021 - Broken Access Control"
+    BROKEN_ACCESS_CONTROL = "A01:2021 - Broken Access Control"  # Alias for easier reference
     A02_CRYPTOGRAPHIC_FAILURES = "A02:2021 - Cryptographic Failures"
+    CRYPTOGRAPHIC_FAILURES = "A02:2021 - Cryptographic Failures"  # Alias
     A03_INJECTION = "A03:2021 - Injection"
-    A04_INSECURE_DESIGN = "A04:2021 - Insecure Design"
-    A05_SECURITY_MISCONFIGURATION = "A05:2021 - Security Misconfiguration"
-    A06_VULNERABLE_AND_OUTDATED_COMPONENTS = "A06:2021 - Vulnerable and Outdated Components"
-    A07_IDENTIFICATION_AND_AUTHENTICATION_FAILURES = "A07:2021 - Identification and Authentication Failures"
-    A08_SOFTWARE_AND_DATA_INTEGRITY_FAILURES = "A08:2021 - Software and Data Integrity Failures"
-    A09_SECURITY_LOGGING_AND_MONITORING_FAILURES = "A09:2021 - Security Logging and Monitoring Failures"
-    A10_SERVER_SIDE_REQUEST_FORGERY_SSRF = "A10:2021 - Server-Side Request Forgery (SSRF)"
+    INJECTION = "A03:2021 - Injection"  # Alias
     A03_XSS = "A03:2021 - Cross-Site Scripting (XSS)"
+    XSS = "A03:2021 - Cross-Site Scripting (XSS)"  # Alias
+    A04_INSECURE_DESIGN = "A04:2021 - Insecure Design"
+    INSECURE_DESIGN = "A04:2021 - Insecure Design"  # Alias
+    A05_SECURITY_MISCONFIGURATION = "A05:2021 - Security Misconfiguration"
+    SECURITY_MISCONFIGURATION = "A05:2021 - Security Misconfiguration"  # Alias
+    A06_VULNERABLE_AND_OUTDATED_COMPONENTS = "A06:2021 - Vulnerable and Outdated Components"
+    VULNERABLE_AND_OUTDATED_COMPONENTS = "A06:2021 - Vulnerable and Outdated Components"  # Alias
+    A07_IDENTIFICATION_AND_AUTHENTICATION_FAILURES = "A07:2021 - Identification and Authentication Failures"
+    IDENTIFICATION_AND_AUTHENTICATION_FAILURES = "A07:2021 - Identification and Authentication Failures"  # Alias
+    A08_SOFTWARE_AND_DATA_INTEGRITY_FAILURES = "A08:2021 - Software and Data Integrity Failures"
+    SOFTWARE_AND_DATA_INTEGRITY_FAILURES = "A08:2021 - Software and Data Integrity Failures"  # Alias
+    A09_SECURITY_LOGGING_AND_MONITORING_FAILURES = "A09:2021 - Security Logging and Monitoring Failures"
+    LOGGING_AND_MONITORING_FAILURES = "A09:2021 - Security Logging and Monitoring Failures"  # Alias
+    A10_SERVER_SIDE_REQUEST_FORGERY_SSRF = "A10:2021 - Server-Side Request Forgery (SSRF)"
+    SSRF = "A10:2021 - Server-Side Request Forgery (SSRF)"  # Alias
+    SERVER_SIDE_REQUEST_FORGERY_SSRF = "A10:2021 - Server-Side Request Forgery (SSRF)"  # Alias
     UNKNOWN = "Unknown" # Added for default if no specific category is matched
 
 class HistoricalScanSummary(BaseModel):
@@ -36,8 +49,9 @@ class HistoricalScanSummary(BaseModel):
 
 class ScanInput(BaseModel):
     """Model for representing scan input."""
-    target: str = Field(..., description="The target URL to scan.")
-    options: Dict[str, object] = Field(default_factory=dict, description="Optional scan parameters.")
+    target: str
+    scan_type: str
+    options: Optional[Dict] = Field(default_factory=dict)
 
 # New Pydantic model for the scan start request body
 class ScanStartRequest(BaseModel):
@@ -50,10 +64,11 @@ class PluginConfig(BaseModel):
     options: Optional[Dict[str, object]] = None
 
 class ModuleStatus(BaseModel):
-    """Status of an individual scanning module."""
+    """Status of an individual scanning module. Includes error for reporting failures."""
     module_name: str
     status: str # e.g., "started", "running", "completed", "failed"
     progress: int = Field(0, ge=0, le=100) # Percentage complete
+    error: Optional[str] = None
 
 class RequestLog(BaseModel):
     """Details of an HTTP request."""
@@ -73,18 +88,20 @@ class FindingDetails(BaseModel):
 
 class Finding(BaseModel):
     """Model for representing a security finding."""
-    id: str = Field(None, description="Unique ID for the finding.") # For frontend keying, generated in backend
-    vulnerability_type: str = Field(..., description="The type of vulnerability found.")
-    severity: Severity = Field(..., description="The severity of the vulnerability.")
-    description: str = Field(..., description="A brief description of the finding.")
-    technical_details: Optional[str] = Field(None, description="Detailed technical information about the finding.")
-    remediation: Optional[str] = Field(None, description="Steps to remediate the vulnerability.")
-    owasp_category: Optional[OwaspCategory] = Field(None, description="The relevant OWASP Top 10 category.")
-    affected_url: Optional[str] = Field(None, description="The URL where the vulnerability was found.")
-    request: Optional[RequestLog] = Field(None, description="Example HTTP request that triggered the finding.")
-    response: Optional[str] = Field(None, description="Example HTTP response related to the finding.")
-    proof: Optional[Union[Dict[str, Any], str]] = Field(None, description="Evidence or proof of the vulnerability.")
-    # Added for compatibility with some scanner outputs that might have these fields
-    title: Optional[str] = Field(None, description="Title of the finding, if different from vulnerability_type.")
-    cwe_id: Optional[str] = Field(None, description="Common Weakness Enumeration (CWE) ID.")
-    score: Optional[float] = Field(None, description="Numerical score representing the severity of the finding.")
+    id: str
+    type: str
+    severity: str
+    title: str
+    description: str
+    location: str
+    evidence: Optional[str] = None
+    timestamp: datetime = Field(default_factory=datetime.now)
+
+class ScanResult(BaseModel):
+    scan_id: str
+    target: str
+    status: str
+    findings: List[Finding] = Field(default_factory=list)
+    start_time: datetime
+    end_time: Optional[datetime] = None
+    errors: List[str] = Field(default_factory=list)

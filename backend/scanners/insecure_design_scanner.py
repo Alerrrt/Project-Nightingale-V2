@@ -1,12 +1,15 @@
 import asyncio
-import uuid
 from typing import List, Dict, Any
+from datetime import datetime
 import httpx
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
-from backend.types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
+from backend.types.models import ScanInput, Severity, OwaspCategory
 
+logger = get_context_logger(__name__)
 
 class InsecureDesignScanner(BaseScanner):
     """
@@ -21,7 +24,37 @@ class InsecureDesignScanner(BaseScanner):
         "version": "1.0"
     }
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="insecure_design_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        try:
+            logger.info("Scan started", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "options": scan_input.options
+            })
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            self._update_metrics(True, start_time)
+            logger.info("Scan completed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "result_count": len(results)
+            })
+            return results
+        except Exception as e:
+            self._update_metrics(False, start_time)
+            logger.error("Scan failed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "error": str(e)
+            }, exc_info=True)
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
         Asynchronously checks for insecure design vulnerabilities.
 
@@ -30,11 +63,11 @@ class InsecureDesignScanner(BaseScanner):
             options: Additional options for the scan.
 
         Returns:
-            A list of Finding objects for detected insecure design issues.
+            A list of findings for detected insecure design issues.
         """
-        findings: List[Finding] = []
+        findings: List[Dict] = []
         target_url = target
-        print(f"[*] Starting Insecure Design scan for {target_url}...")
+        logger.info(f"Starting Insecure Design scan for {target_url}")
 
         # Test cases for insecure design patterns
         test_cases = [
@@ -66,7 +99,7 @@ class InsecureDesignScanner(BaseScanner):
             }
         ]
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
+        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
             for test_case in test_cases:
                 try:
                     url = f"{target_url.rstrip('/')}/{test_case['path'].lstrip('/')}"
@@ -92,48 +125,52 @@ class InsecureDesignScanner(BaseScanner):
                                 missing_headers.append(header)
 
                         if missing_headers:
-                            findings.append(
-                                Finding(
-                                    id=str(uuid.uuid4()),
-                                    vulnerability_type="Insecure Design",
-                                    description=f"Missing security headers for {test_case['description']}.",
-                                    severity=Severity.MEDIUM,
-                                    affected_url=url,
-                                    remediation="Implement proper security headers and follow secure design principles. Consider implementing a Web Application Firewall (WAF) for additional protection.",
-                                    owasp_category=OwaspCategory.A04_INSECURE_DESIGN,
-                                    proof={
-                                        "test_case": test_case['description'],
-                                        "missing_headers": missing_headers,
-                                        "response_status": response.status_code
-                                    }
-                                )
-                            )
+                            findings.append({
+                                "type": "insecure_design_missing_headers",
+                                "severity": Severity.MEDIUM,
+                                "title": "Insecure Design - Missing Security Headers",
+                                "description": f"Missing security headers for {test_case['description']}.",
+                                "evidence": {
+                                    "test_case": test_case['description'],
+                                    "missing_headers": missing_headers,
+                                    "response_status": response.status_code
+                                },
+                                "owasp_category": OwaspCategory.INSECURE_DESIGN,
+                                "recommendation": "Implement proper security headers and follow secure design principles. Consider implementing a Web Application Firewall (WAF) for additional protection.",
+                                "affected_url": url
+                            })
 
                         # Check for weak password policy
                         if test_case['description'] == "Weak password policy":
                             if len(test_case['data']['password']) < 8:
-                                findings.append(
-                                    Finding(
-                                        id=str(uuid.uuid4()),
-                                        vulnerability_type="Weak Password Policy",
-                                        description="Application allows weak passwords.",
-                                        severity=Severity.HIGH,
-                                        affected_url=url,
-                                        remediation="Implement a strong password policy requiring minimum length, complexity, and preventing common passwords.",
-                                        owasp_category=OwaspCategory.A04_INSECURE_DESIGN,
-                                        proof={
-                                            "test_case": test_case['description'],
-                                            "password_length": len(test_case['data']['password'])
-                                        }
-                                    )
-                                )
+                                findings.append({
+                                    "type": "insecure_design_weak_password",
+                                    "severity": Severity.HIGH,
+                                    "title": "Insecure Design - Weak Password Policy",
+                                    "description": "Application allows weak passwords.",
+                                    "evidence": {
+                                        "test_case": test_case['description'],
+                                        "password_length": len(test_case['data']['password'])
+                                    },
+                                    "owasp_category": OwaspCategory.INSECURE_DESIGN,
+                                    "recommendation": "Implement a strong password policy requiring minimum length, complexity, and preventing common passwords.",
+                                    "affected_url": url
+                                })
 
                 except httpx.RequestError as e:
-                    print(f"Error testing insecure design for {url}: {e}")
+                    logger.error(f"Error testing insecure design", extra={
+                        "url": url,
+                        "test_case": test_case['description'],
+                        "error": str(e)
+                    })
                 except Exception as e:
-                    print(f"An unexpected error occurred during insecure design scan: {e}")
+                    logger.error(f"Unexpected error during insecure design scan", extra={
+                        "url": url,
+                        "test_case": test_case['description'],
+                        "error": str(e)
+                    }, exc_info=True)
 
-        print(f"[*] Finished Insecure Design scan for {target_url}.")
+        logger.info(f"Completed Insecure Design scan for {target_url}. Found {len(findings)} issues.")
         return findings
 
 

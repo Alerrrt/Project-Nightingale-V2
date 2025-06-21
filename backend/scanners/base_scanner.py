@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 from backend.utils.logging_config import get_context_logger
-from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.resource_monitor import ResourceMonitor
 from backend.types.models import ScanInput, Finding # Import Finding from centralized models
 
@@ -53,7 +52,7 @@ class BaseScanner(ABC):
             }
         )
 
-    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="scanner")
+    @abstractmethod
     async def scan(self, scan_input: ScanInput) -> List[Dict]:
         """
         Perform a security scan.
@@ -68,16 +67,18 @@ class BaseScanner(ABC):
         scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
         
         try:
-            # Log scan start
             logger.info(
-                "Scan started",
+                "Starting scan",
                 extra={
                     "scanner": self.__class__.__name__,
                     "scan_id": scan_id,
-                    "target": scan_input.target,
-                    "options": scan_input.options
+                    "target": scan_input.target
                 }
             )
+            
+            # Check resource availability
+            if self._resource_monitor and not await self._resource_monitor.check_resources_available():
+                raise RuntimeError("Insufficient resources available for scan")
             
             # Perform scan
             results = await self._perform_scan(scan_input.target, scan_input.options)
@@ -85,9 +86,8 @@ class BaseScanner(ABC):
             # Update metrics
             self._update_metrics(True, start_time)
             
-            # Log scan completion
             logger.info(
-                "Scan completed",
+                "Scan completed successfully",
                 extra={
                     "scanner": self.__class__.__name__,
                     "scan_id": scan_id,
@@ -99,10 +99,7 @@ class BaseScanner(ABC):
             return results
             
         except Exception as e:
-            # Update metrics
             self._update_metrics(False, start_time)
-            
-            # Log error
             logger.error(
                 "Scan failed",
                 extra={
@@ -135,14 +132,26 @@ class BaseScanner(ABC):
             # Check resource availability
             if self._resource_monitor:
                 if not await self._resource_monitor.check_resources_available():
+                    logger.warning(
+                        "Health check failed: insufficient resources",
+                        extra={"scanner": self.__class__.__name__}
+                    )
                     return False
             
             # Perform health check
-            return await self._check_health()
+            health_status = await self._check_health()
+            
+            if not health_status:
+                logger.warning(
+                    "Health check failed: scanner reported unhealthy",
+                    extra={"scanner": self.__class__.__name__}
+                )
+            
+            return health_status
             
         except Exception as e:
             logger.error(
-                "Health check failed",
+                "Health check failed with error",
                 extra={
                     "scanner": self.__class__.__name__,
                     "error": str(e)

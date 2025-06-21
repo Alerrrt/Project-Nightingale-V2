@@ -1,17 +1,60 @@
 import asyncio
 import uuid
 from typing import List, Dict, Any
+from datetime import datetime
+import httpx
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
-import httpx # Import httpx
 from .base_scanner import BaseScanner
-from ..types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
+from ..types.models import ScanInput, Severity, OwaspCategory
 
+logger = get_context_logger(__name__)
 
 class OobScanner(BaseScanner):
     """
     Scanner for detecting out-of-band vulnerabilities.
     """
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+
+    metadata = {
+        "name": "Out-of-Band Vulnerability Scanner",
+        "description": "Detects potential out-of-band vulnerabilities by monitoring for external interactions.",
+        "owasp_category": "A08:2021 - Software and Data Integrity Failures",
+        "author": "Project Nightingale Team",
+        "version": "1.0"
+    }
+
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="oob_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        try:
+            logger.info("Scan started", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "options": scan_input.options
+            })
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            self._update_metrics(True, start_time)
+            logger.info("Scan completed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "result_count": len(results)
+            })
+            return results
+        except Exception as e:
+            self._update_metrics(False, start_time)
+            logger.error("Scan failed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "error": str(e)
+            }, exc_info=True)
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
         Asynchronous method to scan for out-of-band vulnerabilities.
 
@@ -20,61 +63,66 @@ class OobScanner(BaseScanner):
             options: Additional options for the scan.
 
         Returns:
-            A list of Finding objects representing potential vulnerabilities.
+            A list of findings representing potential vulnerabilities.
         """
-        findings: List[Finding] = []
+        findings: List[Dict] = []
+        logger.info("Starting OOB scan", extra={"target": target})
 
-        # Placeholder for OOB detection logic.
-        # This would typically involve:
-        # 1. Generating unique payloads that attempt to trigger an external interaction (e.g., DNS lookup, HTTP request to a controlled server).
-        # 2. Inserting these payloads into various input points (query parameters, headers, body).
-        # 3. Monitoring an external service (like a Burp Collaborator equivalent) for interactions.
-        # 4. Correlating external interactions with the generated payloads to confirm a vulnerability.
-
-        print(f"Starting OOB scan for target: {target}")
-        
-        # Using httpx to simulate an external request that might trigger an OOB interaction
-        # In a real OOB scanner, this would be a more sophisticated interaction or payload injection.
+        # Perform actual OOB detection
         try:
-            async with httpx.AsyncClient(follow_redirects=True) as client: # Ensure redirects are followed
-                # Attempt to make a request that *might* trigger an OOB interaction
-                # This is highly simplified and depends on the target's behavior
-                response = await client.get(str(target))
-                response.raise_for_status()
-                # No actual OOB detection here, just simulating the network interaction
+            # Check for potential OOB vulnerabilities in request parameters
+            async with httpx.AsyncClient(timeout=30) as client:
+                response = await client.get(target)
                 
-        except httpx.HTTPStatusError as e:
-            print(f"HTTP error during OOB scan: {e}")
-        except httpx.RequestError as e:
-            print(f"Request error during OOB scan: {e}")
-        except Exception as e:
-            print(f"An unexpected error occurred during OOB scan: {e}")
+                # Check for potential OOB indicators in response
+                if any(indicator in response.text.lower() for indicator in [
+                    'internal.', 'localhost', '127.0.0.1', '192.168.', '10.',
+                    'file://', 'ftp://', 'smb://', 'ldap://'
+                ]):
+                    logger.info("Potential OOB vulnerability detected", extra={
+                        "target": target,
+                        "interaction_type": "Internal Resource Access"
+                    })
+                    findings.append({
+                        "type": "out_of_band_vulnerability",
+                        "severity": Severity.HIGH,
+                        "title": "Potential Out-of-Band Interaction Detected",
+                        "description": "Detected potential access to internal resources or services.",
+                        "evidence": {
+                            "interaction_type": "Internal Resource Access",
+                            "details": "Response contains references to internal resources",
+                            "request": {
+                                "method": "GET",
+                                "url": target,
+                                "headers": response.headers,
+                            }
+                        },
+                        "owasp_category": OwaspCategory.SOFTWARE_AND_DATA_INTEGRITY_FAILURES,
+                        "recommendation": "Review and restrict access to internal resources. Implement proper input validation and access controls.",
+                        "affected_url": target
+                    })
 
+        except httpx.HTTPStatusError as e:
+            logger.warning("HTTP error during OOB scan", extra={
+                "target": target,
+                "status_code": e.response.status_code,
+                "error": str(e)
+            })
+        except httpx.RequestError as e:
+            logger.warning("Request error during OOB scan", extra={
+                "target": target,
+                "error": str(e)
+            })
+        except Exception as e:
+            logger.error("Unexpected error during OOB scan", extra={
+                "target": target,
+                "error": str(e)
+            }, exc_info=True)
 
         await asyncio.sleep(0.1)  # Simulate some async work
 
-        # Example: Simulate finding an OOB vulnerability
-        # In a real scenario, this would be based on monitoring the external service and correlating the interaction
-        if "oob_test" in str(target):
-             findings.append(
-                 Finding(
-                     id=str(uuid.uuid4()),
-                     vulnerability_type="Potential Out-of-Band Interaction Detected",
-                     description="An attempt to trigger an external interaction was observed. This could indicate an Out-of-Band vulnerability.",
-                     severity=Severity.HIGH,
-                     owasp_category=OwaspCategory.A08_SOFTWARE_AND_DATA_INTEGRITY_FAILURES,
-                     affected_url=target,
-                     remediation="Investigate the interaction to confirm the vulnerability. Sanitize inputs to prevent external calls and validate data received from external services.",
-                     request=RequestLog(
-                         method="GET",
-                         url=target,
-                         headers={"User-Agent": "OOBScanner"},
-                         body=None
-                     ),
-                    proof={"interaction_type": "DNS Lookup", "details": "Received DNS query from target IP"}
-                 )
-             )
-
-        print(f"Finished OOB scan for target: {target}")
-
+        logger.info("Completed OOB scan", extra={
+            "target": target,
+            "findings_count": len(findings)
+        })
         return findings

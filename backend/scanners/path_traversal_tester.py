@@ -1,18 +1,61 @@
 import asyncio
 import uuid
 from typing import List, Optional, Dict, Any
+from datetime import datetime
 import httpx
 from urllib.parse import urljoin
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
 from .base_scanner import BaseScanner
-from ..types.models import ScanInput, Finding, Severity, OwaspCategory
+from ..types.models import ScanInput, Severity, OwaspCategory
+
+logger = get_context_logger(__name__)
 
 class PathTraversalTesterScanner(BaseScanner):
     """
     A scanner module for detecting path traversal vulnerabilities.
     """
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    metadata = {
+        "name": "Path Traversal Scanner",
+        "description": "Detects path traversal vulnerabilities by testing various payloads and parameters.",
+        "owasp_category": "A01:2021 - Broken Access Control",
+        "author": "Project Nightingale Team",
+        "version": "1.0"
+    }
+
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="path_traversal_tester")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        try:
+            logger.info("Scan started", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "options": scan_input.options
+            })
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            self._update_metrics(True, start_time)
+            logger.info("Scan completed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "result_count": len(results)
+            })
+            return results
+        except Exception as e:
+            self._update_metrics(False, start_time)
+            logger.error("Scan failed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "error": str(e)
+            }, exc_info=True)
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
         Asynchronously appends payloads to detect directory traversal flaws.
 
@@ -21,11 +64,11 @@ class PathTraversalTesterScanner(BaseScanner):
             options: Additional options for the scan.
 
         Returns:
-            A list of Finding objects for detected path traversal vulnerabilities.
+            A list of findings for detected path traversal vulnerabilities.
         """
-        findings: List[Finding] = []
+        findings: List[Dict] = []
         target_url = target
-        print(f"[*] Starting Path Traversal scan for {target_url}...")
+        logger.info("Starting Path Traversal scan", extra={"target": target_url})
 
         # Common path traversal payloads for various OS
         path_traversal_payloads = [
@@ -42,49 +85,85 @@ class PathTraversalTesterScanner(BaseScanner):
         # Common parameters that might be vulnerable
         common_params = ["file", "path", "page", "doc", "view", "filename"]
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
-            tasks = []
-            for param in common_params:
-                for payload in path_traversal_payloads:
-                    # Attempt to inject into query parameters
-                    test_url_query = f"{target_url}?{param}={payload}"
-                    tasks.append(self._check_path_traversal(client, test_url_query, param, payload))
+        try:
+            async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+                tasks = []
+                for param in common_params:
+                    for payload in path_traversal_payloads:
+                        # Attempt to inject into query parameters
+                        test_url_query = f"{target_url}?{param}={payload}"
+                        tasks.append(self._check_path_traversal(client, test_url_query, param, payload))
 
-                    # Attempt to inject into path segments (requires more sophisticated URL manipulation)
-                    # For simplicity, we'll focus on query parameters first.
+                results = await asyncio.gather(*tasks, return_exceptions=True)
+                for result in results:
+                    if isinstance(result, Exception):
+                        logger.error("Error during path traversal check", extra={
+                            "error": str(result)
+                        }, exc_info=True)
+                    elif result:
+                        findings.append(result)
 
-            results = await asyncio.gather(*tasks)
-            for result in results:
-                if result:
-                    findings.append(result)
+        except Exception as e:
+            logger.error("Unexpected error during scan", extra={
+                "target": target_url,
+                "error": str(e)
+            }, exc_info=True)
 
-        print(f"[*] Finished Path Traversal scan for {target_url}.")
+        logger.info("Completed Path Traversal scan", extra={
+            "target": target_url,
+            "findings_count": len(findings)
+        })
         return findings
 
-    async def _check_path_traversal(self, client: httpx.AsyncClient, test_url: str, param: str, payload: str) -> Optional[Finding]:
+    async def _check_path_traversal(self, client: httpx.AsyncClient, test_url: str, param: str, payload: str) -> Optional[Dict]:
+        """
+        Checks for path traversal vulnerability using a specific payload.
+
+        Args:
+            client: The HTTP client to use for requests.
+            test_url: The URL to test.
+            param: The parameter being tested.
+            payload: The payload being injected.
+
+        Returns:
+            A finding dictionary if vulnerability is detected, None otherwise.
+        """
         try:
             response = await client.get(test_url)
 
-            # Very basic check: look for content that suggests file exposure
-            # In a real scanner, you'd verify against known file contents (e.g., "root:x:", "[fonts]")
+            # Check for content that suggests file exposure
             if "root:x:0:0:" in response.text.lower() or "for 16-bit app support" in response.text.lower():
-                return Finding(
-                    id=str(uuid.uuid4()),
-                    vulnerability_type="Path Traversal",
-                    description=f"Potential Path Traversal vulnerability detected by injecting '{payload}' into parameter '{param}'. Server responded with content that suggests file exposure.",
-                    severity=Severity.HIGH,
-                    affected_url=test_url,
-                    remediation="Implement strict input validation and sanitization for all file and path-related inputs. Use whitelisting for allowed file types and directories. Do not concatenate user input directly into file paths.",
-                    owasp_category=OwaspCategory.A01_BROKEN_ACCESS_CONTROL, # Or A08: Software and Data Integrity Failures
-                    proof={
+                logger.info("Path traversal vulnerability detected", extra={
+                    "url": test_url,
+                    "param": param,
+                    "payload": payload
+                })
+                return {
+                    "type": "path_traversal",
+                    "severity": Severity.HIGH,
+                    "title": "Path Traversal Vulnerability Detected",
+                    "description": f"Potential Path Traversal vulnerability detected by injecting '{payload}' into parameter '{param}'. Server responded with content that suggests file exposure.",
+                    "evidence": {
                         "test_url": test_url,
                         "parameter": param,
                         "injected_payload": payload,
                         "response_status": response.status_code,
                         "response_snippet": response.text[:200]
-                    }
-                )
-            # You might also look for specific status codes (e.g., 200 for successful file access, 400 for errors indicating payload was processed)
+                    },
+                    "owasp_category": OwaspCategory.BROKEN_ACCESS_CONTROL,
+                    "recommendation": "Implement strict input validation and sanitization for all file and path-related inputs. Use whitelisting for allowed file types and directories. Do not concatenate user input directly into file paths.",
+                    "affected_url": test_url
+                }
+
         except httpx.RequestError as e:
-            print(f"Error checking path traversal for {test_url}: {e}")
+            logger.warning("Request error during path traversal check", extra={
+                "url": test_url,
+                "error": str(e)
+            })
+        except Exception as e:
+            logger.error("Unexpected error during path traversal check", extra={
+                "url": test_url,
+                "error": str(e)
+            }, exc_info=True)
+
         return None 

@@ -1,6 +1,7 @@
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from pydantic import BaseModel, Field
 from backend.types.scanner_config import ScannerRegistryConfig
+from pydantic_settings import BaseSettings
 
 class AppConfig(BaseModel):
     """Application configuration loaded from environment variables."""
@@ -49,4 +50,31 @@ class AppConfig(BaseModel):
                     'max_network_connections': int(os.getenv('MAX_NETWORK_CONNECTIONS', '100'))
                 }
             )
-        ) 
+        )
+
+class Settings(BaseSettings):
+    # API Settings
+    HOST: str = "0.0.0.0"
+    PORT: int = 8000
+    DEBUG: bool = False
+    
+    # Security Settings
+    SECRET_KEY: str = "your-secret-key-here"  # Change this in production
+    
+    # CORS Settings
+    CORS_ORIGINS: List[str] = ["*"]
+    
+    # Scanner Settings
+    MAX_CONCURRENT_SCANS: int = 5
+    SCAN_TIMEOUT: int = 3600  # 1 hour
+    MAX_RETRIES: int = 3
+    
+    # Resource Limits
+    MAX_CPU_PERCENT: int = 80
+    MAX_MEMORY_MB: int = 1024
+    MAX_NETWORK_CONNECTIONS: int = 1000
+
+    class Config:
+        env_file = ".env"
+
+settings = Settings() 

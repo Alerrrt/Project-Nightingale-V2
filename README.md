@@ -168,6 +168,35 @@ Metrics are available at `/metrics` endpoint:
 - `resource_memory_mb`: Memory usage in MB
 - `resource_network_connections`: Number of network connections
 
+## Environment Variables
+
+Create a `.env` file in the project root (automatically created by setup scripts) with the following variables:
+
+### Backend settings
+- `BACKEND_HOST` - Host for backend server (default: 0.0.0.0)
+- `BACKEND_PORT` - Port for backend server (default: 8000)
+- `DEBUG` - Enable debug mode (default: True)
+- `SECRET_KEY` - Secret key for JWT and security (change in production!)
+
+### CORS settings
+- `CORS_ORIGINS` - Allowed origins for CORS (default: *)
+
+### Scanner settings
+- `MAX_CONCURRENT_SCANS` - Maximum concurrent scans (default: 5)
+- `SCAN_TIMEOUT` - Scan timeout in seconds (default: 3600)
+- `MAX_RETRIES` - Maximum scan retries (default: 3)
+- `SCANNER_DEFAULT_TIMEOUT` - Default scanner timeout (default: 30)
+- `SCANNER_MAX_RETRIES` - Default scanner max retries (default: 3)
+- `SCANNER_BATCH_SIZE` - Default scanner batch size (default: 5)
+
+### Resource limits
+- `MAX_CPU_PERCENT` - Max CPU percent (default: 80)
+- `MAX_MEMORY_MB` - Max memory in MB (default: 1024)
+- `MAX_NETWORK_CONNECTIONS` - Max network connections (default: 1000)
+
+### Frontend settings
+- `REACT_APP_API_URL` - URL for frontend to reach backend API (default: http://localhost:8000)
+
 ## Contributing
 
 1. Fork the repository

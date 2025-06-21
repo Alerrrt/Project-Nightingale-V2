@@ -2,95 +2,143 @@ import asyncio
 import uuid
 from typing import List, Optional, Dict, Any
 import httpx
+from datetime import datetime
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
-from .base_scanner import BaseScanner
-from ..types.models import ScanInput, Finding, Severity, OwaspCategory
+from backend.scanners.base_scanner import BaseScanner
+from backend.types.models import ScanInput, Finding, Severity, OwaspCategory
+
+logger = get_context_logger(__name__)
 
 class DirectoryFileEnumerationScanner(BaseScanner):
     """
     A scanner module for brute-forcing common paths to uncover hidden or forgotten resources.
     """
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
-        """
-        Asynchronously attempts to discover hidden directories and files.
+    metadata = {
+        "name": "Directory and File Enumeration",
+        "description": "Detects exposed directories and files through enumeration.",
+        "owasp_category": "A05:2021 - Security Misconfiguration",
+        "author": "Project Nightingale Team",
+        "version": "1.0"
+    }
 
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="directory_file_enumeration_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        """
+        Perform a security scan with circuit breaker protection.
+        
         Args:
-            target: The target URL for the scan.
-            options: Additional options for the scan.
-
+            scan_input: The input for the scan, including target and options.
+            
         Returns:
-            A list of Finding objects for discovered resources.
+            List of scan results
         """
-        findings: List[Finding] = []
-        target_url = target
-        print(f"[*] Starting Directory and File Enumeration scan for {target_url}...")
-
-        # Common paths to brute-force
-        common_paths = [
-            "/admin", "/dashboard", "/login",
-            "/backup.zip", "/backup.tar.gz", "/old.zip",
-            "/.git/config", "/.env", "/docker-compose.yml",
-            "/robots.txt", "/sitemap.xml",
-            "/wp-admin", "/wp-login.php", # Common WordPress paths
-            "/phpmyadmin",
-            "/config.php", "/credentials.txt",
-            "/test/", "/dev/", "/old/"
-        ]
-
-        async with httpx.AsyncClient(follow_redirects=True) as client:
-            tasks = []
-            for path in common_paths:
-                full_url = f"{target_url.rstrip('/')}{path}"
-                tasks.append(self._check_path(client, full_url, path))
-
-            results = await asyncio.gather(*tasks)
-            for result in results:
-                if result:
-                    findings.append(result)
-
-        print(f"[*] Finished Directory and File Enumeration scan for {target_url}.")
-        return findings
-
-    async def _check_path(self, client: httpx.AsyncClient, url: str, path: str) -> Optional[Finding]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        
         try:
-            response = await client.get(url, timeout=5)
-            if response.status_code == 200:
-                # Basic check for common directory listing indicators
-                if "<title>Index of" in response.text or "Directory Listing For" in response.text:
-                    return Finding(
-                        id=str(uuid.uuid4()),
-                        vulnerability_type="Directory Listing Enabled",
-                        description=f"Directory listing enabled at {path}, potentially exposing sensitive files or directory structure.",
-                        severity=Severity.MEDIUM,
-                        affected_url=url,
-                        remediation="Disable directory listing on your web server for this path.",
-                        owasp_category=OwaspCategory.A05_SECURITY_MISCONFIGURATION,
-                        proof={"url": url, "status_code": response.status_code, "indicator": "Directory listing HTML"}
+            # Log scan start
+            logger.info(
+                "Scan started",
+                extra={
+                    "scanner": self.__class__.__name__,
+                    "scan_id": scan_id,
+                    "target": scan_input.target,
+                    "options": scan_input.options
+                }
+            )
+            
+            # Perform scan
+            options = scan_input.options if scan_input.options is not None else {}
+            results = await self._perform_scan(scan_input.target, options)
+            
+            # Update metrics
+            self._update_metrics(True, start_time)
+            
+            # Log scan completion
+            logger.info(
+                "Scan completed",
+                extra={
+                    "scanner": self.__class__.__name__,
+                    "scan_id": scan_id,
+                    "target": scan_input.target,
+                    "result_count": len(results)
+                }
+            )
+            
+            return results
+            
+        except Exception as e:
+            # Update metrics
+            self._update_metrics(False, start_time)
+            
+            # Log error
+            logger.error(
+                "Scan failed",
+                extra={
+                    "scanner": self.__class__.__name__,
+                    "scan_id": scan_id,
+                    "target": scan_input.target,
+                    "error": str(e)
+                },
+                exc_info=True
+            )
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
+        """
+        Perform the actual directory and file enumeration scan.
+        
+        Args:
+            target: Target URL to scan
+            options: Scan options including wordlist and timeout
+            
+        Returns:
+            List of findings containing discovered paths
+        """
+        findings = []
+        common_paths = options.get('wordlist', [
+            '/admin', '/backup', '/config', '/db', '/debug',
+            '/dev', '/docs', '/files', '/images', '/includes',
+            '/install', '/logs', '/media', '/phpinfo.php',
+            '/robots.txt', '/server-status', '/sql', '/temp',
+            '/test', '/tmp', '/upload', '/uploads', '/vendor'
+        ])
+        
+        timeout = options.get('timeout', 10)
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            
+            async def check_path(path: str) -> Optional[Dict]:
+                try:
+                    url = f"{target.rstrip('/')}/{path.lstrip('/')}"
+                    response = await client.get(url)
+                    
+                    if response.status_code < 400:  # Found something
+                        return {
+                            "type": "vulnerability",
+                            "severity": Severity.MEDIUM.value,
+                            "cwe": "CWE-538", # File and Directory Information Exposure
+                            "title": f"Exposed Path Found: {path}",
+                            "description": f"An accessible path was discovered at {url}, which returned a status code of {response.status_code}. This could expose sensitive files, directory listings, or functionality.",
+                            "location": url,
+                            "remediation": "Ensure that sensitive files and directories are not publicly accessible. Configure your web server to show a 404 Not Found error instead of a 403 Forbidden error for non-existent resources to avoid path enumeration. Restrict access to authorized users where necessary.",
+                            "confidence": 100,
+                            "impact": "Information disclosure, potential for further attacks.",
+                            "cvss": 5.3,
+                            "category": OwaspCategory.SECURITY_MISCONFIGURATION.value,
+                        }
+                except httpx.RequestError as e:
+                    logger.warning(
+                        f"Error checking path {path}: {type(e).__name__}",
+                        extra={"target": target, "path": path}
                     )
-                else:
-                    return Finding(
-                        id=str(uuid.uuid4()),
-                        vulnerability_type="Hidden Resource Found",
-                        description=f"Potentially hidden resource found at {path}. Status code: {response.status_code}",
-                        severity=Severity.LOW, # Could be Medium/High depending on content
-                        affected_url=url,
-                        remediation="Review the contents of this resource and ensure it\'s not publicly accessible if sensitive.",
-                        owasp_category=OwaspCategory.A05_SECURITY_MISCONFIGURATION,
-                        proof={"url": url, "status_code": response.status_code, "response_length": len(response.text)}
-                    )
-            elif response.status_code in [401, 403]:
-                return Finding(
-                    id=str(uuid.uuid4()),
-                    vulnerability_type="Access Controlled Resource Found",
-                    description=f"Resource at {path} exists but requires authentication or is forbidden (Status: {response.status_code}).",
-                    severity=Severity.INFO,
-                    affected_url=url,
-                    remediation="Review access controls for this resource.",
-                    owasp_category=OwaspCategory.A01_BROKEN_ACCESS_CONTROL,
-                    proof={"url": url, "status_code": response.status_code}
-                )
-            # Do not return a finding for 404 or other expected errors
-        except httpx.RequestError as e:
-            print(f"Error checking path {url}: {e}")
-        return None 
+                return None
+
+            tasks = [check_path(path) for path in common_paths]
+            results = await asyncio.gather(*tasks)
+            
+            findings = [res for res in results if res is not None]
+                    
+        return findings 

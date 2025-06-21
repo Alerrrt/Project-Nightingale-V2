@@ -1,31 +1,14 @@
-import logging
-import uuid
-from typing import List, Dict, Any, Optional
-
+import re
 import httpx
-from pydantic import BaseModel
+from typing import List, Dict
+import logging
+import asyncio
 
 from backend.scanners.base_scanner import BaseScanner
-from backend.scanners.scanner_registry import ScannerRegistry
-from backend.types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
+from backend.types.models import ScanInput, Severity, OwaspCategory
+from backend.utils.circuit_breaker import circuit_breaker
 
 logger = logging.getLogger(__name__)
-
-
-class SqlInjectionScanTarget(BaseModel):
-    """Model for the target of an SQL Injection scan."""
-    url: str
-
-
-class SqlInjectionFinding(BaseModel):
-    """Model for a detected SQL Injection vulnerability finding."""
-    vulnerability_type: str = "SQL Injection"
-    severity: str
-    url: str
-    parameter: Optional[str] = None
-    payload: Optional[str] = None
-    response_status: Optional[int] = None
-    response_body_snippet: Optional[str] = None
 
 
 class SqlInjectionScanner(BaseScanner):
@@ -34,78 +17,114 @@ class SqlInjectionScanner(BaseScanner):
     """
 
     metadata = {
-        "name": "SQL Injection",
-        "description": "Detects SQL injection vulnerabilities by injecting common payloads and analyzing responses.",
-        "owasp_category": "A03:2021 - Injection",
+        "name": "SQL Injection Scanner",
+        "description": "Detects SQL Injection vulnerabilities by sending common attack payloads.",
+        "owasp_category": OwaspCategory.A03_INJECTION,
         "author": "Project Nightingale Team",
         "version": "1.0"
     }
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    SQLI_PAYLOADS = [
+        "' OR '1'='1", "' OR '1'='1'--", "' OR 1=1--",
+        '" OR "1"="1"', '" OR "1"="1"--', '" OR 1=1--',
+        "admin'--", "admin' #", "admin'/*",
+        "' OR 'x'='x",
+    ]
+    TIME_BASED_PAYLOADS = [
+        "' AND SLEEP(5)--",
+        "' AND (SELECT * FROM (SELECT(SLEEP(5)))a)--",
+        "'; WAITFOR DELAY '0:0:5'--",
+    ]
+    NORMAL_TIMEOUT = 5
+    TIME_BASED_TIMEOUT = 10
+
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="sql_injection_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
         """
-        Asynchronously scans a target URL for SQL Injection vulnerabilities.
-
-        Args:
-            target: The target URL for the scan.
-            options: Additional options for the scan.
-
-        Returns:
-            A list of Finding objects representing detected vulnerabilities.
+        This is the entry point for the scanner. It will delegate to the
+        private _perform_scan method. The boilerplate for logging, metrics,
+        and broadcasting is handled by higher-level components.
         """
-        findings: List[Finding] = []
-        url = target
-        logger.info(f"Starting SQL Injection scan for: {url}")
+        return await self._perform_scan(scan_input.target, scan_input.options or {})
 
-        common_payloads = [
-            "' OR '1'='1",
-            '" OR "1"="1"\'',
-            " admin'--",
-            "' OR '1'='1'--",
-            "' HAVING 1=1 --",
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
+        findings = []
+        error_patterns = [
+            r"sql syntax", r"mysql", r"unclosed quotation mark",
+            r"odbc", r"oracle", r"microsoft ole db",
         ]
 
-        async with httpx.AsyncClient(follow_redirects=True) as client:
-            for payload in common_payloads:
-                try:
-                    test_url = f"{url}?id={payload}"
-                    response = await client.get(test_url)
-                    response.raise_for_status()
+        try:
+            async with httpx.AsyncClient(verify=False, follow_redirects=True, timeout=self.TIME_BASED_TIMEOUT) as client:
+                response = await client.get(target)
+                content = response.text
 
-                    if "syntax error" in response.text.lower() or "mysql_fetch_array" in response.text.lower():
-                        findings.append(
-                            Finding(
-                                id=str(uuid.uuid4()),
-                                vulnerability_type="SQL Injection",
-                                description=f"Potential SQL Injection detected with payload: {payload}",
-                                severity=Severity.HIGH,
-                                owasp_category=OwaspCategory.A03_INJECTION,
-                                affected_url=url,
-                                request=RequestLog(
-                                    method="GET",
-                                    url=test_url,
-                                    headers=dict(response.request.headers),
-                                    body=None
-                                ),
-                                response=response.text[:500],
-                                proof=f"Payload: {payload}, Response Status: {response.status_code}, Response Snippet: {response.text[:100]}"
-                            )
-                        )
-                except httpx.HTTPStatusError as e:
-                    logger.warning(f"HTTP error during SQL Injection scan for {test_url}: {e}", exc_info=True)
-                except httpx.RequestError as e:
-                    logger.warning(f"Request error during SQL Injection scan for {test_url}: {e}", exc_info=True)
-                except Exception as e:
-                    logger.error(f"An unexpected error occurred during SQL Injection scan for {test_url}: {e}", exc_info=True)
+                forms = re.findall(r'<form[^>]*>.*?</form>', content, re.DOTALL)
+                for form_html in forms:
+                    action_match = re.search(r'action=["\']([^"\']*)["\']', form_html)
+                    method_match = re.search(r'method=["\']([^"\']*)["\']', form_html)
+                    action = action_match.group(1) if action_match else ''
+                    method = method_match.group(1).upper() if method_match else 'GET'
+                    
+                    form_url = str(httpx.URL(target).join(action))
 
-        logger.info(f"Finished SQL Injection scan for: {url}")
+                    inputs = re.findall(r'<input[^>]*name=["\']([^"\']*)["\'][^>]*>', form_html)
+                    
+                    for param_name in inputs:
+                        # Error-based checks
+                        for payload in self.SQLI_PAYLOADS:
+                            data = {input_name: 'test' for input_name in inputs}
+                            data[param_name] = payload
+
+                            try:
+                                if method == 'POST':
+                                    test_response = await client.post(form_url, data=data, timeout=self.NORMAL_TIMEOUT)
+                                else:
+                                    test_response = await client.get(form_url, params=data, timeout=self.NORMAL_TIMEOUT)
+
+                                for pattern in error_patterns:
+                                    if re.search(pattern, test_response.text, re.IGNORECASE):
+                                        findings.append(self._create_finding(form_url, param_name, payload, "error-based", test_response.text))
+                                        break
+                            except httpx.RequestError as e:
+                                logger.warning(f"Request failed for error-based SQLi check: {e}")
+                        
+                        # Time-based checks
+                        for payload in self.TIME_BASED_PAYLOADS:
+                            data = {input_name: 'test' for input_name in inputs}
+                            data[param_name] = payload
+
+                            try:
+                                start_time = asyncio.get_event_loop().time()
+                                if method == 'POST':
+                                    await client.post(form_url, data=data, timeout=self.TIME_BASED_TIMEOUT)
+                                else:
+                                    await client.get(form_url, params=data, timeout=self.TIME_BASED_TIMEOUT)
+                                end_time = asyncio.get_event_loop().time()
+
+                                if (end_time - start_time) >= 4.5:
+                                    findings.append(self._create_finding(form_url, param_name, payload, "time-based", f"Response time: {end_time - start_time:.2f}s"))
+                                    break
+                            except httpx.TimeoutException:
+                                findings.append(self._create_finding(form_url, param_name, payload, "time-based-timeout", f"Request timed out after {self.TIME_BASED_TIMEOUT}s"))
+                                break
+                            except httpx.RequestError as e:
+                                logger.warning(f"Request failed for time-based SQLi check: {e}")
+
+        except httpx.RequestError as e:
+            logger.error(f"Failed to fetch target URL {target}: {e}")
+
         return findings
 
-
-def register(scanner_registry: ScannerRegistry) -> None:
-    """
-    Register this scanner with the scanner registry.
-
-    Args:
-        scanner_registry: The scanner registry instance.
-    """
-    scanner_registry.register("sql_injection", SqlInjectionScanner)
+    def _create_finding(self, url: str, param: str, payload: str, method: str, evidence: str) -> Dict:
+        return {
+            "type": "sql_injection",
+            "severity": Severity.HIGH,
+            "title": f"Potential SQL Injection ({method})",
+            "description": f"A potential SQL injection vulnerability was found in the '{param}' parameter using a {method} check.",
+            "location": url,
+            "evidence": f"Payload: {payload}, Evidence: {evidence}",
+            "confidence": "Medium" if "time-based" in method else "High",
+            "owasp_category": OwaspCategory.A03_INJECTION,
+            "remediation": "Use parameterized queries (prepared statements) to prevent user input from being interpreted as SQL commands."
+        }

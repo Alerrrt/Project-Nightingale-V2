@@ -1,14 +1,17 @@
 import asyncio
-import uuid
 from typing import List, Dict, Any
+from datetime import datetime
 import httpx
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
-from backend.types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
+from backend.types.models import ScanInput, Severity, OwaspCategory
 
+logger = get_context_logger(__name__)
 
 class CsrfTokenCheckerScanner(BaseScanner):
     """
@@ -23,7 +26,37 @@ class CsrfTokenCheckerScanner(BaseScanner):
         "version": "1.0"
     }
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="csrf_token_checker")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        try:
+            logger.info("Scan started", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "options": scan_input.options
+            })
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            self._update_metrics(True, start_time)
+            logger.info("Scan completed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "result_count": len(results)
+            })
+            return results
+        except Exception as e:
+            self._update_metrics(False, start_time)
+            logger.error("Scan failed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "error": str(e)
+            }, exc_info=True)
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
         Asynchronously crawls the target, identifies HTML forms, and checks for CSRF tokens.
 
@@ -32,13 +65,13 @@ class CsrfTokenCheckerScanner(BaseScanner):
             options: Additional options for the scan.
 
         Returns:
-            A list of Finding objects for missing or improperly handled CSRF tokens.
+            A list of findings for missing or improperly handled CSRF tokens.
         """
-        findings: List[Finding] = []
+        findings: List[Dict] = []
         target_url = target
-        print(f"[*] Starting CSRF Token Check for {target_url}...")
+        logger.info(f"Starting CSRF Token Check for {target_url}")
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
+        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
             try:
                 response = await client.get(target_url)
                 response.raise_for_status()
@@ -47,7 +80,9 @@ class CsrfTokenCheckerScanner(BaseScanner):
                 forms = soup.find_all('form')
 
                 if not forms:
-                    print(f"No forms found on {target_url}. Skipping CSRF token check.")
+                    logger.info("No forms found on target", extra={
+                        "target": target_url
+                    })
                     return findings
 
                 for form in forms:
@@ -63,21 +98,19 @@ class CsrfTokenCheckerScanner(BaseScanner):
                             break
                     
                     if not csrf_token_found:
-                        findings.append(
-                            Finding(
-                                id=str(uuid.uuid4()),
-                                vulnerability_type="Missing CSRF Token",
-                                description=f"Form at '{full_action_url}' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site Request Forgery (CSRF) attacks.",
-                                severity=Severity.HIGH,
-                                affected_url=full_action_url,
-                                remediation="Implement anti-CSRF tokens for all state-changing operations via forms. Ensure tokens are unique per session/request and validated on the server-side.",
-                                owasp_category=OwaspCategory.A04_INSECURE_DESIGN,
-                                proof={
-                                    "form_action": full_action_url,
-                                    "details": "No hidden input field resembling a CSRF token found."
-                                }
-                            )
-                        )
+                        findings.append({
+                            "type": "missing_csrf_token",
+                            "severity": Severity.HIGH,
+                            "title": "Missing CSRF Token",
+                            "description": f"Form at '{full_action_url}' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site Request Forgery (CSRF) attacks.",
+                            "evidence": {
+                                "form_action": full_action_url,
+                                "details": "No hidden input field resembling a CSRF token found."
+                            },
+                            "owasp_category": OwaspCategory.INSECURE_DESIGN,
+                            "recommendation": "Implement anti-CSRF tokens for all state-changing operations via forms. Ensure tokens are unique per session/request and validated on the server-side.",
+                            "affected_url": full_action_url
+                        })
 
                     # TODO: For more advanced checks, we would need to:
                     # 1. Fetch the page twice in the same session to see if the token changes.
@@ -85,11 +118,17 @@ class CsrfTokenCheckerScanner(BaseScanner):
                     # 3. Analyze server response to confirm token validation.
 
             except httpx.RequestError as e:
-                print(f"Error fetching {target_url} for CSRF token check: {e}")
+                logger.error(f"Error fetching target for CSRF token check", extra={
+                    "target": target_url,
+                    "error": str(e)
+                })
             except Exception as e:
-                print(f"An unexpected error occurred during CSRF Token Check of {target_url}: {e}")
+                logger.error(f"Unexpected error during CSRF Token Check", extra={
+                    "target": target_url,
+                    "error": str(e)
+                }, exc_info=True)
 
-        print(f"[*] Finished CSRF Token Check for {target_url}.")
+        logger.info(f"Completed CSRF Token Check for {target_url}. Found {len(findings)} issues.")
         return findings
 
 

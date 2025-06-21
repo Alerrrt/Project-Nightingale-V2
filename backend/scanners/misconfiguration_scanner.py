@@ -1,13 +1,13 @@
-import asyncio
-import uuid
-from typing import List, Dict, Any, Optional
-import logging
+from typing import List, Dict, Any
+from datetime import datetime
+import httpx
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
-import httpx # or aiohttp
 from .base_scanner import BaseScanner
-from ..types.models import ScanInput, Finding, Severity, OwaspCategory
+from ..types.models import ScanInput, Severity, OwaspCategory
 
-logger = logging.getLogger(__name__)
+logger = get_context_logger(__name__)
 
 class MisconfigurationScanner(BaseScanner):
     """
@@ -22,41 +22,86 @@ class MisconfigurationScanner(BaseScanner):
         "version": "1.0"
     }
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="misconfiguration_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        try:
+            logger.info("Scan started", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "options": scan_input.options
+            })
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            self._update_metrics(True, start_time)
+            logger.info("Scan completed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "result_count": len(results)
+            })
+            return results
+        except Exception as e:
+            self._update_metrics(False, start_time)
+            logger.error("Scan failed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "error": str(e)
+            }, exc_info=True)
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
         Scans for security misconfigurations.
         """
-        findings = []
+        findings: List[Dict] = []
         target_url = target
+        logger.info("Starting misconfiguration scan", extra={"target": target_url})
 
         try:
-            async with httpx.AsyncClient() as client:
-                # Check for common misconfigurations
+            async with httpx.AsyncClient(timeout=30) as client:
                 response = await client.get(target_url)
                 
                 # Check for server information disclosure
                 if 'server' in response.headers:
-                    findings.append(Finding(
-                        vulnerability_type="Server Information Disclosure",
-                        severity=Severity.MEDIUM,
-                        description=f"Server header reveals technology information: {response.headers['server']}",
-                        technical_details=f"Server header value: {response.headers['server']}",
-                        remediation="Configure server to not reveal version information",
-                        owasp_category=OwaspCategory.A05_SECURITY_MISCONFIGURATION,
-                        affected_url=target_url
-                    ))
-
+                    logger.info("Server header reveals technology information", extra={
+                        "server_header": response.headers['server'],
+                        "target": target_url
+                    })
+                    findings.append({
+                        "type": "server_information_disclosure",
+                        "severity": Severity.MEDIUM,
+                        "title": "Server Information Disclosure",
+                        "description": f"Server header reveals technology information: {response.headers['server']}",
+                        "evidence": {
+                            "server_header": response.headers['server']
+                        },
+                        "owasp_category": OwaspCategory.SECURITY_MISCONFIGURATION,
+                        "recommendation": "Configure server to not reveal version information.",
+                        "affected_url": target_url
+                    })
                 # Add more misconfiguration checks here...
 
         except httpx.HTTPStatusError as e:
-            logger.error(f"HTTP error while scanning {target_url}: {e}")
-            raise  # Re-raise to allow proper error handling upstream
+            logger.warning("HTTP error while scanning", extra={
+                "target": target_url,
+                "error": str(e)
+            })
         except httpx.RequestError as e:
-            logger.error(f"Request error while scanning {target_url}: {e}")
-            raise  # Re-raise to allow proper error handling upstream
+            logger.warning("Request error while scanning", extra={
+                "target": target_url,
+                "error": str(e)
+            })
         except Exception as e:
-            logger.error(f"An unexpected error occurred during misconfiguration scan of {target_url}: {e}", exc_info=True)
-            raise  # Re-raise to allow proper error handling upstream
+            logger.error("Unexpected error during misconfiguration scan", extra={
+                "target": target_url,
+                "error": str(e)
+            }, exc_info=True)
 
-        logger.info(f"Finished scanning {target_url} for misconfigurations.")
+        logger.info("Finished scanning for misconfigurations", extra={
+            "target": target_url,
+            "findings_count": len(findings)
+        })
         return findings

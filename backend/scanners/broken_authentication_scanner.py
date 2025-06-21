@@ -2,11 +2,15 @@ import asyncio
 import uuid
 from typing import List, Dict, Any
 import httpx
+from datetime import datetime
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
 from backend.types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
 
+logger = get_context_logger(__name__)
 
 class BrokenAuthenticationScanner(BaseScanner):
     """
@@ -21,23 +25,84 @@ class BrokenAuthenticationScanner(BaseScanner):
         "version": "1.0"
     }
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="broken_authentication_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
         """
-        Asynchronously checks for broken authentication vulnerabilities.
-
+        Perform a security scan with circuit breaker protection.
+        
         Args:
-            target: The target URL for the scan.
-            options: Additional options for the scan.
-
+            scan_input: The input for the scan, including target and options.
+            
         Returns:
-            A list of Finding objects for detected broken authentication vulnerabilities.
+            List of scan results
         """
-        findings: List[Finding] = []
-        target_url = target
-        print(f"[*] Starting Broken Authentication scan for {target_url}...")
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        
+        try:
+            # Log scan start
+            logger.info(
+                "Scan started",
+                extra={
+                    "scanner": self.__class__.__name__,
+                    "scan_id": scan_id,
+                    "target": scan_input.target,
+                    "options": scan_input.options
+                }
+            )
+            
+            # Perform scan
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            
+            # Update metrics
+            self._update_metrics(True, start_time)
+            
+            # Log scan completion
+            logger.info(
+                "Scan completed",
+                extra={
+                    "scanner": self.__class__.__name__,
+                    "scan_id": scan_id,
+                    "target": scan_input.target,
+                    "result_count": len(results)
+                }
+            )
+            
+            return results
+            
+        except Exception as e:
+            # Update metrics
+            self._update_metrics(False, start_time)
+            
+            # Log error
+            logger.error(
+                "Scan failed",
+                extra={
+                    "scanner": self.__class__.__name__,
+                    "scan_id": scan_id,
+                    "target": scan_input.target,
+                    "error": str(e)
+                },
+                exc_info=True
+            )
+            raise
 
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
+        """
+        Perform the actual broken authentication scan.
+        
+        Args:
+            target: Target URL to scan
+            options: Scan options including timeout and credentials
+            
+        Returns:
+            List of findings containing authentication vulnerabilities
+        """
+        findings = []
+        timeout = options.get('timeout', 10)
+        
         # Common authentication endpoints to test
-        auth_endpoints = [
+        auth_endpoints = options.get('endpoints', [
             "/login",
             "/auth",
             "/signin",
@@ -45,40 +110,37 @@ class BrokenAuthenticationScanner(BaseScanner):
             "/api/login",
             "/api/v1/auth",
             "/api/v1/login"
-        ]
+        ])
 
         # Common weak credentials to test
-        weak_credentials = [
+        weak_credentials = options.get('credentials', [
             {"username": "admin", "password": "admin"},
             {"username": "admin", "password": "password"},
             {"username": "test", "password": "test"},
             {"username": "user", "password": "user"}
-        ]
+        ])
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
+        async with httpx.AsyncClient(timeout=timeout) as client:
             for endpoint in auth_endpoints:
-                auth_url = f"{target_url.rstrip('/')}/{endpoint.lstrip('/')}"
+                auth_url = f"{target.rstrip('/')}/{endpoint.lstrip('/')}"
                 
                 try:
                     # Test for missing authentication
                     response = await client.get(auth_url)
                     if response.status_code == 200:
-                        findings.append(
-                            Finding(
-                                id=str(uuid.uuid4()),
-                                vulnerability_type="Missing Authentication",
-                                description=f"Endpoint '{auth_url}' is accessible without authentication.",
-                                severity=Severity.HIGH,
-                                affected_url=auth_url,
-                                remediation="Implement proper authentication checks for all sensitive endpoints. Ensure authentication is required before accessing protected resources.",
-                                owasp_category=OwaspCategory.A07_IDENTIFICATION_AND_AUTHENTICATION_FAILURES,
-                                proof={
-                                    "endpoint": auth_url,
-                                    "response_status": response.status_code,
-                                    "response_length": len(response.text)
-                                }
-                            )
-                        )
+                        findings.append({
+                            "type": "missing_authentication",
+                            "severity": Severity.HIGH,
+                            "title": "Missing Authentication",
+                            "description": f"Endpoint '{endpoint}' is accessible without authentication",
+                            "evidence": {
+                                "url": auth_url,
+                                "status_code": response.status_code,
+                                "response_length": len(response.text)
+                            },
+                            "owasp_category": OwaspCategory.IDENTIFICATION_AND_AUTHENTICATION_FAILURES,
+                            "recommendation": "Implement proper authentication checks for all sensitive endpoints. Ensure authentication is required before accessing protected resources."
+                        })
 
                     # Test for weak credentials
                     for creds in weak_credentials:
@@ -91,31 +153,40 @@ class BrokenAuthenticationScanner(BaseScanner):
                             
                             # Check if login was successful
                             if response.status_code == 200 and "token" in response.text.lower():
-                                findings.append(
-                                    Finding(
-                                        id=str(uuid.uuid4()),
-                                        vulnerability_type="Weak Credentials",
-                                        description=f"Endpoint '{auth_url}' accepts weak credentials.",
-                                        severity=Severity.HIGH,
-                                        affected_url=auth_url,
-                                        remediation="Implement strong password policies and prevent the use of common or weak credentials. Consider implementing rate limiting and account lockout mechanisms.",
-                                        owasp_category=OwaspCategory.A07_IDENTIFICATION_AND_AUTHENTICATION_FAILURES,
-                                        proof={
-                                            "endpoint": auth_url,
-                                            "credentials": creds,
-                                            "response_status": response.status_code
-                                        }
-                                    )
-                                )
-                        except httpx.RequestError:
+                                findings.append({
+                                    "type": "weak_credentials",
+                                    "severity": Severity.HIGH,
+                                    "title": "Weak Credentials Accepted",
+                                    "description": f"Endpoint '{endpoint}' accepts weak credentials",
+                                    "evidence": {
+                                        "url": auth_url,
+                                        "credentials": creds,
+                                        "status_code": response.status_code
+                                    },
+                                    "owasp_category": OwaspCategory.IDENTIFICATION_AND_AUTHENTICATION_FAILURES,
+                                    "recommendation": "Implement strong password policies and prevent the use of common or weak credentials. Consider implementing rate limiting and account lockout mechanisms."
+                                })
+                        except Exception as e:
+                            logger.warning(
+                                f"Error testing credentials for {auth_url}",
+                                extra={
+                                    "url": auth_url,
+                                    "credentials": creds,
+                                    "error": str(e)
+                                }
+                            )
                             continue
 
-                except httpx.RequestError as e:
-                    print(f"Error testing authentication for {auth_url}: {e}")
                 except Exception as e:
-                    print(f"An unexpected error occurred during authentication scan: {e}")
-
-        print(f"[*] Finished Broken Authentication scan for {target_url}.")
+                    logger.warning(
+                        f"Error testing authentication for {auth_url}",
+                        extra={
+                            "url": auth_url,
+                            "error": str(e)
+                        }
+                    )
+                    continue
+                    
         return findings
 
 

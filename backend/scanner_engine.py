@@ -1,270 +1,149 @@
 import asyncio
 import logging
-import time
-import uuid
+from typing import Dict, List, Optional, Any
 from datetime import datetime
-from typing import List, Dict, Any, Optional, Set, Callable, Type
-from concurrent.futures import ThreadPoolExecutor
-from functools import lru_cache
-from contextlib import asynccontextmanager
-
-from backend.types.models import ScanInput, Finding, ModuleStatus
-from backend.scanners.base_scanner import BaseScanner
-from backend.scanners.scanner_registry import ScannerRegistry, ScannerRegistryConfig
+from backend.types.models import ScanInput, Finding
 from backend.plugins.plugin_manager import PluginManager
-from backend.utils.scoring import classify_finding, assign_severity_score
-from backend.utils.exceptions import ScanTimeoutError, InvalidTargetError
-from backend.types.scanner_config import ScannerIntensity, ScannerConfig
-from backend.utils.resource_monitor import ResourceMonitor
-from backend.utils.logging_config import get_context_logger
-from backend.utils.circuit_breaker import circuit_breaker
+from backend.config import settings
+import uuid
+import json
+from enum import Enum
 
-logger = get_context_logger(__name__)
+logger = logging.getLogger(__name__)
+
+SCANNER_TIMEOUT = 300.0  # 5 minutes per scanner
+
+def _transform_finding_for_frontend(finding_data: Dict, target: str) -> Dict:
+    severity = finding_data.get("severity")
+    if isinstance(severity, Enum):
+        severity = severity.value
+    
+    evidence_dict = finding_data.get("evidence", {})
+    location_url = evidence_dict.get("url", target)
+    owasp_category = finding_data.get("owasp_category")
+    if isinstance(owasp_category, Enum):
+        owasp_category = owasp_category.value
+
+    return {
+        "id": str(uuid.uuid4()),
+        "title": finding_data.get("title", "Untitled Finding"),
+        "severity": severity or "Info",
+        "description": finding_data.get("description", ""),
+        "remediation": finding_data.get("remediation", ""),
+        "location": location_url,
+        "cwe": finding_data.get("cwe", "N/A"),
+        "cve": finding_data.get("cve", "N/A"),
+        "confidence": finding_data.get("confidence", 75),
+        "category": owasp_category or "Unknown",
+        "impact": finding_data.get("impact", "N/A"),
+        "cvss": finding_data.get("cvss", 0.0),
+        "evidence": json.dumps(evidence_dict, indent=2),
+    }
 
 class ScannerEngine:
-    """
-    Orchestrates the scanning process by loading and running scanner modules
-    and plugins in parallel.
-    """
-
     def __init__(self, plugin_manager: PluginManager):
-        """
-        Initializes the ScannerEngine with a PluginManager.
-
-        Args:
-            plugin_manager: An instance of PluginManager to handle external tools.
-        """
-        if not isinstance(plugin_manager, PluginManager) and plugin_manager is not None:
-            raise TypeError("plugin_manager must be an instance of PluginManager")
-        
         self.plugin_manager = plugin_manager
-        self.scanner_registry = ScannerRegistry.get_instance()
-        self.config: Optional[ScannerRegistryConfig] = None
-        self._update_callback: Optional[Callable] = None
+        self.scanner_registry = None
         self._active_scans: Dict[str, asyncio.Task] = {}
         self._scan_results: Dict[str, Dict] = {}
-        self._resource_monitor: Optional[ResourceMonitor] = None
-        self._thread_pool = ThreadPoolExecutor(max_workers=20)
-        self._scanner_cache: Dict[str, BaseScanner] = {}
-        self._semaphore = asyncio.Semaphore(10)
-        self._adaptive_semaphore = asyncio.Semaphore(10)  # Initial value, will be adjusted
+        self._semaphore = asyncio.Semaphore(settings.MAX_CONCURRENT_SCANS)
 
-    def configure(self, config: ScannerRegistryConfig) -> None:
-        """
-        Configure the scanner engine.
-
-        Args:
-            config: The configuration to apply.
-        """
-        self.config = config
-        self._resource_monitor = ResourceMonitor(config.resource_limits)
+    def configure(self, scanner_registry: Any) -> None:
+        """Configure the scanner engine."""
+        self.scanner_registry = scanner_registry
         logger.info("Scanner engine configured")
 
-    async def _run_scanner_with_progress(
-        self,
-        scanner_name: str,
-        scan_input: ScanInput,
-        scan_id: str,
-        config: ScannerConfig
-    ) -> List[Finding]:
-        """
-        Runs a scanner with progress tracking and retries.
-        """
-        retries = 0
-        last_error = None
-
-        while retries <= config.max_retries:
-            try:
-                async with self._adaptive_semaphore:  # Use adaptive semaphore
-                    async with self._get_scanner(scanner_name) as scanner:
-                        findings = await asyncio.wait_for(
-                            scanner.scan(scan_input),
-                            timeout=config.timeout
-                        )
-                        return findings
-            except asyncio.TimeoutError:
-                last_error = ScanTimeoutError(f"Scanner {scanner_name} timed out after {config.timeout} seconds")
-                logger.warning(f"Scanner {scanner_name} timed out, attempt {retries + 1}/{config.max_retries}")
-            except Exception as e:
-                last_error = e
-                logger.error(f"Scanner {scanner_name} failed, attempt {retries + 1}/{config.max_retries}: {str(e)}")
-            
-            retries += 1
-            if retries <= config.max_retries:
-                await asyncio.sleep(1)  # Wait before retrying
-        
-        raise last_error or Exception(f"Scanner {scanner_name} failed after {config.max_retries} retries")
-
     async def load_scanners(self):
-        """
-        Discovers and loads all scanner modules using the scanner registry.
-        """
-        try:
-            await self.scanner_registry.load_scanners()
-            logger.info(
-                "Scanners loaded successfully",
-                extra={"scanner_count": len(self.scanner_registry.get_scanners())}
-            )
-        except Exception as e:
-            logger.error("Error loading scanners", exc_info=True)
-            raise
+        """Load all available scanners."""
+        if not self.scanner_registry:
+            raise Exception("Scanner registry not configured")
+        await self.scanner_registry.load_scanners()
+        logger.info("Scanners loaded successfully")
 
-    def register_update_callback(self, callback: Callable):
-        """
-        Registers a callback function to receive real-time scan updates.
-
-        Args:
-            callback: A callable that accepts a dictionary or object containing update data.
-        """
-        self._update_callback = callback
-        if self.plugin_manager:
-            self.plugin_manager._update_callback = callback
-
-    @asynccontextmanager
-    async def _get_scanner(self, scanner_name: str) -> BaseScanner:
-        """
-        Get or create a scanner instance with caching.
-        """
-        if scanner_name not in self._scanner_cache:
-            scanner_class = self.scanner_registry.get_scanner(scanner_name)
-            if not scanner_class:
-                raise ValueError(f"Scanner '{scanner_name}' not found")
-            self._scanner_cache[scanner_name] = scanner_class()
-        yield self._scanner_cache[scanner_name]
-
-    async def _adjust_concurrency(self):
-        """
-        Adjusts concurrency based on resource usage.
-        """
-        if not self._resource_monitor:
-            return
-
-        metrics = self._resource_monitor.get_current_metrics()
-        if not metrics:
-            return
-
-        config = self.scanner_registry.get_config()
-        limits = config.resource_limits
-
-        # Calculate resource usage ratios
-        cpu_ratio = metrics.cpu_percent / limits['max_cpu_percent']
-        memory_ratio = metrics.memory_mb / limits['max_memory_mb']
-        network_ratio = metrics.network_connections / limits['max_network_connections']
-
-        # Use the highest ratio to determine concurrency adjustment
-        max_ratio = max(cpu_ratio, memory_ratio, network_ratio)
-
-        # Adjust semaphore value based on resource usage
-        if max_ratio > 0.9:  # Critical
-            new_value = max(1, self._adaptive_semaphore._value - 2)
-        elif max_ratio > 0.7:  # High
-            new_value = max(2, self._adaptive_semaphore._value - 1)
-        elif max_ratio < 0.3:  # Low
-            new_value = min(10, self._adaptive_semaphore._value + 1)
-        else:
-            return  # No adjustment needed
-
-        # Update semaphore value
-        if new_value != self._adaptive_semaphore._value:
-            old_value = self._adaptive_semaphore._value
-            self._adaptive_semaphore = asyncio.Semaphore(new_value)
-            logger.info(f"Adjusted concurrency from {old_value} to {new_value} based on resource usage")
-
-    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="scanner_engine")
     async def start_scan(
         self,
         target: str,
         scan_type: str,
         options: Optional[Dict] = None
     ) -> str:
-        """
-        Start a new security scan.
-        
-        Args:
-            target: Target to scan
-            scan_type: Type of scan to perform
-            options: Additional scan options
+        """Start a new security scan."""
+        if not self.scanner_registry:
+            raise Exception("Scanner registry not configured")
             
-        Returns:
-            Scan ID
-        """
         try:
             # Generate scan ID
             scan_id = f"{scan_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             
-            # Check resource availability
-            if self._resource_monitor:
-                if not self._resource_monitor.check_resource_availability():
-                    raise Exception("Insufficient resources available")
-            
             # Create ScanInput object
-            scan_input = ScanInput(target=target, options=options or {})
+            scan_input = ScanInput(target=target, scan_type=scan_type, options=options or {})
 
+            scanners_to_run = []
             if scan_type == "full_scan":
                 logger.info(f"Initiating full scan with ID: {scan_id}")
-                all_scanners = self.scanner_registry.get_all_scanners()
-                if not all_scanners:
-                    raise Exception("No scanners found to perform a full scan.")
-
-                # Initialize results for the main full_scan ID
-                self._scan_results[scan_id] = {
-                    "id": scan_id,
-                    "target": target,
-                    "type": scan_type,
-                    "status": "running",
-                    "start_time": datetime.now().isoformat(),
-                    "results": [],
-                    "errors": [],
-                    "sub_scans": {}
-                }
-
-                for individual_scanner_name in all_scanners.keys():
-                    sub_scan_id = f"{scan_id}_{individual_scanner_name}_{datetime.now().strftime('%f')}" # Add microseconds to ensure uniqueness
-                    logger.info(f"Starting sub-scan for {individual_scanner_name} with sub-scan ID: {sub_scan_id}")
-                    sub_scan_task = asyncio.create_task(
-                        self._run_scan(sub_scan_id, individual_scanner_name, scan_input, parent_scan_id=scan_id) # Pass ScanInput and parent_scan_id
-                    )
-                    self._active_scans[sub_scan_id] = sub_scan_task
-                    self._scan_results[scan_id]["sub_scans"][sub_scan_id] = {
-                        "name": individual_scanner_name,
-                        "status": "running",
-                        "results": [],
-                        "errors": []
-                    }
-                # Send an initial update for the full scan
-                if self._update_callback:
-                    await self._update_callback(scan_id, "started", {"message": "Full scan initiated with multiple sub-scans"})
-
+                scanners_to_run = list(self.scanner_registry.get_all_scanners().keys())
+            elif scan_type == "quick_scan":
+                logger.info(f"Initiating quick scan with ID: {scan_id}")
+                # Predefined list of fast, non-intrusive scanners
+                scanners_to_run = [
+                    'robots_txt_sitemap_crawl_scanner',
+                    'security_headers_analyzer',
+                    'csrf_token_checker',
+                    'clickjacking_screenshotter',
+                    'js_scanner'
+                ]
+            elif scan_type == "custom_scan":
+                logger.info(f"Initiating custom scan with ID: {scan_id}")
+                if options and 'scanners' in options and isinstance(options['scanners'], list):
+                    scanners_to_run = options['scanners']
+                else:
+                    raise Exception("Custom scan requires a 'scanners' list in options.")
             else:
-                # Create scan task for a single scanner
-                scan_task = asyncio.create_task(
-                    self._run_scan(scan_id, scan_type, scan_input) # Pass ScanInput
+                # Single scanner scan
+                scanners_to_run = [scan_type]
+
+            if not scanners_to_run:
+                raise Exception(f"No scanners found for scan type: {scan_type}")
+
+            # Initialize results
+            self._scan_results[scan_id] = {
+                "id": scan_id,
+                "target": target,
+                "type": scan_type,
+                "status": "running",
+                "start_time": datetime.now().isoformat(),
+                "results": [],
+                "errors": [],
+                "sub_scans": {},
+                "progress": 0,
+                "total_modules": len(scanners_to_run),
+                "completed_modules": 0
+            }
+
+            # Start all designated scanners
+            for scanner_name in scanners_to_run:
+                scanner_class = self.scanner_registry.get_scanner(scanner_name)
+                if not scanner_class:
+                    logger.warning(f"Scanner '{scanner_name}' not found in registry, skipping.")
+                    continue
+
+                sub_scan_id = f"{scan_id}_{scanner_name}_{datetime.now().strftime('%f')}"
+                logger.info(f"Starting sub-scan for {scanner_name} with ID: {sub_scan_id}")
+                
+                # Create and start sub-scan task
+                sub_scan_task = asyncio.create_task(
+                    self._run_scan(sub_scan_id, scanner_name, scan_input, parent_scan_id=scan_id)
                 )
+                self._active_scans[sub_scan_id] = sub_scan_task
                 
-                # Store task
-                self._active_scans[scan_id] = scan_task
-                
-                # Initialize results
-                self._scan_results[scan_id] = {
-                    "id": scan_id,
-                    "target": target,
-                    "type": scan_type,
+                # Initialize sub-scan results
+                self._scan_results[scan_id]["sub_scans"][sub_scan_id] = {
+                    "name": scanner_name,
                     "status": "running",
-                    "start_time": datetime.now().isoformat(),
                     "results": [],
                     "errors": []
                 }
-                
-                logger.info(
-                    "Scan started",
-                    extra={
-                        "scan_id": scan_id,
-                        "target": target,
-                        "scan_type": scan_type
-                    }
-                )
-                
-                return scan_id
+            
+            return scan_id
             
         except Exception as e:
             logger.error(
@@ -286,260 +165,189 @@ class ScannerEngine:
         parent_scan_id: Optional[str] = None
     ):
         """Run a security scan."""
+        if not self.scanner_registry:
+            logger.error("Scanner registry not configured in _run_scan.")
+            # Or raise an exception, depending on desired behavior
+            raise Exception("Scanner registry not configured")
+
+        broadcast_id = parent_scan_id or scan_id
+        from backend.api.websocket import get_connection_manager
+        manager = get_connection_manager()
+
         try:
-            # Get scanner
-            scanner = self.scanner_registry.get_scanner(scan_type)
-            if not scanner:
-                raise Exception(f"Scanner not found: {scan_type}")
-            
-            # Run scan
-            results = await scanner.scan(scan_input)
-            
-            # Update results
-            if parent_scan_id and parent_scan_id in self._scan_results and "sub_scans" in self._scan_results[parent_scan_id]:
-                if scan_id in self._scan_results[parent_scan_id]["sub_scans"]:
-                    self._scan_results[parent_scan_id]["sub_scans"][scan_id].update({
-                        "status": "completed",
-                        "results": results
-                    })
-                    # Also append results to the main full_scan results
-                    self._scan_results[parent_scan_id]["results"].extend(results)
+            logger.info(f"Starting execution for {scan_type} ({scan_id})")
+            async with self._semaphore:
+                scanner_class = self.scanner_registry.get_scanner(scan_type)
+                if not scanner_class:
+                    raise Exception(f"Scanner not found: {scan_type}")
+
+                scanner_instance = scanner_class()
+                
+                await manager.broadcast_scan_update(
+                    broadcast_id, "module_status", 
+                    {"name": scan_type, "status": "started", "scan_id": broadcast_id}
+                )
+
+                await manager.broadcast_scan_update(
+                    broadcast_id, "activity_log",
+                    {"message": f"Executing scanner: {scan_type}"}
+                )
+
+                results: List[Dict[str, Any]] = await asyncio.wait_for(
+                    scanner_instance.scan(scan_input), 
+                    timeout=SCANNER_TIMEOUT
+                )
+
+                transformed_results = []
+                for finding_data in results:
+                    frontend_finding = _transform_finding_for_frontend(finding_data, scan_input.target)
+                    transformed_results.append(frontend_finding)
+                    await manager.broadcast_scan_update(
+                        broadcast_id, "new_finding", frontend_finding
+                    )
+
+                await manager.broadcast_scan_update(
+                    broadcast_id, "module_status",
+                    {"name": scan_type, "status": "completed", "findings_count": len(results), "scan_id": broadcast_id}
+                )
+                
+                if parent_scan_id and parent_scan_id in self._scan_results:
+                    sub_scan_data = self._scan_results[parent_scan_id]["sub_scans"].get(scan_id)
+                    if sub_scan_data:
+                        sub_scan_data.update({
+                            "status": "completed",
+                            "results": transformed_results
+                        })
+                        self._scan_results[parent_scan_id]["results"].extend(transformed_results)
                 else:
-                    self._scan_results[scan_id].update({
-                        "status": "completed",
-                        "end_time": datetime.now().isoformat(),
-                        "results": results
-                    })
-            else:
-                self._scan_results[scan_id].update({
-                    "status": "completed",
-                    "end_time": datetime.now().isoformat(),
-                    "results": results
-                })
-            
-            # Send update
-            if self._update_callback:
-                if parent_scan_id:
-                    await self._update_callback(parent_scan_id, "sub_scan_update", {"sub_scan_id": scan_id, "status": "completed", "results": results}) # Update parent for sub-scan
-                else:
-                    await self._update_callback(scan_id, "completed", {"results": results})
-            
-            logger.info(
-                "Scan completed",
-                extra={
-                    "scan_id": scan_id,
-                    "target": scan_input.target,
-                    "scan_type": scan_type
-                }
-            )
-            
+                    scan_data = self._scan_results.get(scan_id)
+                    if scan_data:
+                        scan_data.update({
+                            "status": "completed",
+                            "end_time": datetime.now().isoformat(),
+                            "results": transformed_results
+                        })
+                
+                logger.info(f"Scan completed for {scan_type} on {scan_input.target}")
+                
         except Exception as e:
-            # Update results with error
-            if parent_scan_id and parent_scan_id in self._scan_results and "sub_scans" in self._scan_results[parent_scan_id]:
-                if scan_id in self._scan_results[parent_scan_id]["sub_scans"]:
-                    self._scan_results[parent_scan_id]["sub_scans"][scan_id].update({
-                        "status": "failed",
-                        "errors": [str(e)]
-                    })
-            else:
-                self._scan_results[scan_id].update({
-                    "status": "failed",
-                    "end_time": datetime.now().isoformat(),
-                    "errors": [str(e)]
-                })
-            
-            # Send update
-            if self._update_callback:
-                if parent_scan_id:
-                    await self._update_callback(parent_scan_id, "sub_scan_update", {"sub_scan_id": scan_id, "status": "failed", "error": str(e)}) # Update parent for sub-scan
-                else:
-                    await self._update_callback(scan_id, "failed", {"error": str(e)})
-            
-            logger.error(
-                "Scan failed",
-                extra={
-                    "scan_id": scan_id,
-                    "target": scan_input.target,
-                    "scan_type": scan_type,
-                    "error": str(e)
-                },
-                exc_info=True
+            error_message = f"Timeout after {SCANNER_TIMEOUT}s" if isinstance(e, asyncio.TimeoutError) else str(e)
+            await manager.broadcast_scan_update(
+                broadcast_id, "module_status",
+                {"name": scan_type, "status": "failed", "error": error_message, "scan_id": broadcast_id}
             )
+            
+            if parent_scan_id and parent_scan_id in self._scan_results:
+                sub_scan_data = self._scan_results[parent_scan_id]["sub_scans"].get(scan_id)
+                if sub_scan_data:
+                    sub_scan_data.update({"status": "failed", "errors": [error_message]})
+            else:
+                scan_data = self._scan_results.get(scan_id)
+                if scan_data:
+                    scan_data.update({
+                        "status": "failed",
+                        "end_time": datetime.now().isoformat(),
+                        "errors": [error_message]
+                    })
+            
+            logger.error(f"Scan failed for {scan_type}", exc_info=True)
             
         finally:
-            # Cleanup
+            logger.info(f"Entering finally block for {scan_type} ({scan_id})")
             if scan_id in self._active_scans:
                 del self._active_scans[scan_id]
+            
+            if parent_scan_id and parent_scan_id in self._scan_results:
+                parent_scan = self._scan_results[parent_scan_id]
+                parent_scan["completed_modules"] += 1
+                
+                logger.info(f"Module {scan_type} completed. Total progress: {parent_scan['completed_modules']}/{parent_scan['total_modules']}")
+
+                progress = (parent_scan["completed_modules"] / parent_scan["total_modules"]) * 100
+                parent_scan["progress"] = progress
+                
+                await manager.broadcast_scan_update(
+                    broadcast_id, "scan_progress",
+                    {"progress": progress, "scan_id": broadcast_id}
+                )
+
+                if parent_scan["completed_modules"] == parent_scan["total_modules"]:
+                    parent_scan["status"] = "completed"
+                    parent_scan["end_time"] = datetime.now().isoformat()
+                    await manager.broadcast_scan_update(
+                        broadcast_id, "scan_completed",
+                        {
+                            "scan_id": broadcast_id,
+                            "status": "completed",
+                            "results": parent_scan["results"]
+                        }
+                    )
 
     async def get_scan_status(self, scan_id: str) -> Dict:
-        """
-        Get status of a scan.
-        """
+        """Get the status of a scan."""
         if scan_id not in self._scan_results:
             raise Exception(f"Scan not found: {scan_id}")
         return self._scan_results[scan_id]
 
     async def get_active_scans(self) -> List[Dict]:
-        """
-        Get list of active scans.
-        """
+        """Get list of active scans."""
         return [
             {
                 "id": scan_id,
-                "status": self._scan_results[scan_id]["status"]
+                "status": self._scan_results[scan_id]["status"],
+                "type": self._scan_results[scan_id]["type"],
+                "target": self._scan_results[scan_id]["target"],
+                "start_time": self._scan_results[scan_id]["start_time"]
             }
             for scan_id in self._active_scans
         ]
 
     async def cancel_scan(self, scan_id: str):
-        """
-        Cancel an active scan.
-        """
-        if scan_id in self._active_scans:
-            self._active_scans[scan_id].cancel()
-            self._scan_results[scan_id]["status"] = "cancelled"
-            logger.info(f"Scan {scan_id} cancelled")
-        else:
-            logger.warning(f"Attempted to cancel non-existent scan: {scan_id}")
+        """Cancel a running scan and its sub-scans."""
+        logger.info(f"Attempting to cancel scan {scan_id}")
+        
+        # Find all active sub-scans related to the parent scan_id
+        sub_scan_ids_to_cancel = [s_id for s_id in self._active_scans if s_id.startswith(scan_id)]
+        
+        for sub_scan_id in sub_scan_ids_to_cancel:
+            task = self._active_scans.get(sub_scan_id)
+            if task and not task.done():
+                task.cancel()
+                logger.info(f"Cancelled sub-scan task: {sub_scan_id}")
+            # Remove from active scans right away
+            if sub_scan_id in self._active_scans:
+                del self._active_scans[sub_scan_id]
+        
+        # Update the parent scan status
+        if scan_id in self._scan_results:
+            self._scan_results[scan_id].update({
+                "status": "cancelled",
+                "end_time": datetime.now().isoformat()
+            })
+            logger.info(f"Scan {scan_id} marked as cancelled.")
 
+        from backend.api.websocket import get_connection_manager
+        manager = get_connection_manager()
+        await manager.broadcast_scan_update(
+            scan_id,
+            "scan_completed",
+            {
+                "scan_id": scan_id,
+                "status": "cancelled",
+                "message": "Scan was cancelled by user.",
+            },
+        )
+    
     async def get_historical_scans(self) -> List[Dict]:
-        """
-        Get all historical scan results.
-        """
-        # Filter out active scans if needed, or return all completed/failed ones.
-        # For now, return all stored scan results.
+        """Retrieve a summary of all historical scans."""
         return list(self._scan_results.values())
 
     async def cleanup(self):
-        """
-        Cleanup scanner engine resources.
-        """
-        try:
-            # Cancel active scans
-            for scan_id in list(self._active_scans.keys()):
-                await self.cancel_scan(scan_id)
-            
-            # Stop resource monitoring
-            if self._resource_monitor:
-                await self._resource_monitor.stop_monitoring()
-            
-            logger.info("Scanner engine cleanup completed")
-            
-        except Exception as e:
-            logger.error("Error during cleanup", exc_info=True)
-            raise
-
-    def _create_scanner_batches(self, enabled_scanners: List[str]) -> List[List[str]]:
-        """
-        Creates optimized batches of scanners to run concurrently.
-        """
-        config = self.scanner_registry.get_config()
-        batch_size = config.batch_size
+        """Clean up resources."""
+        # Cancel all active scans
+        for scan_id, task in self._active_scans.items():
+            task.cancel()
         
-        # Group scanners by intensity
-        scanners_by_intensity: Dict[ScannerIntensity, List[str]] = {
-            ScannerIntensity.HEAVY: [],
-            ScannerIntensity.MEDIUM: [],
-            ScannerIntensity.LIGHT: []
-        }
-        
-        for scanner_name in enabled_scanners:
-            intensity = self.scanner_registry.get_scanner_config(scanner_name).intensity
-            scanners_by_intensity[intensity].append(scanner_name)
-        
-        # Create optimized batches with adaptive sizing
-        batches = []
-        current_semaphore_value = self._adaptive_semaphore._value
-        
-        # Process heavy scanners in smaller batches
-        heavy_batch_size = max(1, current_semaphore_value // 3)
-        for i in range(0, len(scanners_by_intensity[ScannerIntensity.HEAVY]), heavy_batch_size):
-            batches.append(scanners_by_intensity[ScannerIntensity.HEAVY][i:i + heavy_batch_size])
-        
-        # Process medium scanners in normal batches
-        medium_batch_size = max(2, current_semaphore_value // 2)
-        for i in range(0, len(scanners_by_intensity[ScannerIntensity.MEDIUM]), medium_batch_size):
-            batches.append(scanners_by_intensity[ScannerIntensity.MEDIUM][i:i + medium_batch_size])
-        
-        # Process light scanners in larger batches
-        light_batch_size = current_semaphore_value
-        for i in range(0, len(scanners_by_intensity[ScannerIntensity.LIGHT]), light_batch_size):
-            batches.append(scanners_by_intensity[ScannerIntensity.LIGHT][i:i + light_batch_size])
-        
-        return batches
-
-    async def _send_progress_update(self, scan_id: str):
-        """
-        Sends progress update through the callback.
-        """
-        if self._update_callback and scan_id in self._scan_results:
-            progress_data = {
-                'scan_id': scan_id,
-                'type': 'scan_progress',
-                'data': {
-                    'overall': self._scan_results[scan_id]['status'] == 'completed' and 100 or 0,
-                    'modules': {},
-                    'elapsed_time': time.time() - self._scan_results[scan_id]['start_time']
-                }
-            }
-            
-            # Add resource metrics if available
-            if self._resource_monitor:
-                metrics = self._resource_monitor.get_current_metrics()
-                if metrics:
-                    progress_data['data']['resource_metrics'] = {
-                        'cpu_percent': metrics.cpu_percent,
-                        'memory_mb': metrics.memory_mb,
-                        'network_connections': metrics.network_connections
-                    }
-            
-            await self._update_callback(scan_id, 'scan_progress', progress_data['data'])
-
-    @lru_cache(maxsize=1000)
-    def _normalize_findings(self, findings: List[Finding]) -> List[Finding]:
-        """
-        Normalizes and deduplicates findings with caching. Handles unhashable types gracefully.
-        """
-        unique_findings: Dict[str, Finding] = {}
-        for finding in findings:
-            try:
-                # Ensure all key parts are strings and not lists or dicts
-                vt = finding.vulnerability_type
-                au = finding.affected_url
-                desc = finding.description
-                if isinstance(vt, list):
-                    vt = ",".join(map(str, vt))
-                if isinstance(au, list):
-                    au = ",".join(map(str, au))
-                if isinstance(desc, list):
-                    desc = ",".join(map(str, desc))
-                vt = str(vt) if vt is not None else ""
-                au = str(au) if au is not None else ""
-                desc = str(desc) if desc is not None else ""
-                unique_key_parts = [vt, au, desc[:50]]
-                unique_key = "|".join(unique_key_parts).lower()
-                
-                if unique_key not in unique_findings:
-                    unique_findings[unique_key] = finding
-                else:
-                    existing = unique_findings[unique_key]
-                    if hasattr(finding.severity, 'value') and hasattr(existing.severity, 'value'):
-                        if finding.severity.value > existing.severity.value:
-                            unique_findings[unique_key] = finding
-            except Exception as e:
-                logger.error(f"Error normalizing finding: {finding}. Exception: {e}")
-                continue
-        return list(unique_findings.values())
-
-    def _classify_and_score(self, findings: List[Finding]) -> List[Finding]:
-        """
-        Classifies vulnerabilities and assigns severity scores.
-        """
-        return [assign_severity_score(classify_finding(finding)) for finding in findings]
-
-    def __del__(self):
-        """
-        Cleanup resources when the scanner engine is destroyed.
-        """
-        if hasattr(self, '_thread_pool'):
-            self._thread_pool.shutdown(wait=True)
+        # Clear results
+        self._scan_results.clear()
+        self._active_scans.clear()

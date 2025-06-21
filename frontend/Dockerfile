@@ -1,29 +1,24 @@
-FROM node:16-alpine
+# Use Debian-based Node image for best compatibility
+FROM node:20
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy only package files first for better Docker cache
+COPY package.json package-lock.json* ./
 
-# Clear npm cache and install dependencies with legacy peer deps
-RUN npm cache clean --force && npm install --legacy-peer-deps
+# Install dependencies (this installs vite and all dev dependencies)
+RUN npm install
 
-# Copy the rest of the application
+# Copy the rest of your app
 COPY . .
 
-# Install additional dependencies that might be missing
-RUN npm install --legacy-peer-deps \
-    @mui/icons-material@5.15.3 \
-    @mui/material@5.15.3 \
-    framer-motion@10.16.4 \
-    lucide-react@0.294.0 \
-    recharts@2.10.3 \
-    @radix-ui/react-accordion@1.1.2 \
-    tailwind-merge@2.1.0 \
-    tailwindcss-animate@1.0.7 \
-    @tailwindcss/typography@0.5.10
+ENV PATH /app/node_modules/.bin:$PATH
 
-EXPOSE 3000
+EXPOSE 3002
 
-# Command to run the application
-CMD ["npm", "start"] 
+# For development (Vite dev server)
+CMD ["npm", "run", "dev", "--", "--host", "--port", "3002"]
+
+# For production, use the following instead:
+# RUN npm run build
+# CMD ["npx", "serve", "dist"] 

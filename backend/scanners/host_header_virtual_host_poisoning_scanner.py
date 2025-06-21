@@ -3,17 +3,59 @@ import uuid
 from typing import List, Optional, Dict, Any
 import httpx
 from urllib.parse import urlparse
+from datetime import datetime
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
-from .base_scanner import BaseScanner
+from backend.scanners.base_scanner import BaseScanner
 from ..types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
 
+logger = get_context_logger(__name__)
 
 class HostHeaderVirtualHostPoisoningScanner(BaseScanner):
     """
     A scanner module for detecting Host Header and Virtual Host Poisoning vulnerabilities.
     """
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    metadata = {
+        "name": "Host Header Virtual Host Poisoning",
+        "description": "Detects host header injection and virtual host poisoning vulnerabilities.",
+        "owasp_category": "A01:2021 - Broken Access Control",
+        "author": "Project Nightingale Team",
+        "version": "1.0"
+    }
+
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="host_header_poisoning_scanner")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        try:
+            logger.info("Scan started", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "options": scan_input.options
+            })
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            self._update_metrics(True, start_time)
+            logger.info("Scan completed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "result_count": len(results)
+            })
+            return results
+        except Exception as e:
+            self._update_metrics(False, start_time)
+            logger.error("Scan failed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "error": str(e)
+            }, exc_info=True)
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
         Asynchronously swaps the Host: header to evil.com or 127.0.0.1 and watches for odd behavior.
 
@@ -22,21 +64,21 @@ class HostHeaderVirtualHostPoisoningScanner(BaseScanner):
             options: Additional options for the scan.
 
         Returns:
-            A list of Finding objects for detected Host Header/Virtual Host Poisoning vulnerabilities.
+            A list of findings for detected Host Header/Virtual Host Poisoning vulnerabilities.
         """
-        findings: List[Finding] = []
+        findings: List[Dict] = []
         target_url = target
-        print(f"[*] Starting Host Header and Virtual Host Poisoning scan for {target_url}...")
+        logger.info(f"Starting Host Header and Virtual Host Poisoning scan for {target_url}.")
 
         # Common malicious Host headers to test
         evil_hosts = [
             "evil.com",
             "127.0.0.1",
             "localhost",
-            "example.com:8080", # Port-specific
+            "example.com:8080",
             "www.attacker.com",
-            f"{urlparse(target_url).netloc}:8080", # Original host with different port
-            "[::1]", # IPv6 localhost
+            f"{urlparse(target_url).netloc}:8080",
+            "[::1]",
         ]
 
         async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
@@ -49,44 +91,39 @@ class HostHeaderVirtualHostPoisoningScanner(BaseScanner):
                 if result:
                     findings.append(result)
 
-        print(f"[*] Finished Host Header and Virtual Host Poisoning scan for {target_url}.")
+        logger.info(f"Finished Host Header and Virtual Host Poisoning scan for {target_url}.")
         return findings
 
-    async def _check_host_header_poisoning(self, client: httpx.AsyncClient, target_url: str, evil_host: str) -> Optional[Finding]:
+    async def _check_host_header_poisoning(self, client: httpx.AsyncClient, target_url: str, evil_host: str) -> Optional[Dict]:
         try:
             headers = {"Host": evil_host}
             response = await client.get(target_url, headers=headers)
 
-            # This is a highly simplified check. Real detection involves:
-            # - Analyzing redirects (e.g., redirecting to evil.com with correct path)
-            # - Analyzing response content for reflected evil_host (e.g., in links, absolute URLs)
-            # - Cache poisoning indicators (e.g., different content served based on Host header in cached response)
-            # - Server-side errors or unexpected behavior
-
-            # Check for reflection of the evil host in the response body or Location header
             if evil_host in response.text or (response.headers.get("location") and evil_host in response.headers["location"]):
-                if response.status_code == 200 or 300 <= response.status_code < 400: # Check for successful responses or redirects
-                    return Finding(
-                        id=str(uuid.uuid4()),
-                        vulnerability_type="Host Header Injection/Virtual Host Poisoning",
-                        description=f"Potential Host Header Injection or Virtual Host Poisoning detected. The injected Host header '{evil_host}' was reflected in the response or caused an unexpected redirect.",
-                        severity=Severity.HIGH,
-                        affected_url=target_url,
-                        remediation="Ensure the application explicitly validates the Host header against a whitelist of allowed domains or uses the original request's Host header only for internal routing, not for generating absolute URLs or redirects. Prevent caching mechanisms from caching responses based on arbitrary Host headers.",
-                        owasp_category=OwaspCategory.A05_SECURITY_MISCONFIGURATION, # Can also be A01 Broken Access Control or A04 Insecure Design
-                        proof={
+                if response.status_code == 200 or 300 <= response.status_code < 400:
+                    return {
+                        "type": "host_header_injection",
+                        "severity": Severity.HIGH,
+                        "title": "Host Header Injection/Virtual Host Poisoning",
+                        "description": f"Potential Host Header Injection or Virtual Host Poisoning detected. The injected Host header '{evil_host}' was reflected in the response or caused an unexpected redirect.",
+                        "evidence": {
                             "test_url": target_url,
                             "injected_host_header": evil_host,
                             "response_status": response.status_code,
                             "response_snippet": response.text[:200],
                             "location_header": response.headers.get("location"),
                             "reflection_found": True
-                        }
-                    )
-            elif response.status_code == 400: # Sometimes a 400 Bad Request can indicate header processing issues
-                print(f"Received 400 Bad Request for Host: {evil_host} on {target_url}")
-                # Consider if this warrants a low severity info finding, or just debug log.
+                        },
+                        "owasp_category": OwaspCategory.SECURITY_MISCONFIGURATION,
+                        "recommendation": "Ensure the application explicitly validates the Host header against a whitelist of allowed domains or uses the original request's Host header only for internal routing, not for generating absolute URLs or redirects. Prevent caching mechanisms from caching responses based on arbitrary Host headers.",
+                        "affected_url": target_url
+                    }
+            elif response.status_code == 400:
+                logger.debug(f"Received 400 Bad Request for Host: {evil_host} on {target_url}")
 
         except httpx.RequestError as e:
-            print(f"Error checking Host Header poisoning for {target_url} with Host {evil_host}: {e}")
+            logger.error(f"Error checking Host Header poisoning for {target_url}", extra={
+                "host": evil_host,
+                "error": str(e)
+            })
         return None 

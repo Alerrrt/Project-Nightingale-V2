@@ -3,47 +3,48 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
-    container_name: security_scanner_backend
-    volumes:
-      - ./backend:/app/backend
-    working_dir: /app/backend
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend:/app/backend
     environment:
-      - DEBUG=True
-      - BACKEND_HOST=0.0.0.0
-      - BACKEND_PORT=8000
+      - DEBUG=true
+      - HOST=0.0.0.0
+      - PORT=8000
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000
     networks:
-      - app_network
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: security_scanner_frontend
-    volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/public:/app/public
-    working_dir: /app
-    command: npm start
     ports:
-      - "3000:3000"
+      - "3002:3002"
+    command: npm run dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     environment:
-      - REACT_APP_API_URL=http://localhost:8000
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
+      - NODE_ENV=development
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
-      - app_network
+      - app-network
 
-# Define volumes for persistent data (e.g., ZAP data, nuclei templates)
+# Define volumes for persistent data
 volumes:
   zap_data:
   nuclei_templates:
 
 # Define a network for services to communicate with each other
 networks:
-  app_network:
+  app-network:
     driver: bridge

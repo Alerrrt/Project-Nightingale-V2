@@ -1,135 +1,186 @@
 import asyncio
-import uuid
-from typing import List, Dict, Any
-
 import httpx
-from .base_scanner import BaseScanner
-from ..types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
+from typing import List, Dict, Any
+from datetime import datetime
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
+from .base_scanner import BaseScanner
+from ..types.models import ScanInput, Severity, OwaspCategory
+
+logger = get_context_logger(__name__)
 
 class SecurityHeadersAnalyzer(BaseScanner):
     """
-    A scanner module for analyzing security headers.
+    A scanner module for analyzing security headers in HTTP responses.
     """
 
-    async def _perform_scan(self, target: str, options: Dict) -> List[Finding]:
+    metadata = {
+        "name": "Security Headers Analyzer",
+        "description": "Analyzes security headers in HTTP responses to identify missing or misconfigured headers.",
+        "owasp_category": "A05:2021 - Security Misconfiguration",
+        "author": "Project Nightingale Team",
+        "version": "1.0"
+    }
+
+    # Define required security headers and their recommended values
+    REQUIRED_HEADERS = {
+        "Strict-Transport-Security": {
+            "recommended": "max-age=31536000; includeSubDomains; preload",
+            "description": "Enforces HTTPS connections",
+            "severity": Severity.HIGH
+        },
+        "X-Content-Type-Options": {
+            "recommended": "nosniff",
+            "description": "Prevents MIME type sniffing",
+            "severity": Severity.MEDIUM
+        },
+        "X-Frame-Options": {
+            "recommended": "DENY",
+            "description": "Prevents clickjacking attacks",
+            "severity": Severity.MEDIUM
+        },
+        "X-XSS-Protection": {
+            "recommended": "1; mode=block",
+            "description": "Enables browser's XSS filtering",
+            "severity": Severity.MEDIUM
+        },
+        "Content-Security-Policy": {
+            "recommended": "default-src 'self'",
+            "description": "Controls resource loading",
+            "severity": Severity.HIGH
+        },
+        "Referrer-Policy": {
+            "recommended": "strict-origin-when-cross-origin",
+            "description": "Controls referrer information",
+            "severity": Severity.LOW
+        },
+        "Permissions-Policy": {
+            "recommended": "geolocation=(), microphone=(), camera=()",
+            "description": "Controls browser features",
+            "severity": Severity.MEDIUM
+        }
+    }
+
+    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="security_headers_analyzer")
+    async def scan(self, scan_input: ScanInput) -> List[Dict]:
+        start_time = datetime.now()
+        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
+        try:
+            logger.info("Scan started", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "options": scan_input.options
+            })
+            results = await self._perform_scan(scan_input.target, scan_input.options)
+            self._update_metrics(True, start_time)
+            logger.info("Scan completed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "result_count": len(results)
+            })
+            return results
+        except Exception as e:
+            self._update_metrics(False, start_time)
+            logger.error("Scan failed", extra={
+                "scanner": self.__class__.__name__,
+                "scan_id": scan_id,
+                "target": scan_input.target,
+                "error": str(e)
+            }, exc_info=True)
+            raise
+
+    async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
-        Asynchronously checks for the presence and proper configuration of security headers.
+        Analyzes security headers in the HTTP response.
 
         Args:
-            target: The target URL for the scan.
-            options: Additional options for the scan.
+            target: The target URL to scan
+            options: Additional scan options
 
         Returns:
-            A list of Finding objects representing missing or insecure headers.
+            List of findings related to missing or misconfigured security headers
         """
-        findings: List[Finding] = []
-        target_url = target
-        print(f"[*] Analyzing security headers for {target_url}...")
+        findings: List[Dict] = []
+        logger.info("Starting security headers analysis", extra={"target": target})
 
         try:
-            async with httpx.AsyncClient(follow_redirects=True) as client:
-                response = await client.get(target_url)
-                response.raise_for_status()
-
+            async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+                response = await client.get(target)
                 headers = response.headers
 
-                # Check Strict-Transport-Security (HSTS)
-                if not headers.get("Strict-Transport-Security"):
-                    findings.append(
-                        Finding(
-                            id=str(uuid.uuid4()),
-                            vulnerability_type="Missing HSTS Header",
-                            description="The HTTP Strict Transport Security (HSTS) header is missing, which could allow protocol downgrade attacks.",
-                            severity=Severity.MEDIUM,
-                            affected_url=target_url,
-                            remediation="Implement the HSTS header on the web server with an appropriate max-age directive (e.g., Strict-Transport-Security: max-age=31536000; includeSubDomains; preload).",
-                            owasp_category=OwaspCategory.A05_SECURITY_MISCONFIGURATION,
-                            proof={"details": "HSTS header not found in response."}
-                        )
-                    )
+                # Check each required header
+                for header, config in self.REQUIRED_HEADERS.items():
+                    if header not in headers:
+                        findings.append({
+                            "type": "missing_security_header",
+                            "severity": config["severity"],
+                            "title": f"Missing {header} Header",
+                            "description": f"The {header} header is missing. {config['description']}",
+                            "evidence": {
+                                "header": header,
+                                "recommended_value": config["recommended"],
+                                "current_value": None
+                            },
+                            "owasp_category": OwaspCategory.SECURITY_MISCONFIGURATION,
+                            "recommendation": f"Add the {header} header with value: {config['recommended']}",
+                            "affected_url": target
+                        })
+                        logger.info("Missing header", extra={"header": header})
+                    else:
+                        current_value = headers[header]
+                        if current_value.lower() != config["recommended"].lower():
+                            findings.append({
+                                "type": "misconfigured_security_header",
+                                "severity": config["severity"],
+                                "title": f"Misconfigured {header} Header",
+                                "description": f"The {header} header is present but may not be optimally configured. {config['description']}",
+                                "evidence": {
+                                    "header": header,
+                                    "recommended_value": config["recommended"],
+                                    "current_value": current_value
+                                },
+                                "owasp_category": OwaspCategory.SECURITY_MISCONFIGURATION,
+                                "recommendation": f"Update the {header} header to: {config['recommended']}",
+                                "affected_url": target
+                            })
+                            logger.info("Misconfigured header", extra={"header": header})
 
-                # Check Content-Security-Policy (CSP)
-                if not headers.get("Content-Security-Policy"):
-                    findings.append(
-                        Finding(
-                            id=str(uuid.uuid4()),
-                            vulnerability_type="Missing Content-Security-Policy Header",
-                            description="The Content-Security-Policy (CSP) header is missing, increasing the risk of XSS and data injection attacks.",
-                            severity=Severity.HIGH,
-                            affected_url=target_url,
-                            remediation="Implement a strong Content-Security-Policy header to mitigate various client-side attacks.",
-                            owasp_category=OwaspCategory.A05_SECURITY_MISCONFIGURATION,
-                            proof={"details": "Content-Security-Policy header not found in response."}
-                        )
-                    )
-                # Further CSP checks could be added here (e.g., unsafe-inline, unsafe-eval)
-
-                # Check X-Frame-Options (Clickjacking)
-                x_frame_options = headers.get("X-Frame-Options")
-                if not x_frame_options:
-                    findings.append(
-                        Finding(
-                            id=str(uuid.uuid4()),
-                            vulnerability_type="Missing X-Frame-Options Header",
-                            description="The X-Frame-Options header is missing, which can lead to clickjacking attacks.",
-                            severity=Severity.MEDIUM,
-                            affected_url=target_url,
-                            remediation="Add the X-Frame-Options header with 'DENY' or 'SAMEORIGIN' to prevent framing.",
-                            owasp_category=OwaspCategory.A05_SECURITY_MISCONFIGURATION,
-                            proof={"details": "X-Frame-Options header not found in response."}
-                        )
-                    )
-                elif x_frame_options.lower() not in ["deny", "sameorigin"]:
-                     findings.append(
-                        Finding(
-                            id=str(uuid.uuid4()),
-                            vulnerability_type="Weak X-Frame-Options Header",
-                            description=f"The X-Frame-Options header is set to '{x_frame_options}', which may not fully protect against clickjacking.",
-                            severity=Severity.LOW,
-                            affected_url=target_url,
-                            remediation="Set the X-Frame-Options header to 'DENY' or 'SAMEORIGIN'.",
-                            owasp_category=OwaspCategory.A05_SECURITY_MISCONFIGURATION,
-                            proof={"details": f"X-Frame-Options: {x_frame_options}."}
-                        )
-                    )
-
-                # Check X-Content-Type-Options
-                if not headers.get("X-Content-Type-Options"):
-                    findings.append(
-                        Finding(
-                            id=str(uuid.uuid4()),
-                            vulnerability_type="Missing X-Content-Type-Options Header",
-                            description="The X-Content-Type-Options header is missing, which could lead to MIME type sniffing vulnerabilities.",
-                            severity=Severity.LOW,
-                            affected_url=target_url,
-                            remediation="Add the X-Content-Type-Options: nosniff header to responses.",
-                            owasp_category=OwaspCategory.A05_SECURITY_MISCONFIGURATION,
-                            proof={"details": "X-Content-Type-Options header not found in response."}
-                        )
-                    )
-
-                # Check Referrer-Policy
-                if not headers.get("Referrer-Policy"):
-                    findings.append(
-                        Finding(
-                            id=str(uuid.uuid4()),
-                            vulnerability_type="Missing Referrer-Policy Header",
-                            description="The Referrer-Policy header is missing, which may inadvertently leak sensitive URL information to third parties.",
-                            severity=Severity.INFO,
-                            affected_url=target_url,
-                            remediation="Implement a suitable Referrer-Policy header (e.g., 'no-referrer', 'same-origin', 'strict-origin-when-cross-origin').",
-                            owasp_category=OwaspCategory.UNKNOWN, # Can be A05 or A07 depending on context
-                            proof={"details": "Referrer-Policy header not found in response."}
-                        )
-                    )
-
-        except httpx.HTTPStatusError as e:
-            print(f"HTTP error while analyzing headers for {target_url}: {e}")
         except httpx.RequestError as e:
-            print(f"Request error while analyzing headers for {target_url}: {e}")
+            logger.error("Failed to connect to target", extra={
+                "target": target,
+                "error": str(e)
+            })
+            findings.append({
+                "type": "connection_error",
+                "severity": Severity.HIGH,
+                "title": "Connection Error",
+                "description": f"Failed to connect to {target}",
+                "evidence": {"error": str(e)},
+                "owasp_category": OwaspCategory.SECURITY_MISCONFIGURATION,
+                "recommendation": "Ensure the target is accessible and try again",
+                "affected_url": target
+            })
         except Exception as e:
-            print(f"An unexpected error occurred during security headers scan of {target_url}: {e}")
+            logger.error("Unexpected error during security headers analysis", extra={
+                "target": target,
+                "error": str(e)
+            }, exc_info=True)
+            findings.append({
+                "type": "unexpected_error",
+                "severity": Severity.HIGH,
+                "title": "Unexpected Error",
+                "description": "An unexpected error occurred during the scan",
+                "evidence": {"error": str(e)},
+                "owasp_category": OwaspCategory.SECURITY_MISCONFIGURATION,
+                "recommendation": "Check the scanner logs for more details",
+                "affected_url": target
+            })
 
-        print(f"[*] Finished analyzing security headers for {target_url}.")
+        logger.info("Completed security headers analysis", extra={
+            "target": target,
+            "findings_count": len(findings)
+        })
         return findings 
