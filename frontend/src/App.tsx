@@ -19,6 +19,7 @@ import Tooltip from './components/Tooltip';
 import ModuleStatusGrid from './components/ModuleStatusGrid';
 import SecurityPostureChart from './components/SecurityPostureChart';
 import './posture-summary.css';
+import HeroLanding from './components/HeroLanding';
 
 // Helper for timeout
 function timeoutPromise(ms: number) {
@@ -296,7 +297,7 @@ const App: React.FC = () => {
         {/* Sidebar */}
         <aside className={`absolute md:relative z-10 w-80 bg-surface h-screen p-4 flex flex-col space-y-6 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 ease-in-out`}>
           <div className="flex items-center space-x-3 px-2">
-            <span className="text-3xl">🕊️</span>
+            <Shield className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-text">Nightingale</h1>
           </div>
           
@@ -355,6 +356,7 @@ const App: React.FC = () => {
             </div>
           </section>
 
+          {/* Progressive UI Reveal - Only show these sections after scan starts */}
           {hasSubmittedUrl && (
             <>
             <section className="bg-background rounded-lg p-4 flex-grow flex flex-col">
@@ -414,6 +416,7 @@ const App: React.FC = () => {
             </div>
           )}
           
+          {/* Progressive UI Reveal - Show scanning interface first */}
           {isScanning && (
             <>
               <LiveModuleStatus activityLogs={activityLogs} />
@@ -426,14 +429,21 @@ const App: React.FC = () => {
             </>
           )}
           
+          {/* Progressive UI Reveal - Show results only after scan completion */}
           {!hasSubmittedUrl ? (
-            <div className="flex flex-col items-center justify-center h-full text-center text-textSecondary">
-              <p className="text-lg">Enter a target URL and start a scan to see the results.</p>
-            </div>
+            <HeroLanding 
+              onStartScan={() => {
+                // Show the config panel to start scan
+                setShowConfigPanel(true);
+              }}
+              onShowHistory={() => setShowHistoryModal(true)}
+              onShowConfig={() => setShowConfigPanel(true)}
+            />
           ) : (
             <>
               {!isScanning && vulnerabilities.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full text-center text-textSecondary">
+                  <Shield className="h-16 w-16 text-primary mb-4 opacity-50" />
                   <p className="text-lg">No vulnerabilities found or no scan performed yet.</p>
                   <p>Enter a target URL and start a scan to see the results.</p>
                 </div>
@@ -520,6 +530,11 @@ const App: React.FC = () => {
         isOpen={showConfigPanel}
         onClose={() => setShowConfigPanel(false)}
         onSave={handleSaveScanConfig}
+        onStartScan={(url, scanners) => {
+          setTargetInput(url);
+          setCustomScanners(scanners);
+          handleScanToggle('custom_scan');
+        }}
         initialSelectedScanners={customScanners}
       />
     </div>

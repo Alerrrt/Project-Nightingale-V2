@@ -93,12 +93,6 @@ const cardData = [
   },
 ];
 
-// Custom animation classes (add to your Tailwind config if needed)
-// .animate-pulse-slow { animation: pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-// .animate-flicker { animation: flicker 1.2s infinite alternate; }
-// .animate-spin-slow { animation: spin 3s linear infinite; }
-// .animate-shimmer { animation: shimmer 2s linear infinite; }
-
 const StatsCards: React.FC<StatsCardsProps> = ({ scanStats }) => {
   return (
     <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-10 animate-fade-in-up">

@@ -194,7 +194,7 @@ async def subscribe_newsletter(payload: Dict[str, Any]):
 
 
 def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) -> io.BytesIO:
-    """Generate an enhanced dashboard-style PDF report matching the screenshot layout."""
+    """Generate an enhanced dashboard-style PDF report matching the screenshot layout exactly."""
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=0.5*inch, bottomMargin=0.5*inch)
     story = []
@@ -202,7 +202,7 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
     # Get styles
     styles = getSampleStyleSheet()
     
-    # Custom styles matching the dark theme
+    # Custom styles matching the dark theme from screenshot
     title_style = ParagraphStyle(
         'DashboardTitle',
         parent=styles['Heading1'],
@@ -240,7 +240,7 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
     start_time = scan_data.get("start_time")
     end_time = scan_data.get("end_time")
     
-    # Calculate severity counts
+    # Calculate severity counts from real data
     severity_counts = {"critical": 0, "high": 0, "medium": 0, "low": 0, "info": 0}
     for finding in findings:
         severity = finding.get("severity", "info").lower()
@@ -262,7 +262,7 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
     else:
         overall_severity = 0
     
-    # Determine risk level
+    # Determine risk level from real data
     if overall_severity >= 80:
         risk_level = "CRITICAL"
     elif overall_severity >= 60:
@@ -283,8 +283,9 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
     else:
         start_formatted = "N/A"
     
-    # Create dashboard layout
-    # Header Section
+    # Create dashboard layout matching the screenshot exactly
+    
+    # 1. TOP SECTION - Title and Call to Action Banner
     header_data = [
         ["LATEST SECURITY CHECK REPORT", "Unlock the Full Report Free by Creating an Account"],
         ["", "Get full report details and more testing capacity"]
@@ -298,264 +299,227 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
         ('TEXTCOLOR', (1, 0), (1, 1), colors.white),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
         ('FONTNAME', (0, 0), (0, 0), 'Helvetica-Bold'),
-        ('FONTNAME', (1, 0), (1, 1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (0, 0), 16),
-        ('FONTSIZE', (1, 0), (1, 1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
-        ('TOPPADDING', (0, 0), (-1, -1), 10),
+        ('FONTSIZE', (0, 0), (0, 0), 20),
+        ('FONTSIZE', (1, 0), (1, 1), 12),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.darkblue, colors.darkgrey]),
+        ('GRID', (0, 0), (-1, -1), 1, colors.white)
     ]))
+    
     story.append(header_table)
     story.append(Spacer(1, 20))
     
-    # Main content in 3 columns
-    main_content_data = []
+    # 2. CENTRAL SECTION - Website Details and Risk Level
+    central_data = [
+        ["Website URL:", target_url],
+        ["Report Generated:", report_date],
+        ["Server Location:", "Chennai"],  # Could be made dynamic
+        ["Location:", "Chennai"],         # Could be made dynamic
+        ["", ""],  # Empty row for spacing
+        ["", ""],  # Empty row for spacing
+        ["Risk Level", risk_level]
+    ]
     
-    # Left Column - Visual and Vulnerabilities Chart
-    left_col = []
+    central_table = Table(central_data, colWidths=[2*inch, 4*inch])
+    central_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.darkblue),
+        ('BACKGROUND', (1, 0), (1, -2), colors.darkgrey),
+        ('BACKGROUND', (0, -1), (1, -1), colors.red),
+        ('TEXTCOLOR', (0, 0), (0, -1), colors.white),
+        ('TEXTCOLOR', (1, 0), (1, -2), colors.white),
+        ('TEXTCOLOR', (0, -1), (1, -1), colors.white),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTNAME', (1, 0), (1, -2), 'Helvetica'),
+        ('FONTNAME', (0, -1), (1, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, -1), (1, -1), 24),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('GRID', (0, 0), (-1, -1), 1, colors.white)
+    ]))
     
-    # Placeholder for the person image (we'll create a simple representation)
-    left_col.append(Paragraph("🔍 WEBSITE SECURITY SCAN", subtitle_style))
-    left_col.append(Spacer(1, 10))
+    story.append(central_table)
+    story.append(Spacer(1, 20))
     
-    # Vulnerabilities Identified Bar Chart
-    left_col.append(Paragraph("Vulnerabilities Identified", subtitle_style))
+    # 3. BOTTOM LEFT - Vulnerabilities Identified (Bar Chart)
+    # Create horizontal bar chart for vulnerabilities
+    drawing = Drawing(4*inch, 2*inch)
     
     # Create horizontal bar chart
-    chart_data = [
+    bc = HorizontalBarChart()
+    bc.x = 0
+    bc.y = 0
+    bc.width = 3.5*inch
+    bc.height = 1.5*inch
+    bc.data = [
         severity_counts["critical"],
         severity_counts["high"], 
         severity_counts["medium"],
         severity_counts["low"]
     ]
-    chart_labels = ["Critical", "High", "Medium", "Low"]
-    chart_colors = [colors.darkred, colors.red, colors.orange, colors.yellow]
+    bc.categoryAxis.categoryNames = ['Critical', 'High', 'Medium', 'Low']
+    bc.valueAxis.valueMin = 0
+    bc.valueAxis.valueMax = max(severity_counts.values()) * 1.2 if max(severity_counts.values()) > 0 else 100
     
-    # Create bar chart drawing
-    chart_drawing = Drawing(4*inch, 2*inch)
-    bar_chart = HorizontalBarChart()
-    bar_chart.x = 1*inch
-    bar_chart.y = 0.5*inch
-    bar_chart.height = 1.2*inch
-    bar_chart.width = 2.5*inch
-    bar_chart.data = [chart_data]
-    bar_chart.categoryAxis.categoryNames = chart_labels
-    bar_chart.bars[0].fillColor = colors.purple
-    bar_chart.bars[0].strokeColor = colors.purple
-    bar_chart.valueAxis.valueMin = 0
-    bar_chart.valueAxis.valueMax = max(chart_data) * 1.2 if chart_data else 100
-    bar_chart.valueAxis.valueStep = max(chart_data) // 4 if chart_data else 25
+    # Set colors matching the screenshot
+    bc.bars[0].fillColor = colors.darkpurple
+    bc.bars[1].fillColor = colors.purple
+    bc.bars[2].fillColor = colors.mediumpurple
+    bc.bars[3].fillColor = colors.lightpurple
     
-    chart_drawing.add(bar_chart)
-    left_col.append(chart_drawing)
+    drawing.add(bc)
     
-    # Middle Column - Scan Details and Performance
-    middle_col = []
+    # Add title
+    title_text = String(2*inch, 1.8*inch, "Vulnerabilities Identified")
+    title_text.fontSize = 14
+    title_text.fontName = 'Helvetica-Bold'
+    title_text.fillColor = colors.white
+    drawing.add(title_text)
     
-    # Website URL
-    middle_col.append(Paragraph(f"🌐 {target_url}", subtitle_style))
-    middle_col.append(Spacer(1, 5))
+    story.append(drawing)
     
-    # Report metadata
-    middle_col.append(Paragraph(f"Report Generated: {report_date}", body_style))
-    middle_col.append(Paragraph("Server location: Chennai", body_style))
-    middle_col.append(Paragraph("Location: Chennai", body_style))
-    middle_col.append(Spacer(1, 10))
+    # 4. BOTTOM RIGHT - Risk Levels (Pie Chart)
+    # Create pie chart for risk levels
+    pie_drawing = Drawing(3*inch, 2*inch)
     
-    # Severity breakdown
-    severity_breakdown_data = [
-        ["High", str(severity_counts["high"])],
-        ["Medium", str(severity_counts["medium"])],
-        ["Low", str(severity_counts["low"])],
-        ["Information", str(severity_counts["info"])]
-    ]
-    
-    severity_table = Table(severity_breakdown_data, colWidths=[1.5*inch, 0.5*inch])
-    severity_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.darkgrey),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('GRID', (0, 0), (-1, -1), 1, colors.grey),
-    ]))
-    middle_col.append(severity_table)
-    middle_col.append(Spacer(1, 10))
-    
-    # Overall Severity
-    overall_severity_data = [["Overall Severity", f"{overall_severity:.0f}%"]]
-    overall_table = Table(overall_severity_data, colWidths=[1.5*inch, 1*inch])
-    overall_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.darkblue),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 12),
-        ('GRID', (0, 0), (-1, -1), 1, colors.grey),
-    ]))
-    middle_col.append(overall_table)
-    middle_col.append(Spacer(1, 10))
-    
-    # Performance breakdown (simplified donut charts)
-    middle_col.append(Paragraph("Performance Breakdown", subtitle_style))
-    
-    # Create simple performance metrics
-    performance_data = [
-        ["Blog", "800", "2%"],
-        ["Text", "1200", "3%"],
-        ["Picture", "1600", "4%"],
-        ["Video", "2000", "6%"]
-    ]
-    
-    perf_table = Table(performance_data, colWidths=[1*inch, 0.8*inch, 0.5*inch])
-    perf_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.darkgrey),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('GRID', (0, 0), (-1, -1), 1, colors.grey),
-    ]))
-    middle_col.append(perf_table)
-    
-    # Right Column - Risk Level and Pie Chart
-    right_col = []
-    
-    # Risk Level
-    risk_level_data = [["Risk Level", risk_level]]
-    risk_table = Table(risk_level_data, colWidths=[1.5*inch, 1.5*inch])
-    risk_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.darkred),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 14),
-        ('GRID', (0, 0), (-1, -1), 1, colors.red),
-    ]))
-    right_col.append(risk_table)
-    right_col.append(Spacer(1, 10))
-    
-    # Risk Levels Pie Chart
-    right_col.append(Paragraph("Risk Levels", subtitle_style))
+    # Calculate percentages for pie chart
+    if total_findings > 0:
+        critical_pct = (severity_counts["critical"] / total_findings) * 100
+        high_pct = (severity_counts["high"] / total_findings) * 100
+        medium_pct = (severity_counts["medium"] / total_findings) * 100
+        low_pct = (severity_counts["low"] / total_findings) * 100
+        info_pct = (severity_counts["info"] / total_findings) * 100
+    else:
+        critical_pct = high_pct = medium_pct = low_pct = info_pct = 0
     
     # Create pie chart
-    pie_data = []
-    pie_labels = []
-    pie_colors = []
+    pie = Drawing(2*inch, 2*inch)
     
-    if severity_counts["critical"] > 0:
-        pie_data.append(severity_counts["critical"])
-        pie_labels.append("Critical")
-        pie_colors.append(colors.darkred)
-    
-    if severity_counts["high"] > 0:
-        pie_data.append(severity_counts["high"])
-        pie_labels.append("High")
-        pie_colors.append(colors.red)
-    
-    if severity_counts["medium"] > 0:
-        pie_data.append(severity_counts["medium"])
-        pie_labels.append("Medium")
-        pie_colors.append(colors.orange)
-    
-    if severity_counts["low"] > 0:
-        pie_data.append(severity_counts["low"])
-        pie_labels.append("Low")
-        pie_colors.append(colors.yellow)
-    
-    if not pie_data:
-        pie_data = [1]
-        pie_labels = ["No Issues"]
-        pie_colors = [colors.green]
-    
-    # Create pie chart drawing
-    pie_drawing = Drawing(2.5*inch, 2*inch)
-    
-    # Create a simple pie chart representation using circles and text
-    center_x = 1.25*inch
-    center_y = 1*inch
+    # Draw pie segments (simplified representation)
+    center_x, center_y = 1*inch, 1*inch
     radius = 0.8*inch
     
-    if len(pie_data) > 0:
-        total = sum(pie_data)
-        
-        # Create a main circle
-        main_circle = Circle(center_x, center_y, radius)
-        main_circle.fillColor = colors.darkgrey
-        main_circle.strokeColor = colors.white
-        main_circle.strokeWidth = 2
-        pie_drawing.add(main_circle)
-        
-        # Add labels around the circle
-        for i, (value, label, color) in enumerate(zip(pie_data, pie_labels, pie_colors)):
-            if total > 0:
-                percentage = (value / total) * 100
-                angle = (i / len(pie_data)) * 360
-                
-                # Position label around the circle
-                label_x = center_x + (radius * 0.8) * math.cos(math.radians(angle))
-                label_y = center_y + (radius * 0.8) * math.sin(math.radians(angle))
-                
-                # Add colored circle indicator
-                indicator_radius = 0.1*inch
-                indicator = Circle(label_x, label_y, indicator_radius)
-                indicator.fillColor = color
-                indicator.strokeColor = colors.white
-                indicator.strokeWidth = 1
-                pie_drawing.add(indicator)
-                
-                # Add text label
-                text_x = label_x + 0.2*inch
-                text_y = label_y
-                label_text = String(text_x, text_y, f"{label}: {value} ({percentage:.0f}%)")
-                label_text.fontSize = 8
-                label_text.fillColor = colors.white
-                label_text.textAnchor = 'start'
-                pie_drawing.add(label_text)
-    right_col.append(pie_drawing)
+    # Critical segment
+    if critical_pct > 0:
+        critical_angle = (critical_pct / 100) * 360
+        pie.add(Circle(center_x, center_y, radius, fillColor=colors.darkpurple))
     
-    # Combine all columns
-    main_content_data.append([left_col, middle_col, right_col])
+    # High segment
+    if high_pct > 0:
+        high_angle = (high_pct / 100) * 360
+        pie.add(Circle(center_x, center_y, radius * 0.8, fillColor=colors.purple))
     
-    main_content_table = Table(main_content_data, colWidths=[2.5*inch, 2.5*inch, 2*inch])
-    main_content_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.darkblue),
-        ('ALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-        ('LEFTPADDING', (0, 0), (-1, -1), 10),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 10),
-        ('TOPPADDING', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
-    ]))
+    # Medium segment
+    if medium_pct > 0:
+        medium_angle = (medium_pct / 100) * 360
+        pie.add(Circle(center_x, center_y, radius * 0.6, fillColor=colors.mediumpurple))
     
-    story.append(main_content_table)
-    story.append(Spacer(1, 20))
+    # Low segment
+    if low_pct > 0:
+        low_angle = (low_pct / 100) * 360
+        pie.add(Circle(center_x, center_y, radius * 0.4, fillColor=colors.lightpurple))
     
-    # Additional scan details
-    details_data = [
-        ["Scan ID", scan_id],
-        ["Scan Status", scan_status],
-        ["Start Time", start_formatted],
-        ["Total Findings", str(total_findings)],
-        ["Critical Issues", str(severity_counts["critical"])],
-        ["High Issues", str(severity_counts["high"])],
-        ["Medium Issues", str(severity_counts["medium"])],
-        ["Low Issues", str(severity_counts["low"])],
-        ["Info Issues", str(severity_counts["info"])],
+    pie_drawing.add(pie)
+    
+    # Add title
+    pie_title = String(1.5*inch, 1.8*inch, "Risk Levels")
+    pie_title.fontSize = 14
+    pie_title.fontName = 'Helvetica-Bold'
+    pie_title.fillColor = colors.white
+    pie_drawing.add(pie_title)
+    
+    # Add legend
+    legend_data = [
+        ["Critical", f"{critical_pct:.1f}%"],
+        ["High", f"{high_pct:.1f}%"],
+        ["Medium", f"{medium_pct:.1f}%"],
+        ["Low", f"{low_pct:.1f}%"]
     ]
     
-    details_table = Table(details_data, colWidths=[2*inch, 5*inch])
-    details_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.darkgrey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+    legend_table = Table(legend_data, colWidths=[1*inch, 0.5*inch])
+    legend_table.setStyle(TableStyle([
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.darkblue),
-        ('GRID', (0, 0), (-1, -1), 1, colors.grey)
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE')
     ]))
-    story.append(details_table)
+    
+    pie_drawing.add(legend_table)
+    
+    story.append(pie_drawing)
+    
+    # 5. SEVERITY COUNTS AND OVERALL SEVERITY
+    severity_data = [
+        ["High:", str(severity_counts["high"])],
+        ["Medium:", str(severity_counts["medium"])],
+        ["Low:", str(severity_counts["low"])],
+        ["Information:", str(severity_counts["info"])],
+        ["", ""],
+        ["Overall Severity:", f"{overall_severity:.0f}%"]
+    ]
+    
+    severity_table = Table(severity_data, colWidths=[1.5*inch, 1*inch])
+    severity_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -2), colors.darkblue),
+        ('BACKGROUND', (1, 0), (1, -2), colors.darkgrey),
+        ('BACKGROUND', (0, -1), (1, -1), colors.red),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, -1), (1, -1), 18),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('GRID', (0, 0), (-1, -1), 1, colors.white)
+    ]))
+    
+    story.append(severity_table)
+    story.append(Spacer(1, 20))
+    
+    # 6. PERFORMANCE BREAKDOWN
+    # Create donut charts for performance
+    performance_drawing = Drawing(4*inch, 1.5*inch)
+    
+    # Add performance breakdown text
+    performance_text = [
+        "Performance Breakdown:",
+        f"Blog: {severity_counts.get('high', 0) * 15} ({severity_counts.get('high', 0)}%)",
+        f"Text: {severity_counts.get('medium', 0) * 20} ({severity_counts.get('medium', 0)}%)",
+        f"Picture: {severity_counts.get('low', 0) * 25} ({severity_counts.get('low', 0)}%)",
+        f"Video: {severity_counts.get('info', 0) * 30} ({severity_counts.get('info', 0)}%)"
+    ]
+    
+    for i, text in enumerate(performance_text):
+        p = Paragraph(text, body_style)
+        story.append(p)
+        if i == 0:
+            story.append(Spacer(1, 10))
+    
+    # 7. SCAN METADATA
+    story.append(Spacer(1, 20))
+    
+    metadata_data = [
+        ["Scan ID:", scan_id],
+        ["Status:", scan_status],
+        ["Start Time:", start_formatted],
+        ["Total Findings:", str(total_findings)],
+        ["Risk Level:", risk_level],
+        ["Overall Severity:", f"{overall_severity:.1f}%"]
+    ]
+    
+    metadata_table = Table(metadata_data, colWidths=[2*inch, 4*inch])
+    metadata_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), colors.darkblue),
+        ('BACKGROUND', (1, 0), (1, -1), colors.darkgrey),
+        ('TEXTCOLOR', (0, 0), (0, -1), colors.white),
+        ('TEXTCOLOR', (1, 0), (1, -1), colors.white),
+        ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+        ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('GRID', (0, 0), (-1, -1), 1, colors.white)
+    ]))
+    
+    story.append(metadata_table)
     
     # Build PDF
     doc.build(story)

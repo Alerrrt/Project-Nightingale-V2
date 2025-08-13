@@ -137,31 +137,42 @@ class ScannerConcurrencyManager:
         return scanner_id
     
     async def _process_task_queue(self):
-        """Process tasks from the queue based on priority and resource availability."""
+        """Process tasks from the queue with priority handling."""
         while self._running and not self._shutdown_event.is_set():
             try:
-                # Check if we can start more tasks
-                while (len(self._active_tasks) < self.max_concurrent_scanners and 
-                       not self._task_queue.empty() and 
-                       self._check_resource_limits()):
+                # Process high-priority tasks first
+                if self.priority_queues:
+                    # Check for high-priority tasks
+                    high_priority_tasks = [
+                        task for task in self._active_tasks.values()
+                        if task.priority in [ScannerPriority.CRITICAL, ScannerPriority.HIGH]
+                        and task.started_at is None
+                    ]
                     
-                    # Get next task (respecting priority if enabled)
-                    if self.priority_queues:
-                        next_task = await self._get_next_priority_task()
-                    else:
-                        next_task = await self._task_queue.get()
-                    
-                    if next_task:
-                        asyncio.create_task(self._execute_scanner(next_task))
-                    else:
-                        break
+                    if high_priority_tasks:
+                        # Start high-priority tasks immediately
+                        for task in high_priority_tasks[:2]:  # Start up to 2 high-priority tasks
+                            if len(self._active_tasks) < self.max_concurrent_scanners:
+                                await self._start_task(task)
+                                continue
                 
-                # Reduced sleep time for more responsive task processing
-                await asyncio.sleep(0.05)
+                # Process regular queue
+                if not self._task_queue.empty() and len(self._active_tasks) < self.max_concurrent_scanners:
+                    try:
+                        task = await asyncio.wait_for(self._task_queue.get(), timeout=0.1)
+                        await self._start_task(task)
+                    except asyncio.TimeoutError:
+                        continue
+                
+                # Check for completed tasks
+                await self._check_completed_tasks()
+                
+                # Reduced sleep time for faster response
+                await asyncio.sleep(0.5)  # Reduced from 1.0 to 0.5 seconds
                 
             except Exception as e:
-                logger.error(f"Error processing task queue: {e}")
-                await asyncio.sleep(0.5)  # Reduced wait time before retrying
+                logger.error(f"Error in task queue processor: {e}")
+                await asyncio.sleep(1)  # Brief pause on error
     
     async def _get_next_priority_task(self) -> Optional[ScannerTask]:
         """Get the next highest priority task from the queue."""
@@ -252,6 +263,43 @@ class ScannerConcurrencyManager:
                 self._failed_tasks.append(task)
             else:
                 self._completed_tasks.append(task)
+    
+    async def _start_task(self, task: ScannerTask):
+        """Start a scanner task."""
+        try:
+            task.started_at = time.time()
+            self._active_tasks[task.scanner_id] = task
+            
+            # Execute the task
+            asyncio.create_task(self._execute_scanner(task))
+            
+        except Exception as e:
+            logger.error(f"Failed to start task {task.scanner_id}: {e}")
+            task.error = e
+            task.completed_at = time.time()
+            self._failed_tasks.append(task)
+            if task.scanner_id in self._active_tasks:
+                del self._active_tasks[task.scanner_id]
+
+    async def _check_completed_tasks(self):
+        """Check for and handle completed tasks."""
+        completed_tasks = []
+        
+        for scanner_id, task in list(self._active_tasks.items()):
+            if task.completed_at is not None:
+                completed_tasks.append(scanner_id)
+                
+                # Move to completed list
+                self._completed_tasks.append(task)
+                self._total_tasks_processed += 1
+                
+                if task.completed_at and task.started_at:
+                    execution_time = task.completed_at - task.started_at
+                    self._total_execution_time += execution_time
+        
+        # Remove completed tasks from active list
+        for scanner_id in completed_tasks:
+            del self._active_tasks[scanner_id]
     
     def _check_resource_limits(self) -> bool:
         """Check if we have resources available to start new tasks."""

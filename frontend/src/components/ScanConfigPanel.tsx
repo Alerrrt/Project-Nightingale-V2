@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, Save, ShieldCheck, ShieldOff, Clock } from 'lucide-react';
+import { X, Save, ShieldCheck, ShieldOff, Clock, Globe, Play } from 'lucide-react';
 import * as scanApi from '../api/scanApi';
 import Tooltip from './Tooltip';
 
@@ -17,12 +17,14 @@ interface ScanConfigPanelProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (selectedScanners: string[]) => void;
+  onStartScan: (url: string, selectedScanners: string[]) => void;
   initialSelectedScanners: string[];
 }
 
-const ScanConfigPanel: React.FC<ScanConfigPanelProps> = ({ isOpen, onClose, onSave, initialSelectedScanners }) => {
+const ScanConfigPanel: React.FC<ScanConfigPanelProps> = ({ isOpen, onClose, onSave, onStartScan, initialSelectedScanners }) => {
   const [scanners, setScanners] = useState<ScannerMeta[]>([]);
   const [selectedScanners, setSelectedScanners] = useState<Set<string>>(new Set(initialSelectedScanners));
+  const [targetUrl, setTargetUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -98,6 +100,24 @@ const ScanConfigPanel: React.FC<ScanConfigPanelProps> = ({ isOpen, onClose, onSa
     onClose();
   };
 
+  const handleStartScan = () => {
+    if (!targetUrl.trim()) {
+      setError('Please enter a target URL');
+      return;
+    }
+    
+    // Validate URL format
+    try {
+      new URL(targetUrl.startsWith('http') ? targetUrl : `https://${targetUrl}`);
+    } catch {
+      setError('Please enter a valid URL');
+      return;
+    }
+    
+    onStartScan(targetUrl, Array.from(selectedScanners));
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -111,8 +131,25 @@ const ScanConfigPanel: React.FC<ScanConfigPanelProps> = ({ isOpen, onClose, onSa
         </header>
 
         <main className="p-6 overflow-y-auto">
+          {/* URL Input Section */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-text mb-2">
+              Target URL
+            </label>
+            <div className="flex items-center space-x-2">
+              <Globe className="w-5 h-5 text-primary" />
+              <input
+                type="text"
+                value={targetUrl}
+                onChange={(e) => setTargetUrl(e.target.value)}
+                placeholder="https://example.com"
+                className="flex-1 bg-background text-text rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary border border-border"
+              />
+            </div>
+            {error && <p className="text-error text-sm mt-1">{error}</p>}
+          </div>
+
           {loading && <p className="text-center text-textSecondary">Loading scanners...</p>}
-          {error && <p className="text-center text-error">{error}</p>}
           
           {!loading && !error && (
             <>
@@ -158,13 +195,21 @@ const ScanConfigPanel: React.FC<ScanConfigPanelProps> = ({ isOpen, onClose, onSa
           )}
         </main>
 
-        <footer className="bg-surface p-4 mt-auto rounded-b-lg flex justify-end">
+        <footer className="bg-surface p-4 mt-auto rounded-b-lg flex justify-end space-x-3">
             <button 
               onClick={handleSave}
-              className="bg-primary hover:bg-opacity-80 text-background font-bold py-2 px-4 rounded-md flex items-center"
+              className="bg-surface hover:bg-opacity-80 text-text font-semibold py-2 px-4 rounded-md flex items-center border border-border"
             >
                 <Save size={18} className="mr-2" />
-                Save and Close
+                Save Configuration
+            </button>
+            <button 
+              onClick={handleStartScan}
+              disabled={!targetUrl.trim() || selectedScanners.size === 0}
+              className="bg-primary hover:bg-opacity-80 disabled:opacity-50 disabled:cursor-not-allowed text-background font-bold py-2 px-4 rounded-md flex items-center"
+            >
+                <Play size={18} className="mr-2" />
+                Start Scan
             </button>
         </footer>
       </div>

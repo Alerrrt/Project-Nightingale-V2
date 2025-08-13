@@ -179,3 +179,117 @@ def map_vulnerability_fields(finding: Dict[str, Any]) -> Dict[str, Any]:
     return finding
 
 
+def deduplicate_vulnerabilities(vulnerabilities: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Deduplicate vulnerabilities in real-time to prevent duplicate findings.
+    
+    Args:
+        vulnerabilities: List of vulnerability dictionaries
+        
+    Returns:
+        Deduplicated list of vulnerabilities
+    """
+    if not vulnerabilities:
+        return []
+    
+    # Create a deduplication key based on title, CWE, and location
+    seen_keys = set()
+    deduplicated = []
+    
+    for vuln in vulnerabilities:
+        # Create a unique key for deduplication
+        title = vuln.get('title', '').lower().strip()
+        cwe = vuln.get('cwe', '').lower().strip()
+        location = vuln.get('location', '').lower().strip()
+        
+        # Skip if any required field is missing
+        if not title or not cwe:
+            continue
+            
+        # Create deduplication key
+        dedup_key = f"{title}|{cwe}|{location}"
+        
+        if dedup_key not in seen_keys:
+            seen_keys.add(dedup_key)
+            deduplicated.append(vuln)
+        else:
+            # Merge with existing vulnerability if severity is higher
+            existing_vuln = next(v for v in deduplicated if 
+                               f"{v.get('title', '').lower().strip()}|{v.get('cwe', '').lower().strip()}|{v.get('location', '').lower().strip()}" == dedup_key)
+            
+            # Update severity if current is higher
+            current_severity = vuln.get('severity', 'info').lower()
+            existing_severity = existing_vuln.get('severity', 'info').lower()
+            
+            severity_order = ['critical', 'high', 'medium', 'low', 'info']
+            if severity_order.index(current_severity) < severity_order.index(existing_severity):
+                existing_vuln['severity'] = vuln['severity']
+                existing_vuln['cvss'] = max(existing_vuln.get('cvss', 0), vuln.get('cvss', 0))
+            
+            # Merge evidence if available
+            if 'evidence' in vuln and 'evidence' in existing_vuln:
+                if isinstance(existing_vuln['evidence'], list):
+                    existing_vuln['evidence'].extend(vuln.get('evidence', []))
+                else:
+                    existing_vuln['evidence'] = [existing_vuln['evidence'], vuln['evidence']]
+    
+    return deduplicated
+
+def merge_vulnerability_instances(vulnerabilities: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Merge multiple instances of the same vulnerability into a single entry with instance count.
+    
+    Args:
+        vulnerabilities: List of vulnerability dictionaries
+        
+    Returns:
+        Merged vulnerabilities with instance counts
+    """
+    if not vulnerabilities:
+        return []
+    
+    # Group by title and CWE
+    grouped = {}
+    
+    for vuln in vulnerabilities:
+        title = vuln.get('title', '').lower().strip()
+        cwe = vuln.get('cwe', '').lower().strip()
+        
+        if not title or not cwe:
+            continue
+            
+        group_key = f"{title}|{cwe}"
+        
+        if group_key not in grouped:
+            grouped[group_key] = {
+                'title': vuln.get('title'),
+                'severity': vuln.get('severity'),
+                'cwe': vuln.get('cwe'),
+                'cve': vuln.get('cve'),
+                'description': vuln.get('description'),
+                'remediation': vuln.get('remediation'),
+                'cvss': vuln.get('cvss', 0),
+                'instances': [],
+                'count': 0
+            }
+        
+        # Add instance
+        grouped[group_key]['instances'].append({
+            'location': vuln.get('location'),
+            'evidence': vuln.get('evidence'),
+            'timestamp': vuln.get('timestamp')
+        })
+        grouped[group_key]['count'] += 1
+        
+        # Update severity if current is higher
+        current_severity = vuln.get('severity', 'info').lower()
+        existing_severity = grouped[group_key]['severity'].lower()
+        
+        severity_order = ['critical', 'high', 'medium', 'low', 'info']
+        if severity_order.index(current_severity) < severity_order.index(existing_severity):
+            grouped[group_key]['severity'] = vuln['severity']
+            grouped[group_key]['cvss'] = max(grouped[group_key]['cvss'], vuln.get('cvss', 0))
+    
+    return list(grouped.values())
+
+

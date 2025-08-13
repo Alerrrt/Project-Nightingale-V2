@@ -14,8 +14,7 @@ from backend.utils.classifier import load_cheatsheets, Classifier
 from backend.utils.enrichment import EnrichmentService
 from backend.utils.scanner_concurrency import get_scanner_concurrency_manager, ScannerPriority
 from backend.utils.http_client import get_shared_http_client
-from backend.utils.vuln_mapper import map_vulnerability_fields
-from backend.utils.vuln_mapper import map_severity_from_cvss
+from backend.utils.vuln_mapper import map_vulnerability_fields, map_severity_from_cvss, deduplicate_vulnerabilities, merge_vulnerability_instances
 import time
 
 logger = logging.getLogger(__name__)
@@ -704,7 +703,7 @@ class ScannerEngine:
             except Exception:
                 pass
 
-            # De-duplicate before appending using composite key
+            # Enhanced deduplication using new functions
             key = _compute_finding_signature(frontend_finding)
             parent_store_id = parent_scan_id or broadcast_id
             parent_store = self._scan_results.get(parent_store_id, {})
@@ -714,10 +713,32 @@ class ScannerEngine:
             if not isinstance(keys_set, set):
                 keys_set = set()
                 parent_store["_finding_keys"] = keys_set
-            if key in keys_set:
-                continue
-            keys_set.add(key)
             
+            # Check if this finding is a duplicate
+            if key in keys_set:
+                # Instead of skipping, check if we need to update severity or merge evidence
+                existing_findings = parent_store.get("results", [])
+                for existing in existing_findings:
+                    if _compute_finding_signature(existing) == key:
+                        # Update severity if current is higher
+                        current_severity = frontend_finding.get("severity", "Info").lower()
+                        existing_severity = existing.get("severity", "Info").lower()
+                        
+                        severity_order = ["critical", "high", "medium", "low", "info"]
+                        if severity_order.index(current_severity) < severity_order.index(existing_severity):
+                            existing["severity"] = frontend_finding["severity"]
+                            existing["cvss"] = max(existing.get("cvss", 0), frontend_finding.get("cvss", 0))
+                        
+                        # Merge evidence if available
+                        if "evidence" in frontend_finding and "evidence" in existing:
+                            if isinstance(existing["evidence"], list):
+                                existing["evidence"].append(frontend_finding["evidence"])
+                            else:
+                                existing["evidence"] = [existing["evidence"], frontend_finding["evidence"]]
+                        break
+                continue
+            
+            keys_set.add(key)
             transformed_results.append(frontend_finding)
             
             # Broadcast finding immediately for real-time updates
@@ -728,6 +749,13 @@ class ScannerEngine:
             except Exception as e:
                 logger.warning(f"Failed to broadcast finding: {e}")
                 # Continue processing even if broadcast fails
+        
+        # Apply final deduplication to ensure no duplicates remain
+        if transformed_results:
+            final_deduplicated = deduplicate_vulnerabilities(transformed_results)
+            if len(final_deduplicated) != len(transformed_results):
+                logger.info(f"Final deduplication: {len(transformed_results)} -> {len(final_deduplicated)} findings")
+                transformed_results = final_deduplicated
         
         return transformed_results
 
@@ -844,7 +872,7 @@ class ScannerEngine:
                     await self._force_scan_completion(scan_id)
                     return
                 
-                await asyncio.sleep(5)  # Check every 5 seconds
+                await asyncio.sleep(2)  # Reduced from 5 to 2 seconds for faster response
             
             # If we reach here, force completion due to timeout
             logger.warning(f"Scan {scan_id} timed out after {max_wait_time}s, forcing completion")
