@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import json
 from typing import List, Optional, Any, Dict, Type, Callable
 import importlib.util
@@ -78,28 +78,22 @@ class NucleiPlugin:
                         owasp_category = OwaspCategory.A03_INJECTION
                     # Add more specific mappings based on Nuclei template tags or info fields
 
-                    finding = Finding(
-                        id=str(uuid.uuid4()), # Assign a unique ID
-                        vulnerability_type=nuclei_finding.get("info", {}).get("name", "Nuclei Finding"),
-                        severity=mapped_severity,
-                        description=nuclei_finding.get("info", {}).get("description", "No description provided."),
-                        technical_details=json.dumps(nuclei_finding, indent=2), # Store raw Nuclei output in technical details
-                        remediation=nuclei_finding.get("info", {}).get("remediation", "See Nuclei template information."),
-                        owasp_category=owasp_category,
-                        affected_url=str(nuclei_finding.get("matched-at", scan_input.target)), # Explicitly cast to string
-                        proof=nuclei_finding.get("extracted-results", nuclei_finding.get("matched-at", "No proof provided.")),
-                        # Populate request/response if available from Nuclei output, or from context
-                        request=RequestLog(
-                            method="GET", # Nuclei doesn't always provide method in JSON output, default to GET or infer
-                            url=str(nuclei_finding.get("matched-at", scan_input.target)), # Explicitly cast to string
-                            # headers=... # If Nuclei provides headers, parse and add
-                            # body=... # If Nuclei provides request body, parse and add
-                        ) if nuclei_finding.get("matched-at") else None,
-                        response=nuclei_finding.get("response"), # If Nuclei provides response, add it
-                        title=nuclei_finding.get("info", {}).get("name"),
-                        cwe_id=nuclei_finding.get("info", {}).get("cwe-id"),
-                    )
-                    findings.append(finding)
+                    # Adapt to engine normalization pipeline expected fields
+                    normalized: Dict[str, Any] = {
+                        "title": nuclei_finding.get("info", {}).get("name", "Nuclei Finding"),
+                        "severity": mapped_severity.value if hasattr(mapped_severity, "value") else str(mapped_severity),
+                        "description": nuclei_finding.get("info", {}).get("description", "No description provided."),
+                        "remediation": nuclei_finding.get("info", {}).get("remediation", "See Nuclei template information."),
+                        "location": str(nuclei_finding.get("matched-at", scan_input.target)),
+                        "owasp_category": owasp_category.value if hasattr(owasp_category, "value") else str(owasp_category),
+                        "evidence": json.dumps(nuclei_finding, indent=2),
+                    }
+                    # Attach CWE when provided by Nuclei template
+                    cwe_id = nuclei_finding.get("info", {}).get("cwe-id")
+                    if cwe_id:
+                        normalized["cwe"] = cwe_id if isinstance(cwe_id, str) else str(cwe_id)
+
+                    findings.append(normalized)  # Engine will transform
                 except json.JSONDecodeError:
                     print(f"Could not decode Nuclei JSON output line: {line}")
                 except Exception as e:

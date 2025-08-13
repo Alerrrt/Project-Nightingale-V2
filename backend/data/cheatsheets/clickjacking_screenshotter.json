@@ -1,0 +1,17 @@
+{
+  "name": "clickjacking_screenshotter",
+  "signals": {
+    "headers": ["x-frame-options", "content-security-policy"]
+  },
+  "mapping": {
+    "cwe": {
+      "CWE-1021": { "keywords": ["frame-ancestors", "x-frame-options", "clickjacking"] }
+    },
+    "owasp": {
+      "A05": { "keywords": ["security misconfiguration", "clickjacking"] }
+    }
+  },
+  "remediation": "Set X-Frame-Options to DENY or SAMEORIGIN and configure a CSP with a strict frame-ancestors directive."
+}
+
+

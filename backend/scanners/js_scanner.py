@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import uuid
 import httpx
 import json
@@ -7,13 +7,17 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 from bs4 import BeautifulSoup
 from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils import get_http_client
+from backend.utils.secrets import scan_text_for_secrets
+from backend.utils.crawler import seed_urls
 from backend.utils.logging_config import get_context_logger
+import logging
 
 from .base_scanner import BaseScanner
 from ..types.models import ScanInput, Severity, OwaspCategory
 from .js_scanner_utils import run_retire_js
 
-logger = get_context_logger(__name__)
+logger = logging.getLogger(__name__)
 
 class JsScanner(BaseScanner):
     """
@@ -29,7 +33,6 @@ class JsScanner(BaseScanner):
         "version": "1.0"
     }
 
-    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="js_scanner")
     async def scan(self, scan_input: ScanInput) -> List[Dict]:
         start_time = datetime.now()
         scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
@@ -79,7 +82,10 @@ class JsScanner(BaseScanner):
         discovered_js_urls = set()
 
         try:
-            async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+            timeout = float(options.get("timeout", 30))
+            use_seeds = bool(options.get("use_seeds", True))
+            max_urls = int(options.get("max_urls", 6))
+            async with get_http_client(follow_redirects=True, timeout=timeout) as client:
                 logger.debug(f"Fetching HTML from {target_url}")
                 try:
                     response = await client.get(target_url)
@@ -105,6 +111,24 @@ class JsScanner(BaseScanner):
                         "error": str(e)
                     }, exc_info=True)
 
+                # Optionally crawl a few more pages for extra scripts
+                if use_seeds:
+                    try:
+                        for page in await seed_urls(target_url, max_urls=max_urls):
+                            try:
+                                r2 = await client.get(page)
+                                s2 = BeautifulSoup(r2.text, 'lxml')
+                                for script_tag in s2.find_all('script', src=True):
+                                    src = script_tag['src']
+                                    full_js_url = urljoin(page, src)
+                                    parsed_js_url = urlparse(full_js_url)
+                                    if parsed_js_url.scheme in ['http', 'https'] and (parsed_js_url.netloc == base_domain or not parsed_js_url.netloc):
+                                        discovered_js_urls.add(full_js_url)
+                            except Exception:
+                                continue
+                    except Exception:
+                        pass
+
                 js_download_tasks = []
                 for js_url in discovered_js_urls:
                     js_download_tasks.append(self._download_js_file(client, js_url))
@@ -124,6 +148,23 @@ class JsScanner(BaseScanner):
                             mapped_finding = self._map_retire_to_finding(retire_finding)
                             if mapped_finding:
                                 findings.append(mapped_finding)
+
+                # Secrets scanning pass on JS contents (limited)
+                for js_url, js_content in downloaded_js_files:
+                    if not js_content:
+                        continue
+                    secrets = scan_text_for_secrets(js_content, max_findings=5)
+                    for s in secrets:
+                        findings.append({
+                            "type": "hardcoded_secret",
+                            "severity": Severity.CRITICAL if s["severity"].lower()=="critical" else Severity.HIGH if s["severity"].lower()=="high" else Severity.MEDIUM,
+                            "title": f"Potential Secret: {s['name']}",
+                            "description": "Potential credential/token pattern detected in a JavaScript resource.",
+                            "evidence": {"file_url": js_url, "match": s["match"]},
+                            "owasp_category": OwaspCategory.SENSITIVE_DATA_EXPOSURE if hasattr(OwaspCategory, 'SENSITIVE_DATA_EXPOSURE') else OwaspCategory.SECURITY_MISCONFIGURATION,
+                            "remediation": "Remove hardcoded secrets; use environment variables or secure vaults, and rotate compromised tokens.",
+                            "affected_url": js_url,
+                        })
 
         except Exception as e:
             logger.error(f"Unexpected error during JavaScript scan", extra={
@@ -242,3 +283,6 @@ class JsScanner(BaseScanner):
                 "error": str(e)
             }, exc_info=True)
         return None 
+
+    def _create_error_finding(self, description: str) -> Dict:
+        return { "type": "error", "severity": Severity.INFO, "title": "JavaScript Scanner Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 } 

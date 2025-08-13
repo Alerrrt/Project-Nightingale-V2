@@ -1,13 +1,16 @@
-import asyncio
+﻿import asyncio
 import uuid
 from typing import List, Optional, Dict, Any
 import httpx
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
+import logging
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.types.models import ScanInput, Finding, Severity, OwaspCategory
+from backend.utils import get_http_client
+from backend.utils.crawler import seed_urls
 
 logger = get_context_logger(__name__)
 
@@ -24,7 +27,6 @@ class DirectoryFileEnumerationScanner(BaseScanner):
         "version": "1.0"
     }
 
-    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="directory_file_enumeration_scanner")
     async def scan(self, scan_input: ScanInput) -> List[Dict]:
         """
         Perform a security scan with circuit breaker protection.
@@ -106,29 +108,44 @@ class DirectoryFileEnumerationScanner(BaseScanner):
             '/robots.txt', '/server-status', '/sql', '/temp',
             '/test', '/tmp', '/upload', '/uploads', '/vendor'
         ])
-        
-        timeout = options.get('timeout', 10)
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            
+        include_seeds = bool(options.get('use_seeds', True))
+        max_urls = int(options.get('max_urls', 8))
+        timeout = float(options.get('timeout', 10))
+
+        urls_to_probe = [target]
+        if include_seeds:
+            try:
+                urls_to_probe.extend(await seed_urls(target, max_urls=max_urls))
+            except Exception:
+                pass
+
+        async with get_http_client(timeout=timeout) as client:
+
             async def check_path(path: str) -> Optional[Dict]:
                 try:
-                    url = f"{target.rstrip('/')}/{path.lstrip('/')}"
-                    response = await client.get(url)
-                    
-                    if response.status_code < 400:  # Found something
-                        return {
-                            "type": "vulnerability",
-                            "severity": Severity.MEDIUM.value,
-                            "cwe": "CWE-538", # File and Directory Information Exposure
-                            "title": f"Exposed Path Found: {path}",
-                            "description": f"An accessible path was discovered at {url}, which returned a status code of {response.status_code}. This could expose sensitive files, directory listings, or functionality.",
-                            "location": url,
-                            "remediation": "Ensure that sensitive files and directories are not publicly accessible. Configure your web server to show a 404 Not Found error instead of a 403 Forbidden error for non-existent resources to avoid path enumeration. Restrict access to authorized users where necessary.",
-                            "confidence": 100,
-                            "impact": "Information disclosure, potential for further attacks.",
-                            "cvss": 5.3,
-                            "category": OwaspCategory.SECURITY_MISCONFIGURATION.value,
-                        }
+                    # probe against each base (seed) to increase coverage within origin
+                    results_local: List[Optional[Dict]] = []
+                    for base in urls_to_probe:
+                        url = f"{base.rstrip('/')}/{path.lstrip('/')}"
+                        response = await client.get(url)
+                        if response.status_code < 400:  # Found something
+                            results_local.append({
+                                "type": "vulnerability",
+                                "severity": Severity.MEDIUM.value,
+                                "cwe": "CWE-538", # File and Directory Information Exposure
+                                "title": f"Exposed Path Found: {path}",
+                                "description": f"An accessible path was discovered at {url}, which returned a status code of {response.status_code}. This could expose sensitive files, directory listings, or functionality.",
+                                "location": url,
+                                "remediation": "Ensure that sensitive files and directories are not publicly accessible. Configure your web server to return minimal information on missing resources and restrict access appropriately.",
+                                "confidence": 100,
+                                "impact": "Information disclosure, potential for further attacks.",
+                                "cvss": 5.3,
+                                "category": OwaspCategory.SECURITY_MISCONFIGURATION.value,
+                            })
+                    # Prefer first hit to limit duplicates
+                    for r in results_local:
+                        if r is not None:
+                            return r
                 except httpx.RequestError as e:
                     logger.warning(
                         f"Error checking path {path}: {type(e).__name__}",
@@ -142,3 +159,6 @@ class DirectoryFileEnumerationScanner(BaseScanner):
             findings = [res for res in results if res is not None]
                     
         return findings 
+
+    def _create_error_finding(self, description: str) -> Dict:
+        return { "type": "error", "severity": Severity.INFO, "title": "Directory/File Enumeration Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 } 

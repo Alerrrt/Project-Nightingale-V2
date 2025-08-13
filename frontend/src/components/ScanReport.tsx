@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { GroupedVulnerability, VulnerabilityData } from './VulnerabilityList';
 import { ScanStats } from './StatsCards';
 import { X, Download } from 'lucide-react';
@@ -9,6 +9,7 @@ interface ScanReportProps {
   scanStats: ScanStats;
   groupedVulnerabilities: GroupedVulnerability[];
   allVulnerabilities: VulnerabilityData[]; // For technology stack
+  scanId?: string; // Add scan ID for PDF generation
   onClose: () => void;
 }
 
@@ -22,31 +23,66 @@ interface TechnologyFinding {
   category?: string;
 }
 
-const ScanReport: React.FC<ScanReportProps> = ({ scanStats, groupedVulnerabilities, allVulnerabilities, onClose }) => {
+const ScanReport: React.FC<ScanReportProps> = ({ scanStats, groupedVulnerabilities, allVulnerabilities, scanId, onClose }) => {
   const reportContentRef = useRef<HTMLDivElement>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({ email: '' });
+  const [formError, setFormError] = useState('');
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleDownloadPdf = () => {
-    const input = reportContentRef.current;
-    if (!input) return;
+    // Instead of generating PDF immediately, show the form
+    setShowForm(true);
+  };
 
-    // Temporarily increase resolution for better quality
-    const scale = 2;
-    html2canvas(input, {
-      scale,
-      useCORS: true,
-      backgroundColor: '#0d1117' // Match your background color
-    }).then(canvas => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'p',
-        unit: 'px',
-        format: [canvas.width / scale, canvas.height / scale]
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError('');
+    if (!formData.email) {
+      setFormError('Please enter your business email.');
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      // Call backend to save user info
+      const res = await fetch('/api/reports/scans/user_info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, url: scanStats.target })
       });
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / scale, canvas.height / scale);
+      if (!res.ok) throw new Error('Failed to save user info');
       
-      const targetName = scanStats.target.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-      pdf.save(`scan_report_${targetName}.pdf`);
-    });
+      // Call backend to generate and download PDF
+      const pdfRes = await fetch('/api/reports/scans/generate_pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          url: scanStats.target,
+          scan_id: scanId || 'unknown' // Include scan ID for dynamic PDF generation
+        })
+      });
+      if (!pdfRes.ok) throw new Error('Failed to generate PDF');
+      const blob = await pdfRes.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'nightingale_security_report.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      setFormSubmitted(true);
+      setShowForm(false);
+    } catch (err) {
+      setFormError('Failed to submit or download PDF. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDownloadCsv = () => {
@@ -204,6 +240,31 @@ const ScanReport: React.FC<ScanReportProps> = ({ scanStats, groupedVulnerabiliti
                 Download PDF
             </button>
         </footer>
+        {/* Modal Form for User Info */}
+        {showForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <form onSubmit={handleFormSubmit} className="bg-surface p-8 rounded-lg shadow-lg w-full max-w-md flex flex-col space-y-4">
+              <h2 className="text-xl font-bold mb-2">Enter your business email to download the PDF</h2>
+              <input
+                type="email"
+                name="email"
+                placeholder="Business Email"
+                value={formData.email}
+                onChange={handleFormChange}
+                className="p-2 rounded border border-gray-600 bg-background text-text"
+                required
+              />
+              <div className="text-sm text-textSecondary">Scan URL: <span className="font-mono">{scanStats.target}</span></div>
+              {formError && <div className="text-error text-sm">{formError}</div>}
+              <div className="flex justify-end space-x-2 mt-4">
+                <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 rounded bg-gray-700 text-white">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="px-4 py-2 rounded bg-primary text-background font-bold">
+                  {isSubmitting ? 'Submitting...' : 'Submit & Download PDF'}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );

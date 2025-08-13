@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # Install dependencies (this installs vite and all dev dependencies)
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy the rest of your app
 COPY . .
@@ -17,7 +17,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 EXPOSE 3002
 
 # For development (Vite dev server)
-CMD ["npm", "run", "dev", "--", "--host", "--port", "3002"]
+CMD ["npm", "run", "dev"]
 
 # For production, use the following instead:
 # RUN npm run build

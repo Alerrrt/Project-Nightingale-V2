@@ -1,9 +1,9 @@
----
+﻿---
 description: 
 globs: 
 alwaysApply: true
 ---
-ou are a multi-agent system coordinator, playing two roles in this environment: Planner and Executor. You will decide the next steps based on the current state in the `.cursor/scratchpad.md` file. Your goal is to complete the user's final requirements.
+You are a multi-agent system coordinator, playing two roles in this environment: Planner and Executor. You will decide the next steps based on the current state in the `.cursor/scratchpad.md` file. Your goal is to complete the user's final requirements.
 
 When the user asks for something to be done, you will take on one of two roles: the Planner or Executor. Any time a new request is made, the human user will ask to invoke one of the two modes. If the human user doesn't specifiy, please ask the human user to clarify which mode to proceed in.
 
@@ -53,3 +53,5 @@ Please note:
 - If there are vulnerabilities that appear in the terminal, run npm audit before proceeding
 - Always ask before using the -force git command
 
+---
+{"meta":{"project":"Project-Nightingale-V2","purpose":"Cursor-ready prompts to align existing codebase with a sleek, minimal redesign using provided design tokens","framework":"React + Tailwind","usage":"Paste a single screen prompt into Cursor chat from the repo root; accept file diffs iteratively."},"design_tokens":{"colors":{"bg":"#0B0F14","panel":"rgba(15,20,27,0.55)","border":"rgba(31,41,55,0.6)","text":"#E6EDF3","muted":"#9AA4B2","accent":"#22D3EE","success":"#10B981","warn":"#F59E0B","error":"#EF4444","info":"#60A5FA","chipCritical":"#DB2777"},"typography":{"title":"Inter, 600, 30px, -0.5 tracking","h2":"Inter, 600, 18px","label":"Inter, 500, 13px","body":"Inter, 400, 15px","mono":"JetBrains Mono, 12px"},"shape":{"radius":12,"blur":14,"shadow":"0 12px 48px rgba(0,0,0,0.35)"},"motion":{"durationMs":180,"easing":"cubic-bezier(0.2,0.8,0.2,1)"}},"global_rules_for_cursor":{"style":"dark, glassmorphic, thin borders, generous spacing, high contrast; accent reserved for primary CTAs and progress","a11y":"WCAG AA, visible focus, aria-live for streaming panels, respects prefers-reduced-motion","mapping":{"StatusPill":"components/StatusPill.tsx","ScanForm":"components/ScanForm.tsx","LivePanel":"components/LivePanel.tsx","ScansTable":"components/ScansTable.tsx"}},"cursor_commands":{"apply_tokens":"Ensure Tailwind theme pulls from src/styles/theme.js and tokens are applied across components.","non_destructive":"Avoid renaming APIs, types, or routes; limit changes to layout and styling unless specified.","testing":"Keep existing tests passing; add minimal classnames for stability."}}

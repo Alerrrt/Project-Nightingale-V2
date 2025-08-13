@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+﻿from typing import Dict, Optional
 from datetime import datetime, timedelta
 from collections import defaultdict
 import logging
@@ -21,38 +21,21 @@ class RateLimiter:
 
     def check_rate_limit(self, client_id: str) -> bool:
         """
-        Check if a client has exceeded their rate limit.
-        
-        Args:
-            client_id: Unique identifier for the client
-            
-        Returns:
-            bool: True if the client is within their rate limit, False otherwise
+        Soft rate limit for realtime updates: return False when above window; do not hard-block client.
         """
-        # Check if client is blocked
-        if client_id in self.blocked_clients:
-            if datetime.now() < self.blocked_clients[client_id]:
-                return False
-            else:
-                del self.blocked_clients[client_id]
-
-        # Get current time
         now = datetime.now()
-        
         # Remove old requests
         self.requests[client_id] = [
             req_time for req_time in self.requests[client_id]
             if now - req_time < timedelta(seconds=self.time_window)
         ]
-        
-        # Check if client has exceeded rate limit
+        # Soft drop if exceeded
         if len(self.requests[client_id]) >= self.max_requests:
-            # Block client for 1 minute
-            self.blocked_clients[client_id] = now + timedelta(minutes=1)
-            logger.warning(f"Client {client_id} rate limit exceeded")
+            # Trace occasionally at debug level
+            if len(self.requests[client_id]) % max(1, self.max_requests // 5) == 0:
+                logger.debug("Soft drop due to WS rate limit for client %s", client_id)
             return False
-        
-        # Add new request
+        # Record request
         self.requests[client_id].append(now)
         return True
 
@@ -106,7 +89,7 @@ class RateLimiter:
             "request_count": len(valid_requests),
             "max_requests": self.max_requests,
             "time_window": self.time_window,
-            "is_blocked": client_id in self.blocked_clients,
-            "retry_after": self.get_retry_after(client_id),
+            "is_blocked": False,
+            "retry_after": None,
             "requests_remaining": max(0, self.max_requests - len(valid_requests))
         } 

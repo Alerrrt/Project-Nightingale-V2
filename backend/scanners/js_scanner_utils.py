@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import json
 import os
 import tempfile
@@ -54,3 +54,6 @@ async def run_retire_js(js_content: str) -> List[Dict[str, Any]]:
         # Clean up the temporary file
         if os.path.exists(temp_js_file_path):
             os.remove(temp_js_file_path) 
+
+def _create_error_finding(description: str) -> dict:
+    return { "type": "error", "severity": "INFO", "title": "JS Scanner Utils Error", "description": description, "location": "Utility", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 } 

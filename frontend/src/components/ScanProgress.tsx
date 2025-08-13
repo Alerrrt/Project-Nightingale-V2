@@ -8,6 +8,8 @@ export interface ScanProgressData {
   scannedUrls: number;
   totalUrls: number;
   eta: string;
+  completedModules?: number;
+  totalModules?: number;
 }
 
 interface ScanProgressProps {
@@ -55,6 +57,12 @@ const ScanProgress: React.FC<ScanProgressProps> = ({ scanProgress, isScanning })
         <div>
           <p className="text-sm text-textSecondary">Est. Time Left</p>
           <p className="text-lg font-semibold text-text">{scanProgress.eta || 'N/A'}</p>
+        </div>
+        <div>
+          <p className="text-sm text-textSecondary">Modules</p>
+          <p className="text-lg font-semibold text-text">
+            {scanProgress.completedModules || 0} / {scanProgress.totalModules || 0}
+          </p>
         </div>
         <div className="col-span-2 md:col-span-2">
            <p className="text-sm text-textSecondary">Current Target</p>

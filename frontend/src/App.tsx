@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Shield, Globe, Settings, Play, Pause, Clock, ChevronsRight, FileText, Zap, Menu, X as CloseIcon, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import ScanHistory from './components/ScanHistory';
 import { useScan } from './context/ScanContext';
+import { defaultScanProgress, defaultScanStats } from './context/ScanContext';
 import * as scanApi from './api/scanApi';
 import { useToast } from './components/ToastProvider';
 import ScannersList from './components/ScannersList';
@@ -16,6 +17,27 @@ import TechnologyVulnerabilities from './components/TechnologyVulnerabilities';
 import JavaScriptVulnerabilities from './components/JavaScriptVulnerabilities';
 import Tooltip from './components/Tooltip';
 import ModuleStatusGrid from './components/ModuleStatusGrid';
+import SecurityPostureChart from './components/SecurityPostureChart';
+import './posture-summary.css';
+
+// Helper for timeout
+function timeoutPromise(ms: number) {
+  return new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms));
+}
+
+// PATCH: Default scanners to exclude long-running and off-by-default scanners
+const longRunningScanners = [
+  'automated_cve_lookup_scanner',
+  'subdomain_dns_enumeration_scanner',
+  'ssl_tls_configuration_audit_scanner',
+  'api_fuzzing_scanner',
+];
+const offByDefaultScanners = [
+  'sql_injection_scanner',
+  'broken_access_control_scanner',
+  'broken_authentication_scanner',
+  'open_redirect_scanner',
+];
 
 const App: React.FC = () => {
   const {
@@ -50,6 +72,18 @@ const App: React.FC = () => {
   const [isScannersOpen, setIsScannersOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const prevIsScanning = useRef(false);
+  const [scanTimedOut, setScanTimedOut] = useState(false);
+  const [hasSubmittedUrl, setHasSubmittedUrl] = useState(false);
+  const [scannerMetadata, setScannerMetadata] = useState<Record<string, {
+    name: string;
+    description: string;
+    owasp_category: string;
+    vulnerability_types: string[];
+    scan_type: string;
+    intensity: string;
+    author: string;
+    version: string;
+  }>>({});
 
   useEffect(() => {
     if (prevIsScanning.current && !isScanning && scanId) {
@@ -57,6 +91,25 @@ const App: React.FC = () => {
     }
     prevIsScanning.current = isScanning;
   }, [isScanning, scanId, showToast]);
+
+  useEffect(() => {
+    // Fetch scanners list and set default customScanners
+    async function fetchAndSetDefaultScanners() {
+      try {
+        const data = await scanApi.fetchScannersList();
+        setScannerMetadata(data);
+        const scannersArr = Object.entries(data).map(([key, meta]) => ({ key, ...(meta as any) }));
+        setCustomScanners(
+          scannersArr
+            .filter(s => !longRunningScanners.includes(s.key) && !offByDefaultScanners.includes(s.key))
+            .map(s => s.key)
+        );
+      } catch (err) {
+        // fallback: do nothing
+      }
+    }
+    fetchAndSetDefaultScanners();
+  }, []);
 
   const handleScanToggle = async (scanType: 'full_scan' | 'quick_scan' | 'custom_scan' | 'stop' = 'full_scan') => {
     if (scanType === 'stop') {
@@ -66,6 +119,7 @@ const App: React.FC = () => {
         await scanApi.stopScan(scanId);
         setIsScanning(false);
         setScanId(null);
+        setHasSubmittedUrl(false);
         showToast('Scan cancelled.', 'success');
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to cancel scan.';
@@ -81,25 +135,39 @@ const App: React.FC = () => {
         showToast('Please enter a target URL.', 'error');
         return;
       }
+      setScanTimedOut(false);
       try {
-        const options = scanType === 'custom_scan' ? { scanners: customScanners } : {};
-        const res = await scanApi.startScan({ target: targetInput, scan_type: scanType, options });
+        const options = { scanners: customScanners };
+        const scanPromise = scanApi.startScan({ target: targetInput, scan_type: scanType, options });
+        const res = await Promise.race([
+          scanPromise,
+          timeoutPromise(120_000)
+        ]);
         setScanId(res.scan_id);
         setIsScanning(true);
+        setHasSubmittedUrl(true);
         setScanProgress({
-          ...scanProgress,
+          ...(typeof scanProgress === 'object' && scanProgress !== null ? scanProgress : defaultScanProgress),
           currentUrl: targetInput,
           progress: 0,
           phase: 'Initializing...',
           eta: '...'
         });
-        setScanStats({ ...scanStats, target: targetInput });
+        setScanStats({ ...(typeof scanStats === 'object' && scanStats !== null ? scanStats : defaultScanStats), target: targetInput });
         setVulnerabilities([]);
         setSelectedVuln(null);
         showToast(`Scan started (${scanType.replace('_', ' ')})`, 'success');
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to start scan.';
-        showToast(message, 'error');
+        if (err instanceof Error && err.message === 'timeout') {
+          setScanTimedOut(true);
+          if (scanId) {
+            try { await scanApi.stopScan(scanId); } catch {}
+          }
+          showToast('Scan timed out after 120 seconds.', 'error');
+        } else {
+          const message = err instanceof Error ? err.message : 'Failed to start scan.';
+          showToast(message, 'error');
+        }
       }
     }
   };
@@ -287,34 +355,37 @@ const App: React.FC = () => {
             </div>
           </section>
 
-          <section className="bg-background rounded-lg p-4 flex-grow flex flex-col">
-            <div 
-              className="flex items-center justify-between mb-4 cursor-pointer group"
-              onClick={() => setIsScannersOpen(!isScannersOpen)}
-            >
-              <div className="flex items-center">
-                <Settings className="h-5 w-5 text-primary mr-3 group-hover:text-cyan-300 transition-colors" />
-                <h2 className="text-lg font-semibold group-hover:text-gray-100 transition-colors">Available Scanners</h2>
+          {hasSubmittedUrl && (
+            <>
+            <section className="bg-background rounded-lg p-4 flex-grow flex flex-col">
+              <div 
+                className="flex items-center justify-between mb-4 cursor-pointer group"
+                onClick={() => setIsScannersOpen(!isScannersOpen)}
+              >
+                <div className="flex items-center">
+                  <Settings className="h-5 w-5 text-primary mr-3 group-hover:text-cyan-300 transition-colors" />
+                  <h2 className="text-lg font-semibold group-hover:text-gray-100 transition-colors">Available Scanners</h2>
+                </div>
+                <ChevronDown className={`h-5 w-5 text-textSecondary transform transition-transform ${isScannersOpen ? 'rotate-180' : ''}`} />
               </div>
-              <ChevronDown className={`h-5 w-5 text-textSecondary transform transition-transform ${isScannersOpen ? 'rotate-180' : ''}`} />
-            </div>
-            {isScannersOpen && <ScannersList onStartCustomScan={handleSaveScanConfig} />}
-          </section>
+              {isScannersOpen && <ScannersList onStartCustomScan={handleSaveScanConfig} />}
+            </section>
 
-          <section className="bg-background rounded-lg p-4">
-            <div 
-              className="flex items-center justify-between mb-4 cursor-pointer group"
-              onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-            >
-              <div className="flex items-center">
-                <Clock className="h-5 w-5 text-primary mr-3 group-hover:text-cyan-300 transition-colors" />
-                <h2 className="text-lg font-semibold group-hover:text-gray-100 transition-colors">Scan History</h2>
+            <section className="bg-background rounded-lg p-4">
+              <div 
+                className="flex items-center justify-between mb-4 cursor-pointer group"
+                onClick={() => setIsHistoryOpen(!isHistoryOpen)}
+              >
+                <div className="flex items-center">
+                  <Clock className="h-5 w-5 text-primary mr-3 group-hover:text-cyan-300 transition-colors" />
+                  <h2 className="text-lg font-semibold group-hover:text-gray-100 transition-colors">Scan History</h2>
+                </div>
+                <ChevronDown className={`h-5 w-5 text-textSecondary transform transition-transform ${isHistoryOpen ? 'rotate-180' : ''}`} />
               </div>
-              <ChevronDown className={`h-5 w-5 text-textSecondary transform transition-transform ${isHistoryOpen ? 'rotate-180' : ''}`} />
-            </div>
-            {isHistoryOpen && <ScanHistory onViewAll={() => setShowHistoryModal(true)} onSelectScan={handleViewReportFromHistory} />}
-          </section>
-
+              {isHistoryOpen && <ScanHistory onViewAll={() => setShowHistoryModal(true)} onSelectScan={handleViewReportFromHistory} />}
+            </section>
+            </>
+          )}
         </aside>
 
         {/* Main Content */}
@@ -337,65 +408,95 @@ const App: React.FC = () => {
               </div>
           )}
           
+          {scanTimedOut && (
+            <div className="bg-error/20 border border-error text-text px-4 py-3 rounded-md mb-4 text-sm">
+              Scan timed out after 120 seconds. Please try again or adjust your scanner selection.
+            </div>
+          )}
+          
           {isScanning && (
             <>
-              <ScanProgress scanProgress={scanProgress} isScanning={isScanning} />
-              <ModuleStatusGrid modules={modules} />
               <LiveModuleStatus activityLogs={activityLogs} />
+              <ScanProgress scanProgress={scanProgress} isScanning={isScanning} />
+              <ModuleStatusGrid modules={modules} scannerMetadata={scannerMetadata} />
+              <SecurityPostureChart
+                vulnerabilities={vulnerabilities}
+                loading={isScanning && vulnerabilities.length === 0}
+              />
             </>
           )}
           
-          {!isScanning && vulnerabilities.length === 0 && (
+          {!hasSubmittedUrl ? (
             <div className="flex flex-col items-center justify-center h-full text-center text-textSecondary">
-              <p className="text-lg">No vulnerabilities found or no scan performed yet.</p>
-              <p>Enter a target URL and start a scan to see the results.</p>
+              <p className="text-lg">Enter a target URL and start a scan to see the results.</p>
             </div>
-          )}
-
-          {!isScanning && vulnerabilities.length > 0 && (
+          ) : (
             <>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold">Scan Results</h2>
-                <button
-                  onClick={() => setShowReport(true)}
-                  className="flex items-center bg-primary hover:bg-opacity-80 text-background font-bold py-2 px-4 rounded-md transition-all"
-                >
-                  <FileText size={18} className="mr-2" />
-                  View Report
-                </button>
-              </div>
-              {technologyVulnerabilities.length > 0 && (
-                <div className="mb-6">
-                  <TechnologyVulnerabilities vulnerabilities={technologyVulnerabilities} />
+              {!isScanning && vulnerabilities.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-full text-center text-textSecondary">
+                  <p className="text-lg">No vulnerabilities found or no scan performed yet.</p>
+                  <p>Enter a target URL and start a scan to see the results.</p>
                 </div>
               )}
-              {javaScriptVulnerabilities.length > 0 && (
-                <div className="mb-6">
-                  <JavaScriptVulnerabilities vulnerabilities={javaScriptVulnerabilities} />
-                </div>
-              )}
-              <div className="grid grid-cols-3 gap-6">
-                <div className="col-span-1">
-                  <VulnerabilityList
-                    groupedVulnerabilities={groupedGeneralVulnerabilities}
-                    selectedVuln={selectedVuln}
-                    onSelectVuln={setSelectedVuln}
-                    filterSeverity={filterSeverity}
-                    setFilterSeverity={setFilterSeverity}
-                  />
-                </div>
-                <div className="col-span-2">
-                  {selectedVuln ? (
-                    <VulnerabilityDetails vulnerability={selectedVuln} onClose={() => setSelectedVuln(null)} />
-                  ) : (
-                    <div className="bg-surface rounded-lg p-6 flex items-center justify-center h-full">
-                      <div className="text-center text-textSecondary">
-                        <p>Select a vulnerability to see details.</p>
+
+              {!isScanning && vulnerabilities.length > 0 && (
+                <>
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-bold">Scan Results</h2>
+                    <button
+                      onClick={() => setShowReport(true)}
+                      className="flex items-center bg-primary hover:bg-opacity-80 text-background font-bold py-2 px-4 rounded-md transition-all"
+                    >
+                      <FileText size={18} className="mr-2" />
+                      View Report
+                    </button>
+                  </div>
+                  {technologyVulnerabilities.length > 0 && (
+                    <div className="mb-6">
+                      <TechnologyVulnerabilities vulnerabilities={technologyVulnerabilities} />
+                    </div>
+                  )}
+                  {javaScriptVulnerabilities.length > 0 && (
+                    <div className="mb-6">
+                      <JavaScriptVulnerabilities vulnerabilities={javaScriptVulnerabilities} />
+                    </div>
+                  )}
+                  <div className="grid grid-cols-3 gap-6">
+                    <div className="col-span-1">
+                      <VulnerabilityList
+                        groupedVulnerabilities={groupedGeneralVulnerabilities}
+                        selectedVuln={selectedVuln}
+                        onSelectVuln={setSelectedVuln}
+                        filterSeverity={filterSeverity}
+                        setFilterSeverity={setFilterSeverity}
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      {selectedVuln ? (
+                        <VulnerabilityDetails vulnerability={selectedVuln} onClose={() => setSelectedVuln(null)} />
+                      ) : (
+                        <div className="bg-surface rounded-lg p-6 flex items-center justify-center h-full">
+                          <div className="text-center text-textSecondary">
+                            <p>Select a vulnerability to see details.</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {!isScanning && vulnerabilities.length > 0 && (
+                    <div className="mt-8 mb-8">
+                      <h2 className="text-xl font-bold mb-4 text-primary">Overall Security Posture</h2>
+                      <div className="flex gap-4 flex-wrap">
+                        <div className="posture-item critical">Critical: <span>{vulnerabilities.filter(v => v.severity === 'Critical').length}</span></div>
+                        <div className="posture-item high">High: <span>{vulnerabilities.filter(v => v.severity === 'High').length}</span></div>
+                        <div className="posture-item medium">Medium: <span>{vulnerabilities.filter(v => v.severity === 'Medium').length}</span></div>
+                        <div className="posture-item low">Low: <span>{vulnerabilities.filter(v => v.severity === 'Low').length}</span></div>
+                        <div className="posture-item info">Info: <span>{vulnerabilities.filter(v => v.severity === 'Info').length}</span></div>
                       </div>
                     </div>
                   )}
-                </div>
-              </div>
+                </>
+              )}
             </>
           )}
         </main>
@@ -405,6 +506,7 @@ const App: React.FC = () => {
           scanStats={scanStats}
           groupedVulnerabilities={groupedGeneralVulnerabilities}
           allVulnerabilities={vulnerabilities}
+          scanId={scanId || undefined}
           onClose={() => setShowReport(false)}
         />
       )}

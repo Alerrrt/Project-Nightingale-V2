@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+﻿from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import logging
@@ -26,7 +26,6 @@ app_config = AppConfig.load_from_env()
 scanner_registry = ScannerRegistry(app_config)
 plugin_manager = PluginManager()
 scanner_engine = ScannerEngine(plugin_manager)
-scanner_engine.configure(scanner_registry)
 
 # Attach engine to app state
 app.state.scanner_registry = scanner_registry
@@ -80,10 +79,32 @@ async def test_api():
 async def startup_event():
     """Load scanners on startup."""
     try:
+        logger.info("Starting application initialization...")
+        
+        # Load scanners into the registry first
+        logger.info("Loading scanner registry...")
+        await scanner_registry.load_scanners()
+        scanner_count = len(scanner_registry.get_all_scanners())
+        logger.info(f"Scanner registry loaded successfully with {scanner_count} scanners.")
+        
+        # Configure the scanner engine with the loaded registry
+        logger.info("Configuring scanner engine...")
+        await scanner_engine.configure(scanner_registry)
+        logger.info("Scanner engine configured successfully.")
+        
+        # Then load scanners into the engine
+        logger.info("Loading scanner modules into engine...")
         await scanner_engine.load_scanners()
         logger.info("Scanner modules loaded successfully.")
+        
+        # Verify initialization
+        if scanner_count > 0:
+            logger.info(f"✅ Application startup complete. {scanner_count} scanners ready for scanning.")
+        else:
+            logger.warning("⚠️ Application startup complete but no scanners were loaded.")
+            
     except Exception as e:
-        logger.error(f"Error loading scanner modules during startup: {e}", exc_info=True)
+        logger.error(f"❌ Error loading scanner modules during startup: {e}", exc_info=True)
         raise
 
 @app.on_event("shutdown")
@@ -123,6 +144,6 @@ if __name__ == "__main__":
     uvicorn.run(
         "main:app",
         host=settings.HOST,
-        port=settings.PORT,
+        port=int(settings.PORT or 9000),
         reload=settings.DEBUG
-    ) 
+    )

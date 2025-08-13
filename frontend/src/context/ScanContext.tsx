@@ -69,6 +69,8 @@ const defaultScanStats: ScanStats = {
   target: '',
 };
 
+export { defaultScanProgress, defaultScanStats };
+
 export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
   const [isScanning, setIsScanning] = useState(false);
   const [scanId, setScanId] = useState<string | null>(null);
@@ -111,35 +113,48 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
 
         // Handle different types of messages from the backend
         if (type === 'scan_progress') {
-          const now = new Date();
-          const elapsedMs = now.getTime() - (scanStartTime.current?.getTime() || now.getTime());
           const progress = data.progress;
-          let eta = '...';
-
-          if (progress > 0 && elapsedMs > 0) {
-            const totalEstimatedTimeMs = (elapsedMs / progress) * 100;
-            const remainingTimeMs = totalEstimatedTimeMs - elapsedMs;
+          // Use backend-provided ETA if available, otherwise fall back to frontend calculation
+          let eta = data.eta_formatted || '...';
+          
+          // Fallback calculation if backend doesn't provide ETA
+          if (!data.eta_formatted && progress > 0) {
+            const now = new Date();
+            const elapsedMs = now.getTime() - (scanStartTime.current?.getTime() || now.getTime());
             
-            const remainingSeconds = Math.round(remainingTimeMs / 1000);
-            const minutes = Math.floor(remainingSeconds / 60);
-            const seconds = remainingSeconds % 60;
-            
-            if (remainingTimeMs > 0) {
-              eta = `${minutes}m ${seconds}s`;
-            } else {
-              eta = '< 1s';
+            if (elapsedMs > 0) {
+              const totalEstimatedTimeMs = (elapsedMs / progress) * 100;
+              const remainingTimeMs = totalEstimatedTimeMs - elapsedMs;
+              
+              const remainingSeconds = Math.round(remainingTimeMs / 1000);
+              const minutes = Math.floor(remainingSeconds / 60);
+              const seconds = remainingSeconds % 60;
+              
+              if (remainingTimeMs > 0) {
+                eta = `${minutes}m ${seconds}s`;
+              } else {
+                eta = '< 1s';
+              }
             }
           }
           
-          setScanProgress(prev => ({ ...prev, progress: data.progress, eta }));
+          setScanProgress(prev => ({ 
+            ...prev, 
+            progress: data.progress, 
+            eta,
+            completedModules: data.completed_modules || prev.completedModules,
+            totalModules: data.total_modules || prev.totalModules
+          }));
         } else if (type === 'current_target_url') {
           setScanProgress(prev => ({ ...prev, currentUrl: data.url }));
         } else if (type === 'new_finding') {
           setVulnerabilities((prev) => [...prev, data]);
-          setActivityLogs((prev) => [
-            ...prev,
-            { message: `[+] New finding: ${data.title} (${data.severity})`, timestamp },
-          ]);
+          setActivityLogs((prev) => {
+            const newLog = { message: `[+] New finding: ${data.title} (${data.severity})`, timestamp };
+            // Keep only the last 100 logs to prevent memory issues
+            const updatedLogs = [...prev, newLog];
+            return updatedLogs.slice(-100);
+          });
         } else if (type === 'module_status') {
           setModules((prev) => {
             const existing = prev.find(m => m.name === data.name);
@@ -149,19 +164,40 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
             return [...prev, data];
           });
           const logMessage = `[${data.name}] => ${data.status}${data.error ? ` | ERROR: ${data.error}` : ''}`;
-          setActivityLogs((prev) => [...prev, { message: logMessage, timestamp }]);
+          setActivityLogs((prev) => {
+            const newLog = { message: logMessage, timestamp };
+            // Keep only the last 100 logs to prevent memory issues
+            const updatedLogs = [...prev, newLog];
+            return updatedLogs.slice(-100);
+          });
         } else if (type === 'activity_log') {
-          setActivityLogs((prev) => [...prev, { message: data.message, timestamp }]);
+          setActivityLogs((prev) => {
+            const newLog = { message: data.message, timestamp };
+            // Keep only the last 100 logs to prevent memory issues
+            const updatedLogs = [...prev, newLog];
+            return updatedLogs.slice(-100);
+          });
         } else if (type === 'scan_completed') {
+          console.log('Received scan_completed event', data);
           setIsScanning(false);
+          setScanProgress(prev => ({ ...prev, progress: 100, phase: 'Completed' }));
           if (data.results) {
             setVulnerabilities(data.results);
           }
+          
+          // Clean up old data to prevent memory leaks
+          setTimeout(() => {
+            setActivityLogs([]);
+            setModules([]);
+          }, 5000); // Keep logs for 5 seconds after completion
+          
           if (ws.current) {
             ws.current.close();
           }
         } else if (type === 'status' && data.status === 'completed') {
+          console.log('Received status completed event', data);
           setIsScanning(false);
+          setScanProgress(prev => ({ ...prev, progress: 100, phase: 'Completed' }));
           if (data.results) {
             setVulnerabilities(data.results);
           }

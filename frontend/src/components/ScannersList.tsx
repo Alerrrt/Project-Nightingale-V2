@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Clock } from 'lucide-react';
+import Tooltip from './Tooltip';
 import * as scanApi from '../api/scanApi';
 
 interface ScannerMeta {
+  key: string;
   name: string;
   description: string;
   owasp_category: string;
+  longRunning?: boolean;
 }
 
-type ScannersApiResponse = Record<string, Omit<ScannerMeta, 'name'>>;
+type ScannersApiResponse = Record<string, any>;
 type GroupedScanners = Record<string, ScannerMeta[]>;
 
 interface ScannersListProps {
@@ -20,7 +23,7 @@ const ScannerAccordion: React.FC<{
   category: string; 
   scanners: ScannerMeta[];
   selectedScanners: string[];
-  onScannerToggle: (scannerName: string) => void;
+  onScannerToggle: (scannerKey: string) => void;
 }> = ({ category, scanners, selectedScanners, onScannerToggle }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -47,16 +50,23 @@ const ScannerAccordion: React.FC<{
           >
             <div className="p-2 space-y-2">
               {scanners.map((scanner) => (
-                <div key={scanner.name} className="flex items-center bg-surface rounded-md p-2">
+                <div key={scanner.key} className="flex items-center bg-surface rounded-md p-2">
                   <input
                     type="checkbox"
-                    id={scanner.name}
-                    checked={selectedScanners.includes(scanner.name)}
-                    onChange={() => onScannerToggle(scanner.name)}
+                    id={scanner.key}
+                    checked={selectedScanners.includes(scanner.key)}
+                    onChange={() => onScannerToggle(scanner.key)}
                     className="h-4 w-4 rounded border-gray-600 text-primary bg-surface focus:ring-primary mr-3"
                   />
-                  <label htmlFor={scanner.name} className="flex-grow">
-                    <p className="font-semibold text-xs text-primary truncate">{scanner.name}</p>
+                  <label htmlFor={scanner.key} className="flex-grow flex items-center">
+                    <p className="font-semibold text-xs text-primary truncate flex items-center">
+                      {scanner.name}
+                      {scanner.longRunning && (
+                        <Tooltip content="This scanner may take several minutes to complete." position="top">
+                          <Clock className="inline-block ml-1 text-warning w-4 h-4" />
+                        </Tooltip>
+                      )}
+                    </p>
                     <p className="text-textSecondary text-xs mt-1">{scanner.description}</p>
                   </label>
                 </div>
@@ -75,11 +85,11 @@ const ScannersList: React.FC<ScannersListProps> = ({ onStartCustomScan }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleScannerToggle = (scannerName: string) => {
+  const handleScannerToggle = (scannerKey: string) => {
     setSelectedScanners(prev => 
-      prev.includes(scannerName) 
-        ? prev.filter(name => name !== scannerName)
-        : [...prev, scannerName]
+      prev.includes(scannerKey) 
+        ? prev.filter(key => key !== scannerKey)
+        : [...prev, scannerKey]
     );
   };
 
@@ -88,7 +98,34 @@ const ScannersList: React.FC<ScannersListProps> = ({ onStartCustomScan }) => {
     setError(null);
     try {
       const data: ScannersApiResponse = await scanApi.fetchScannersList();
-      const scannersArr = Object.entries(data).map(([name, meta]) => ({ name, ...meta }));
+      const scannersArr = Object.entries(data).map(([key, meta]) => ({ key, name: (meta as any).name, description: (meta as any).description, owasp_category: (meta as any).owasp_category, longRunning: false }));
+
+      // Hardcoded list of long-running scanners (can be refined)
+      const longRunningScanners = [
+        'automated_cve_lookup_scanner',
+        'subdomain_dns_enumeration_scanner',
+        'ssl_tls_configuration_audit_scanner',
+        'api_fuzzing_scanner',
+      ];
+      const offByDefaultScanners = [
+        'sql_injection_scanner',
+        'broken_access_control_scanner',
+        'broken_authentication_scanner',
+        'open_redirect_scanner',
+      ];
+      scannersArr.forEach(scanner => {
+        if (longRunningScanners.includes(scanner.key)) {
+          scanner.longRunning = true;
+        }
+      });
+      // Default: select only non-longRunning and not offByDefaultScanners
+      if (selectedScanners.length === 0) {
+        setSelectedScanners(
+          scannersArr
+            .filter(s => !s.longRunning && !offByDefaultScanners.includes(s.key))
+            .map(s => s.key)
+        );
+      }
 
       const grouped = scannersArr.reduce((acc: GroupedScanners, scanner) => {
         const category = scanner.owasp_category.startsWith('A') 

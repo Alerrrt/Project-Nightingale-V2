@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+﻿from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 from backend.types.models import ScanInput, Finding
 

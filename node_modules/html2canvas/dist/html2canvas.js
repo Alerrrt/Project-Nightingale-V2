@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * html2canvas 1.4.1 <https://html2canvas.hertzen.com>
  * Copyright (c) 2022 Niklas von Hertzen <https://hertzen.com>
  * Released under MIT License
@@ -454,8 +454,8 @@
     var XX = 43; //  Have as yet unknown line breaking behavior or unassigned code positions
     var ea_OP = [0x2329, 0xff08];
     var BREAK_MANDATORY = '!';
-    var BREAK_NOT_ALLOWED$1 = '×';
-    var BREAK_ALLOWED$1 = '÷';
+    var BREAK_NOT_ALLOWED$1 = 'Ã—';
+    var BREAK_ALLOWED$1 = 'Ã·';
     var UnicodeTrie$1 = createTrieFromBase64$1(base64$1);
     var ALPHABETICS = [AL, HL];
     var HARD_LINE_BREAKS = [BK, CR$1, LF$1, NL];
@@ -479,7 +479,7 @@
                 categories.push(false);
             }
             if (['normal', 'auto', 'loose'].indexOf(lineBreak) !== -1) {
-                // U+2010, – U+2013, 〜 U+301C, ゠ U+30A0
+                // U+2010, â€“ U+2013, ã€œ U+301C, ã‚  U+30A0
                 if ([0x2010, 0x2013, 0x301c, 0x30a0].indexOf(codePoint) !== -1) {
                     indices.push(index);
                     return types.push(CB);
@@ -632,15 +632,15 @@
         if ([SP, BA, HY].indexOf(current) === -1 && next === GL) {
             return BREAK_NOT_ALLOWED$1;
         }
-        // LB13 Do not break before ‘]’ or ‘!’ or ‘;’ or ‘/’, even after spaces.
+        // LB13 Do not break before â€˜]â€™ or â€˜!â€™ or â€˜;â€™ or â€˜/â€™, even after spaces.
         if ([CL, CP, EX, IS, SY].indexOf(next) !== -1) {
             return BREAK_NOT_ALLOWED$1;
         }
-        // LB14 Do not break after ‘[’, even after spaces.
+        // LB14 Do not break after â€˜[â€™, even after spaces.
         if (previousNonSpaceClassType(currentIndex, classTypes) === OP) {
             return BREAK_NOT_ALLOWED$1;
         }
-        // LB15 Do not break within ‘”[’, even with intervening spaces.
+        // LB15 Do not break within â€˜â€[â€™, even with intervening spaces.
         if (isAdjacentWithSpaceIgnored(QU, OP, currentIndex, classTypes)) {
             return BREAK_NOT_ALLOWED$1;
         }
@@ -648,7 +648,7 @@
         if (isAdjacentWithSpaceIgnored([CL, CP], NS, currentIndex, classTypes)) {
             return BREAK_NOT_ALLOWED$1;
         }
-        // LB17 Do not break within ‘——’, even with intervening spaces.
+        // LB17 Do not break within â€˜â€”â€”â€™, even with intervening spaces.
         if (isAdjacentWithSpaceIgnored(B2, B2, currentIndex, classTypes)) {
             return BREAK_NOT_ALLOWED$1;
         }
@@ -656,7 +656,7 @@
         if (current === SP) {
             return BREAK_ALLOWED$1;
         }
-        // LB19 Do not break before or after quotation marks, such as ‘ ” ’.
+        // LB19 Do not break before or after quotation marks, such as â€˜ â€ â€™.
         if (current === QU || next === QU) {
             return BREAK_NOT_ALLOWED$1;
         }
@@ -672,7 +672,7 @@
         if (before === HL && HYPHEN.indexOf(current) !== -1) {
             return BREAK_NOT_ALLOWED$1;
         }
-        // LB21b Don’t break between Solidus and Hebrew letters.
+        // LB21b Donâ€™t break between Solidus and Hebrew letters.
         if (current === SY && next === HL) {
             return BREAK_NOT_ALLOWED$1;
         }
@@ -696,16 +696,16 @@
         }
         // LB25 Do not break between the following pairs of classes relevant to numbers:
         if (
-        // (PR | PO) × ( OP | HY )? NU
+        // (PR | PO) Ã— ( OP | HY )? NU
         ([PR, PO].indexOf(current) !== -1 &&
             (next === NU || ([OP, HY].indexOf(next) !== -1 && classTypes[afterIndex + 1] === NU))) ||
-            // ( OP | HY ) × NU
+            // ( OP | HY ) Ã— NU
             ([OP, HY].indexOf(current) !== -1 && next === NU) ||
-            // NU ×	(NU | SY | IS)
+            // NU Ã—	(NU | SY | IS)
             (current === NU && [NU, SY, IS].indexOf(next) !== -1)) {
             return BREAK_NOT_ALLOWED$1;
         }
-        // NU (NU | SY | IS)* × (NU | SY | IS | CL | CP)
+        // NU (NU | SY | IS)* Ã— (NU | SY | IS | CL | CP)
         if ([NU, SY, IS, CL, CP].indexOf(next) !== -1) {
             var prevIndex = currentIndex;
             while (prevIndex >= 0) {
@@ -721,7 +721,7 @@
                 }
             }
         }
-        // NU (NU | SY | IS)* (CL | CP)? × (PO | PR))
+        // NU (NU | SY | IS)* (CL | CP)? Ã— (PO | PR))
         if ([PR, PO].indexOf(next) !== -1) {
             var prevIndex = [CL, CP].indexOf(current) !== -1 ? beforeIndex : currentIndex;
             while (prevIndex >= 0) {
@@ -748,11 +748,11 @@
             (KOREAN_SYLLABLE_BLOCK.indexOf(next) !== -1 && current === PR)) {
             return BREAK_NOT_ALLOWED$1;
         }
-        // LB28 Do not break between alphabetics (“at”).
+        // LB28 Do not break between alphabetics (â€œatâ€).
         if (ALPHABETICS.indexOf(current) !== -1 && ALPHABETICS.indexOf(next) !== -1) {
             return BREAK_NOT_ALLOWED$1;
         }
-        // LB29 Do not break between numeric punctuation and alphabetics (“e.g.”).
+        // LB29 Do not break between numeric punctuation and alphabetics (â€œe.g.â€).
         if (current === IS && ALPHABETICS.indexOf(next) !== -1) {
             return BREAK_NOT_ALLOWED$1;
         }
@@ -2123,7 +2123,7 @@
         var ry = 0;
         switch (gradient.size) {
             case 0 /* CLOSEST_SIDE */:
-                // The ending shape is sized so that that it exactly meets the side of the gradient box closest to the gradient’s center.
+                // The ending shape is sized so that that it exactly meets the side of the gradient box closest to the gradientâ€™s center.
                 // If the shape is an ellipse, it exactly meets the closest side in each dimension.
                 if (gradient.shape === 0 /* CIRCLE */) {
                     rx = ry = Math.min(Math.abs(x), Math.abs(x - width), Math.abs(y), Math.abs(y - height));
@@ -2134,7 +2134,7 @@
                 }
                 break;
             case 2 /* CLOSEST_CORNER */:
-                // The ending shape is sized so that that it passes through the corner of the gradient box closest to the gradient’s center.
+                // The ending shape is sized so that that it passes through the corner of the gradient box closest to the gradientâ€™s center.
                 // If the shape is an ellipse, the ending shape is given the same aspect-ratio it would have if closest-side were specified.
                 if (gradient.shape === 0 /* CIRCLE */) {
                     rx = ry = Math.min(distance(x, y), distance(x, y - height), distance(x - width, y), distance(x - width, y - height));
@@ -4088,8 +4088,8 @@
         return result;
     };
     var UnicodeTrie = createTrieFromBase64(base64);
-    var BREAK_NOT_ALLOWED = '×';
-    var BREAK_ALLOWED = '÷';
+    var BREAK_NOT_ALLOWED = 'Ã—';
+    var BREAK_ALLOWED = 'Ã·';
     var codePointToClass = function (codePoint) { return UnicodeTrie.get(codePoint); };
     var _graphemeBreakAtIndex = function (_codePoints, classTypes, index) {
         var prevIndex = index - 2;
@@ -4892,42 +4892,42 @@
             60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
         ],
         values: [
-            'Ք',
-            'Փ',
-            'Ւ',
-            'Ց',
-            'Ր',
-            'Տ',
-            'Վ',
-            'Ս',
-            'Ռ',
-            'Ջ',
-            'Պ',
-            'Չ',
-            'Ո',
-            'Շ',
-            'Ն',
-            'Յ',
-            'Մ',
-            'Ճ',
-            'Ղ',
-            'Ձ',
-            'Հ',
-            'Կ',
-            'Ծ',
-            'Խ',
-            'Լ',
-            'Ի',
-            'Ժ',
-            'Թ',
-            'Ը',
-            'Է',
-            'Զ',
-            'Ե',
-            'Դ',
-            'Գ',
-            'Բ',
-            'Ա'
+            'Õ”',
+            'Õ“',
+            'Õ’',
+            'Õ‘',
+            'Õ',
+            'Õ',
+            'ÕŽ',
+            'Õ',
+            'ÕŒ',
+            'Õ‹',
+            'ÕŠ',
+            'Õ‰',
+            'Õˆ',
+            'Õ‡',
+            'Õ†',
+            'Õ…',
+            'Õ„',
+            'Õƒ',
+            'Õ‚',
+            'Õ',
+            'Õ€',
+            'Ô¿',
+            'Ô¾',
+            'Ô½',
+            'Ô¼',
+            'Ô»',
+            'Ôº',
+            'Ô¹',
+            'Ô¸',
+            'Ô·',
+            'Ô¶',
+            'Ôµ',
+            'Ô´',
+            'Ô³',
+            'Ô²',
+            'Ô±'
         ]
     };
     var HEBREW = {
@@ -4936,43 +4936,43 @@
             19, 18, 17, 16, 15, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
         ],
         values: [
-            'י׳',
-            'ט׳',
-            'ח׳',
-            'ז׳',
-            'ו׳',
-            'ה׳',
-            'ד׳',
-            'ג׳',
-            'ב׳',
-            'א׳',
-            'ת',
-            'ש',
-            'ר',
-            'ק',
-            'צ',
-            'פ',
-            'ע',
-            'ס',
-            'נ',
-            'מ',
-            'ל',
-            'כ',
-            'יט',
-            'יח',
-            'יז',
-            'טז',
-            'טו',
-            'י',
-            'ט',
-            'ח',
-            'ז',
-            'ו',
-            'ה',
-            'ד',
-            'ג',
-            'ב',
-            'א'
+            '×™×³',
+            '×˜×³',
+            '×—×³',
+            '×–×³',
+            '×•×³',
+            '×”×³',
+            '×“×³',
+            '×’×³',
+            '×‘×³',
+            '××³',
+            '×ª',
+            '×©',
+            '×¨',
+            '×§',
+            '×¦',
+            '×¤',
+            '×¢',
+            '×¡',
+            '× ',
+            '×ž',
+            '×œ',
+            '×›',
+            '×™×˜',
+            '×™×—',
+            '×™×–',
+            '×˜×–',
+            '×˜×•',
+            '×™',
+            '×˜',
+            '×—',
+            '×–',
+            '×•',
+            '×”',
+            '×“',
+            '×’',
+            '×‘',
+            '×'
         ]
     };
     var GEORGIAN = {
@@ -4981,43 +4981,43 @@
             80, 70, 60, 50, 40, 30, 20, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
         ],
         values: [
-            'ჵ',
-            'ჰ',
-            'ჯ',
-            'ჴ',
-            'ხ',
-            'ჭ',
-            'წ',
-            'ძ',
-            'ც',
-            'ჩ',
-            'შ',
-            'ყ',
-            'ღ',
-            'ქ',
-            'ფ',
-            'ჳ',
-            'ტ',
-            'ს',
-            'რ',
-            'ჟ',
-            'პ',
-            'ო',
-            'ჲ',
-            'ნ',
-            'მ',
-            'ლ',
-            'კ',
-            'ი',
-            'თ',
-            'ჱ',
-            'ზ',
-            'ვ',
-            'ე',
-            'დ',
-            'გ',
-            'ბ',
-            'ა'
+            'áƒµ',
+            'áƒ°',
+            'áƒ¯',
+            'áƒ´',
+            'áƒ®',
+            'áƒ­',
+            'áƒ¬',
+            'áƒ«',
+            'áƒª',
+            'áƒ©',
+            'áƒ¨',
+            'áƒ§',
+            'áƒ¦',
+            'áƒ¥',
+            'áƒ¤',
+            'áƒ³',
+            'áƒ¢',
+            'áƒ¡',
+            'áƒ ',
+            'áƒŸ',
+            'áƒž',
+            'áƒ',
+            'áƒ²',
+            'áƒœ',
+            'áƒ›',
+            'áƒš',
+            'áƒ™',
+            'áƒ˜',
+            'áƒ—',
+            'áƒ±',
+            'áƒ–',
+            'áƒ•',
+            'áƒ”',
+            'áƒ“',
+            'áƒ’',
+            'áƒ‘',
+            'áƒ'
         ]
     };
     var createAdditiveCounter = function (value, min, max, symbols, fallback, suffix) {
@@ -5088,27 +5088,27 @@
         }
         return (value < 0 ? negativeSign : '') + string;
     };
-    var CHINESE_INFORMAL_MULTIPLIERS = '十百千萬';
-    var CHINESE_FORMAL_MULTIPLIERS = '拾佰仟萬';
-    var JAPANESE_NEGATIVE = 'マイナス';
-    var KOREAN_NEGATIVE = '마이너스';
+    var CHINESE_INFORMAL_MULTIPLIERS = 'åç™¾åƒè¬';
+    var CHINESE_FORMAL_MULTIPLIERS = 'æ‹¾ä½°ä»Ÿè¬';
+    var JAPANESE_NEGATIVE = 'ãƒžã‚¤ãƒŠã‚¹';
+    var KOREAN_NEGATIVE = 'ë§ˆì´ë„ˆìŠ¤';
     var createCounterText = function (value, type, appendSuffix) {
         var defaultSuffix = appendSuffix ? '. ' : '';
-        var cjkSuffix = appendSuffix ? '、' : '';
+        var cjkSuffix = appendSuffix ? 'ã€' : '';
         var koreanSuffix = appendSuffix ? ', ' : '';
         var spaceSuffix = appendSuffix ? ' ' : '';
         switch (type) {
             case 0 /* DISC */:
-                return '•' + spaceSuffix;
+                return 'â€¢' + spaceSuffix;
             case 1 /* CIRCLE */:
-                return '◦' + spaceSuffix;
+                return 'â—¦' + spaceSuffix;
             case 2 /* SQUARE */:
-                return '◾' + spaceSuffix;
+                return 'â—¾' + spaceSuffix;
             case 5 /* DECIMAL_LEADING_ZERO */:
                 var string = createCounterStyleFromRange(value, 48, 57, true, defaultSuffix);
                 return string.length < 4 ? "0" + string : string;
             case 4 /* CJK_DECIMAL */:
-                return createCounterStyleFromSymbols(value, '〇一二三四五六七八九', cjkSuffix);
+                return createCounterStyleFromSymbols(value, 'ã€‡ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹', cjkSuffix);
             case 6 /* LOWER_ROMAN */:
                 return createAdditiveCounter(value, 1, 3999, ROMAN_UPPER, 3 /* DECIMAL */, defaultSuffix).toLowerCase();
             case 7 /* UPPER_ROMAN */:
@@ -5132,28 +5132,28 @@
             case 30 /* KHMER */:
                 return createCounterStyleFromRange(value, 6112, 6121, true, defaultSuffix);
             case 15 /* CJK_EARTHLY_BRANCH */:
-                return createCounterStyleFromSymbols(value, '子丑寅卯辰巳午未申酉戌亥', cjkSuffix);
+                return createCounterStyleFromSymbols(value, 'å­ä¸‘å¯…å¯è¾°å·³åˆæœªç”³é…‰æˆŒäº¥', cjkSuffix);
             case 16 /* CJK_HEAVENLY_STEM */:
-                return createCounterStyleFromSymbols(value, '甲乙丙丁戊己庚辛壬癸', cjkSuffix);
+                return createCounterStyleFromSymbols(value, 'ç”²ä¹™ä¸™ä¸æˆŠå·±åºšè¾›å£¬ç™¸', cjkSuffix);
             case 17 /* CJK_IDEOGRAPHIC */:
             case 48 /* TRAD_CHINESE_INFORMAL */:
-                return createCJKCounter(value, '零一二三四五六七八九', CHINESE_INFORMAL_MULTIPLIERS, '負', cjkSuffix, CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS | CJK_HUNDRED_COEFFICIENTS);
+                return createCJKCounter(value, 'é›¶ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹', CHINESE_INFORMAL_MULTIPLIERS, 'è² ', cjkSuffix, CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS | CJK_HUNDRED_COEFFICIENTS);
             case 47 /* TRAD_CHINESE_FORMAL */:
-                return createCJKCounter(value, '零壹貳參肆伍陸柒捌玖', CHINESE_FORMAL_MULTIPLIERS, '負', cjkSuffix, CJK_ZEROS | CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS | CJK_HUNDRED_COEFFICIENTS);
+                return createCJKCounter(value, 'é›¶å£¹è²³åƒè‚†ä¼é™¸æŸ’æŒçŽ–', CHINESE_FORMAL_MULTIPLIERS, 'è² ', cjkSuffix, CJK_ZEROS | CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS | CJK_HUNDRED_COEFFICIENTS);
             case 42 /* SIMP_CHINESE_INFORMAL */:
-                return createCJKCounter(value, '零一二三四五六七八九', CHINESE_INFORMAL_MULTIPLIERS, '负', cjkSuffix, CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS | CJK_HUNDRED_COEFFICIENTS);
+                return createCJKCounter(value, 'é›¶ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹', CHINESE_INFORMAL_MULTIPLIERS, 'è´Ÿ', cjkSuffix, CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS | CJK_HUNDRED_COEFFICIENTS);
             case 41 /* SIMP_CHINESE_FORMAL */:
-                return createCJKCounter(value, '零壹贰叁肆伍陆柒捌玖', CHINESE_FORMAL_MULTIPLIERS, '负', cjkSuffix, CJK_ZEROS | CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS | CJK_HUNDRED_COEFFICIENTS);
+                return createCJKCounter(value, 'é›¶å£¹è´°åè‚†ä¼é™†æŸ’æŒçŽ–', CHINESE_FORMAL_MULTIPLIERS, 'è´Ÿ', cjkSuffix, CJK_ZEROS | CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS | CJK_HUNDRED_COEFFICIENTS);
             case 26 /* JAPANESE_INFORMAL */:
-                return createCJKCounter(value, '〇一二三四五六七八九', '十百千万', JAPANESE_NEGATIVE, cjkSuffix, 0);
+                return createCJKCounter(value, 'ã€‡ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹', 'åç™¾åƒä¸‡', JAPANESE_NEGATIVE, cjkSuffix, 0);
             case 25 /* JAPANESE_FORMAL */:
-                return createCJKCounter(value, '零壱弐参四伍六七八九', '拾百千万', JAPANESE_NEGATIVE, cjkSuffix, CJK_ZEROS | CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS);
+                return createCJKCounter(value, 'é›¶å£±å¼å‚å››ä¼å…­ä¸ƒå…«ä¹', 'æ‹¾ç™¾åƒä¸‡', JAPANESE_NEGATIVE, cjkSuffix, CJK_ZEROS | CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS);
             case 31 /* KOREAN_HANGUL_FORMAL */:
-                return createCJKCounter(value, '영일이삼사오육칠팔구', '십백천만', KOREAN_NEGATIVE, koreanSuffix, CJK_ZEROS | CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS);
+                return createCJKCounter(value, 'ì˜ì¼ì´ì‚¼ì‚¬ì˜¤ìœ¡ì¹ íŒ”êµ¬', 'ì‹­ë°±ì²œë§Œ', KOREAN_NEGATIVE, koreanSuffix, CJK_ZEROS | CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS);
             case 33 /* KOREAN_HANJA_INFORMAL */:
-                return createCJKCounter(value, '零一二三四五六七八九', '十百千萬', KOREAN_NEGATIVE, koreanSuffix, 0);
+                return createCJKCounter(value, 'é›¶ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹', 'åç™¾åƒè¬', KOREAN_NEGATIVE, koreanSuffix, 0);
             case 32 /* KOREAN_HANJA_FORMAL */:
-                return createCJKCounter(value, '零壹貳參四五六七八九', '拾百千', KOREAN_NEGATIVE, koreanSuffix, CJK_ZEROS | CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS);
+                return createCJKCounter(value, 'é›¶å£¹è²³åƒå››äº”å…­ä¸ƒå…«ä¹', 'æ‹¾ç™¾åƒ', KOREAN_NEGATIVE, koreanSuffix, CJK_ZEROS | CJK_TEN_COEFFICIENTS | CJK_TEN_HIGH_COEFFICIENTS);
             case 18 /* DEVANAGARI */:
                 return createCounterStyleFromRange(value, 0x966, 0x96f, true, defaultSuffix);
             case 20 /* GEORGIAN */:
@@ -5165,15 +5165,15 @@
             case 22 /* HEBREW */:
                 return createAdditiveCounter(value, 1, 10999, HEBREW, 3 /* DECIMAL */, defaultSuffix);
             case 23 /* HIRAGANA */:
-                return createCounterStyleFromSymbols(value, 'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわゐゑをん');
+                return createCounterStyleFromSymbols(value, 'ã‚ã„ã†ãˆãŠã‹ããã‘ã“ã•ã—ã™ã›ããŸã¡ã¤ã¦ã¨ãªã«ã¬ã­ã®ã¯ã²ãµã¸ã»ã¾ã¿ã‚€ã‚ã‚‚ã‚„ã‚†ã‚ˆã‚‰ã‚Šã‚‹ã‚Œã‚ã‚ã‚ã‚‘ã‚’ã‚“');
             case 24 /* HIRAGANA_IROHA */:
-                return createCounterStyleFromSymbols(value, 'いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせす');
+                return createCounterStyleFromSymbols(value, 'ã„ã‚ã¯ã«ã»ã¸ã¨ã¡ã‚Šã¬ã‚‹ã‚’ã‚ã‹ã‚ˆãŸã‚Œãã¤ã­ãªã‚‰ã‚€ã†ã‚ã®ãŠãã‚„ã¾ã‘ãµã“ãˆã¦ã‚ã•ãã‚†ã‚ã¿ã—ã‚‘ã²ã‚‚ã›ã™');
             case 27 /* KANNADA */:
                 return createCounterStyleFromRange(value, 0xce6, 0xcef, true, defaultSuffix);
             case 28 /* KATAKANA */:
-                return createCounterStyleFromSymbols(value, 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヰヱヲン', cjkSuffix);
+                return createCounterStyleFromSymbols(value, 'ã‚¢ã‚¤ã‚¦ã‚¨ã‚ªã‚«ã‚­ã‚¯ã‚±ã‚³ã‚µã‚·ã‚¹ã‚»ã‚½ã‚¿ãƒãƒ„ãƒ†ãƒˆãƒŠãƒ‹ãƒŒãƒãƒŽãƒãƒ’ãƒ•ãƒ˜ãƒ›ãƒžãƒŸãƒ ãƒ¡ãƒ¢ãƒ¤ãƒ¦ãƒ¨ãƒ©ãƒªãƒ«ãƒ¬ãƒ­ãƒ¯ãƒ°ãƒ±ãƒ²ãƒ³', cjkSuffix);
             case 29 /* KATAKANA_IROHA */:
-                return createCounterStyleFromSymbols(value, 'イロハニホヘトチリヌルヲワカヨタレソツネナラムウヰノオクヤマケフコエテアサキユメミシヱヒモセス', cjkSuffix);
+                return createCounterStyleFromSymbols(value, 'ã‚¤ãƒ­ãƒãƒ‹ãƒ›ãƒ˜ãƒˆãƒãƒªãƒŒãƒ«ãƒ²ãƒ¯ã‚«ãƒ¨ã‚¿ãƒ¬ã‚½ãƒ„ãƒãƒŠãƒ©ãƒ ã‚¦ãƒ°ãƒŽã‚ªã‚¯ãƒ¤ãƒžã‚±ãƒ•ã‚³ã‚¨ãƒ†ã‚¢ã‚µã‚­ãƒ¦ãƒ¡ãƒŸã‚·ãƒ±ãƒ’ãƒ¢ã‚»ã‚¹', cjkSuffix);
             case 34 /* LAO */:
                 return createCounterStyleFromRange(value, 0xed0, 0xed9, true, defaultSuffix);
             case 37 /* MONGOLIAN */:
@@ -7828,3 +7828,4 @@
 
 })));
 //# sourceMappingURL=html2canvas.js.map
+

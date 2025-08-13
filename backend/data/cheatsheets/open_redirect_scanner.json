@@ -1,0 +1,18 @@
+{
+  "name": "open_redirect_scanner",
+  "signals": {
+    "patterns": ["http://", "https://", "//", "redirect", "next", "url=", "returnUrl="]
+  },
+  "mapping": {
+    "cwe": {
+      "CWE-601": { "keywords": ["open redirect", "unvalidated redirect", "returnUrl", "redirect"] }
+    },
+    "owasp": {
+      "A01": { "keywords": ["access control", "redirect"] },
+      "A05": { "keywords": ["security misconfiguration"] }
+    }
+  },
+  "remediation": "Validate and whitelist redirect destinations, avoid reflecting user-controlled URLs, and use relative paths when possible."
+}
+
+

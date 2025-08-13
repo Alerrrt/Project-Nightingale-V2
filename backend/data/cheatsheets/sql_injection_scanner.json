@@ -1,0 +1,17 @@
+{
+  "name": "sql_injection_scanner",
+  "signals": {
+    "patterns": ["sql syntax", "mysql", "unclosed quotation mark", "odbc", "oracle"]
+  },
+  "mapping": {
+    "cwe": {
+      "CWE-89": { "keywords": ["sql injection", "' or '1'='1", "sleep("] }
+    },
+    "owasp": {
+      "A03": { "keywords": ["injection", "sql"] }
+    }
+  },
+  "remediation": "Use parameterized queries and prepared statements, validate and sanitize inputs, and enforce least-privilege on database accounts."
+}
+
+

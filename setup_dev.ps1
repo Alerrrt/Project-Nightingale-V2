@@ -1,4 +1,4 @@
-# Create Python virtual environment
+﻿# Create Python virtual environment
 python -m venv venv
 if (-not $?) { Write-Host "Failed to create virtualenv. Try running PowerShell as Administrator."; exit 1 }
 

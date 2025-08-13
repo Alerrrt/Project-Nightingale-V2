@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import uuid
 from typing import List, Optional, Dict, Any
 from datetime import datetime
@@ -6,11 +6,12 @@ import httpx
 from urllib.parse import urljoin
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
+import logging
 
 from .base_scanner import BaseScanner
 from ..types.models import ScanInput, Severity, OwaspCategory
 
-logger = get_context_logger(__name__)
+logger = logging.getLogger(__name__)
 
 class PathTraversalTesterScanner(BaseScanner):
     """
@@ -25,35 +26,12 @@ class PathTraversalTesterScanner(BaseScanner):
         "version": "1.0"
     }
 
-    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="path_traversal_tester")
     async def scan(self, scan_input: ScanInput) -> List[Dict]:
-        start_time = datetime.now()
-        scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
         try:
-            logger.info("Scan started", extra={
-                "scanner": self.__class__.__name__,
-                "scan_id": scan_id,
-                "target": scan_input.target,
-                "options": scan_input.options
-            })
-            results = await self._perform_scan(scan_input.target, scan_input.options)
-            self._update_metrics(True, start_time)
-            logger.info("Scan completed", extra={
-                "scanner": self.__class__.__name__,
-                "scan_id": scan_id,
-                "target": scan_input.target,
-                "result_count": len(results)
-            })
-            return results
+            return await self._perform_scan(scan_input.target, scan_input.options or {})
         except Exception as e:
-            self._update_metrics(False, start_time)
-            logger.error("Scan failed", extra={
-                "scanner": self.__class__.__name__,
-                "scan_id": scan_id,
-                "target": scan_input.target,
-                "error": str(e)
-            }, exc_info=True)
-            raise
+            logger.error(f"Path Traversal Tester scan failed: {e}", exc_info=True)
+            return [self._create_error_finding(f"Path Traversal Tester scan failed: {e}")]
 
     async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
@@ -166,4 +144,7 @@ class PathTraversalTesterScanner(BaseScanner):
                 "error": str(e)
             }, exc_info=True)
 
-        return None 
+        return None
+
+    def _create_error_finding(self, description: str) -> Dict:
+        return { "type": "error", "severity": Severity.INFO, "title": "Path Traversal Tester Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 } 

@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import uuid
 from typing import List, Optional, Dict, Any
 import ssl
@@ -7,11 +7,12 @@ import OpenSSL.SSL
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
+import logging
 
 from backend.scanners.base_scanner import BaseScanner
 from ..types.models import ScanInput, Finding, Severity, OwaspCategory
 
-logger = get_context_logger(__name__)
+logger = logging.getLogger(__name__)
 
 class SSLTLSConfigurationAuditScanner(BaseScanner):
     """
@@ -26,7 +27,6 @@ class SSLTLSConfigurationAuditScanner(BaseScanner):
         "version": "1.0"
     }
 
-    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="ssl_tls_audit_scanner")
     async def scan(self, scan_input: ScanInput) -> List[Dict]:
         start_time = datetime.now()
         scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
@@ -157,4 +157,7 @@ class SSLTLSConfigurationAuditScanner(BaseScanner):
             logger.error(f"An unexpected error occurred during SSL/TLS audit of {host}:{port}", extra={"error": str(e)})
 
         logger.info(f"Finished SSL/TLS Configuration Audit for {host}:{port}.")
-        return findings 
+        return findings
+
+    def _create_error_finding(self, description: str) -> Dict:
+        return { "type": "error", "severity": Severity.INFO, "title": "SSL/TLS Configuration Audit Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 } 

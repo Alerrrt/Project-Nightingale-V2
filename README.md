@@ -1,4 +1,4 @@
-# Security Scanner
+﻿# Security Scanner
 
 A modern, scalable security scanning platform with real-time monitoring and advanced error handling.
 
@@ -119,17 +119,30 @@ async with websockets.connect("ws://localhost:8000/api/realtime/updates") as ws:
 
 ### Running Tests
 
+Backend (fast targeted tests):
+
 ```bash
-pytest
+python -m pytest -q backend/tests/test_enrichment_and_signature.py
+```
+
+Frontend (unit tests):
+
+```bash
+cd frontend && npm test
 ```
 
 ### Code Style
 
+Pre-commit hooks are available. To install:
+
 ```bash
-black .
-isort .
-flake8
-mypy .
+pip install pre-commit && pre-commit install
+```
+
+Manual runs:
+
+```bash
+black . && isort . && flake8
 ```
 
 ## Monitoring

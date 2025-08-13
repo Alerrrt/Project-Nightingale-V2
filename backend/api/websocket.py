@@ -1,4 +1,4 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Depends, Request
+﻿from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Depends, Request
 from typing import Dict, Set, Optional, List, Any
 import json
 import logging
@@ -28,15 +28,17 @@ class ConnectionManager:
         self.active_connections: Dict[str, Set[WebSocket]] = {}
         self.scan_subscriptions: Dict[str, Set[WebSocket]] = {}
         self.client_metadata: Dict[str, Dict] = {}
+        from backend.config import settings
         self.rate_limiter = RateLimiter(
-            max_requests=100,  # requests per minute
-            time_window=60
+            max_requests=getattr(settings, 'WS_MAX_REQUESTS_PER_MINUTE', 100),
+            time_window=getattr(settings, 'WS_TIME_WINDOW_SECONDS', 60)
         )
         self.message_queue = MessageQueue(self)
         self.heartbeat_tasks: Dict[str, asyncio.Task] = {}
         self.reconnect_tokens: Dict[str, str] = {}
         self.message_history: Dict[str, List[WebSocketMessage]] = defaultdict(list)
-        self.max_history_size = 1000
+        # Allow larger history window to improve resilience
+        self.max_history_size = 5000
 
     async def connect(self, websocket: WebSocket, client_id: str, token: Optional[str] = None):
         """Connect a new client with authentication (FORCED: accept all connections for local dev, never raise)."""
@@ -85,7 +87,7 @@ class ConnectionManager:
             if not self.active_connections[client_id]:
                 del self.active_connections[client_id]
         
-        # Clean up subscriptions
+        # Clean up subscriptions but don't remove scan data
         for scan_id in list(self.scan_subscriptions.keys()):
             if websocket in self.scan_subscriptions[scan_id]:
                 self.scan_subscriptions[scan_id].remove(websocket)
@@ -97,18 +99,26 @@ class ConnectionManager:
             self.heartbeat_tasks[client_id].cancel()
             del self.heartbeat_tasks[client_id]
         
-        # Generate reconnect token
+        # Generate reconnect token with longer expiration for scan completion
         if client_id in self.client_metadata:
+            # Keep connection alive longer for active scans
+            expiration_minutes = 15 if self._has_active_scans(client_id) else 5
             self.reconnect_tokens[client_id] = jwt.encode(
                 {
                     "sub": client_id,
-                    "exp": datetime.utcnow() + timedelta(minutes=5)
+                    "exp": datetime.utcnow() + timedelta(minutes=expiration_minutes)
                 },
                 settings.SECRET_KEY,
                 algorithm="HS256"
             )
         
         logger.info(f"Client {client_id} disconnected")
+    
+    def _has_active_scans(self, client_id: str) -> bool:
+        """Check if client has active scan subscriptions."""
+        if client_id not in self.client_metadata:
+            return False
+        return len(self.client_metadata[client_id]["subscriptions"]) > 0
 
     async def subscribe_to_scan(self, websocket: WebSocket, scan_id: str, options: Optional[Dict] = None):
         """Subscribe to scan updates with advanced options."""
@@ -207,6 +217,40 @@ class ConnectionManager:
             scan_id, "scan_cancelled", {"scan_id": scan_id}
         )
 
+    async def handle_scan_completion(self, scan_id: str, results: Dict):
+        """Handle scan completion and ensure results are delivered to all subscribers."""
+        logger.info(f"Handling scan completion for {scan_id}")
+        
+        # Get all subscribers for this scan
+        subscribers = self.scan_subscriptions.get(scan_id, set()).copy()
+        
+        # Send completion message to all subscribers
+        for websocket in subscribers:
+            try:
+                await self._send_message(websocket, "scan_completed", results)
+                
+                # Send a follow-up message to keep connection alive
+                await asyncio.sleep(0.1)
+                await self._send_message(websocket, "scan_results_ready", {
+                    "scan_id": scan_id,
+                    "message": "All vulnerability results have been processed and are ready for review",
+                    "timestamp": datetime.now().isoformat()
+                })
+                
+            except Exception as e:
+                logger.error(f"Failed to send completion message to subscriber: {e}")
+                # Remove failed websocket from subscriptions
+                if scan_id in self.scan_subscriptions:
+                    self.scan_subscriptions[scan_id].discard(websocket)
+        
+        # Keep scan data available for a while after completion
+        # This allows reconnecting clients to get results
+        await asyncio.sleep(30)  # Keep data for 30 seconds after completion
+        
+        # Clean up scan subscriptions
+        if scan_id in self.scan_subscriptions:
+            del self.scan_subscriptions[scan_id]
+
     async def _heartbeat(self, client_id: str, websocket: WebSocket):
         """Maintain connection with heartbeat messages."""
         try:
@@ -286,20 +330,51 @@ async def websocket_endpoint(
     await manager.subscribe_to_scan(websocket, scan_id)
 
     try:
+        # Send initial connection confirmation
+        await manager._send_message(websocket, "connection_established", {
+            "scan_id": scan_id,
+            "client_id": client_id,
+            "timestamp": datetime.now().isoformat()
+        })
+        
+        # Keep connection alive until scan completes or client disconnects
         while True:
-            raw_data = await websocket.receive_text()
-            message = json.loads(raw_data)
-            
-            if message.get("type") == "stop_scan":
-                logger.info(f"Stop scan message received for {scan_id}")
-                await manager.stop_scan(scan_id, scanner_engine)
-            else:
-                logger.warning(f"Unknown message type received: {message.get('type')}")
+            try:
+                # Wait for messages with a timeout to allow for graceful handling
+                raw_data = await asyncio.wait_for(websocket.receive_text(), timeout=60.0)
+                message = json.loads(raw_data)
+                
+                if message.get("type") == "stop_scan":
+                    logger.info(f"Stop scan message received for {scan_id}")
+                    await manager.stop_scan(scan_id, scanner_engine)
+                elif message.get("type") == "ping":
+                    # Respond to ping with pong to keep connection alive
+                    await manager._send_message(websocket, "pong", {
+                        "timestamp": datetime.now().isoformat()
+                    })
+                else:
+                    logger.warning(f"Unknown message type received: {message.get('type')}")
+                    
+            except asyncio.TimeoutError:
+                # Send heartbeat to keep connection alive
+                await manager._send_message(websocket, "heartbeat", {
+                    "timestamp": datetime.now().isoformat()
+                })
+                continue
 
     except WebSocketDisconnect:
+        logger.info(f"WebSocket disconnected for client {client_id} on scan {scan_id}")
         manager.disconnect(websocket, client_id)
     except Exception as e:
         logger.error(f"Error in WebSocket endpoint for client {client_id}: {e}", exc_info=True)
+        # Don't disconnect immediately, try to send error message first
+        try:
+            await manager._send_message(websocket, "error", {
+                "message": "An error occurred",
+                "timestamp": datetime.now().isoformat()
+            })
+        except:
+            pass
         manager.disconnect(websocket, client_id)
 
 manager = ConnectionManager()

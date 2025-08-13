@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+﻿FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -6,9 +6,8 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
-    gfortran \
-    libatlas-base-dev \
     libc-dev \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Upgrade pip
@@ -25,10 +24,16 @@ COPY backend /app/backend
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 ENV DEBUG=true
+ENV HOST=0.0.0.0
+ENV PORT=8000
 
-# Expose the port
-EXPOSE 8000
+# Create non-root user
+RUN useradd -m appuser \
+    && mkdir -p /app/logs \
+    && chown -R appuser:appuser /app
+USER appuser
 
-# Command to run the application
-# For production, remove --reload and set DEBUG=false
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"] 
+EXPOSE 9000
+
+# Default command (development). For production, override to remove --reload and set DEBUG=false
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "9000", "--reload"]

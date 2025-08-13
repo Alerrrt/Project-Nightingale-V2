@@ -1,16 +1,17 @@
-import asyncio
+﻿import asyncio
 import uuid
 from typing import List, Dict, Any
 import httpx
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
+import logging
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
 from backend.types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
 
-logger = get_context_logger(__name__)
+logger = logging.getLogger(__name__)
 
 class SecurityMisconfigurationScanner(BaseScanner):
     """
@@ -52,7 +53,7 @@ class SecurityMisconfigurationScanner(BaseScanner):
             )
             
             # Perform scan
-            results = await self._perform_scan(scan_input.target, scan_input.options)
+            results = await self._perform_scan(scan_input.target, scan_input.options or {})
             
             # Update metrics
             self._update_metrics(True, start_time)
@@ -172,6 +173,9 @@ class SecurityMisconfigurationScanner(BaseScanner):
                 )
                 
         return findings
+
+    def _create_error_finding(self, description: str) -> Dict:
+        return { "type": "error", "severity": Severity.INFO, "title": "Security Misconfiguration Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 }
 
 
 def register(scanner_registry: ScannerRegistry) -> None:

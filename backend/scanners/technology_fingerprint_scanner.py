@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import httpx
 from typing import List, Dict, Any, Optional
 
@@ -6,7 +6,9 @@ from Wappalyzer import Wappalyzer, WebPage
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.types.models import ScanInput, Severity, OwaspCategory
+from backend.utils.enrichment import EnrichmentService
 from backend.utils.logging_config import get_context_logger
+from backend.utils import get_http_client
 
 # Mapping from Wappalyzer categories to OSV ecosystems where possible.
 # This is a best-effort mapping and might need refinement.
@@ -36,12 +38,17 @@ class TechnologyFingerprintScanner(BaseScanner):
         # Wappalyzer.latest(update=True) is blocking, so we avoid it in an async app
         # or would run it in a thread pool on startup. For now, use cached version.
         self.wappalyzer = Wappalyzer.latest()
+        self._enrichment = EnrichmentService()
 
     async def scan(self, scan_input: ScanInput) -> List[Dict]:
         """
         Overrides the base scan method to perform technology fingerprinting.
         """
-        return await self._perform_scan(scan_input.target, scan_input.options or {})
+        try:
+            return await self._perform_scan(scan_input.target, scan_input.options or {})
+        except Exception as e:
+            self.logger.error(f"Technology Fingerprint scan failed: {e}", exc_info=True)
+            return [self._create_error_finding(f"Technology Fingerprint scan failed: {e}")]
 
     async def _perform_scan(self, target: str, options: Dict) -> List[Dict]:
         """
@@ -49,8 +56,8 @@ class TechnologyFingerprintScanner(BaseScanner):
         """
         findings = []
         try:
-            async with httpx.AsyncClient(verify=False, follow_redirects=True) as client:
-                response = await client.get(target, timeout=20.0)
+            async with get_http_client(verify=False, follow_redirects=True, timeout=20.0) as client:
+                response = await client.get(target)
                 webpage = WebPage(str(response.url), response.text, response.headers)
                 technologies = self.wappalyzer.analyze_with_versions_and_categories(webpage)
         except Exception as e:
@@ -67,14 +74,19 @@ class TechnologyFingerprintScanner(BaseScanner):
             categories = tech_data.get("categories", [])
             version = versions[0] if versions else None
             lookup_tasks.append(self._lookup_cves(tech_name, version, categories))
-        
         results = await asyncio.gather(*lookup_tasks, return_exceptions=True)
 
         for result in results:
             if isinstance(result, list):
-                findings.extend(result)
+                for f in result:
+                    try:
+                        f = await self._enrichment.enrich_finding(f)
+                    except Exception:
+                        pass
+                    findings.append(f)
             elif isinstance(result, Exception):
                 self.logger.error(f"Error during CVE lookup: {result}")
+                findings.append(self._create_error_finding(f"Error during CVE lookup: {result}"))
 
         return findings
 
@@ -110,8 +122,10 @@ class TechnologyFingerprintScanner(BaseScanner):
                 return [self._create_finding_from_osv(vuln, tech_name, version) for vuln in data["vulns"]]
         except httpx.HTTPStatusError as e:
             self.logger.warning(f"OSV API request failed for {tech_name} v{version}: {e.response.status_code}")
+            return [self._create_error_finding(f"OSV API request failed for {tech_name} v{version}: {e.response.status_code}")]
         except Exception as e:
             self.logger.error(f"An unexpected error occurred during CVE lookup for {tech_name}: {e}")
+            return [self._create_error_finding(f"Unexpected error during CVE lookup for {tech_name}: {e}")]
         
         return []
 
@@ -161,7 +175,7 @@ class TechnologyFingerprintScanner(BaseScanner):
         }
 
     def _create_error_finding(self, description: str) -> Dict:
-        return { "type": "error", "severity": Severity.INFO.value, "title": "Technology Scanner Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0}
+        return { "type": "error", "severity": Severity.INFO, "title": "Technology Fingerprint Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 }
     
     def _create_info_finding(self, description: str, location: str) -> Dict:
         return { "type": "info", "severity": Severity.INFO.value, "title": "Technology Information", "description": description, "location": location, "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 }

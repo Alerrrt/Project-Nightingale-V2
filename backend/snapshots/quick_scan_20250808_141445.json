@@ -1,0 +1,56 @@
+{
+  "id": "quick_scan_20250808_141445",
+  "target": "https://www.rexcybersolutions.com/",
+  "type": "quick_scan",
+  "status": "completed",
+  "start_time": "2025-08-08T14:14:45.033111",
+  "results": [],
+  "errors": [],
+  "sub_scans": {
+    "quick_scan_20250808_141445_robots_txt_sitemap_crawl_scanner_033728": {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "'dict' object is not callable"
+      ]
+    },
+    "quick_scan_20250808_141445_security_headers_analyzer_034800": {
+      "name": "security_headers_analyzer",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "'dict' object is not callable"
+      ]
+    },
+    "quick_scan_20250808_141445_csrf_token_checker_035593": {
+      "name": "csrf_token_checker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "'dict' object is not callable"
+      ]
+    },
+    "quick_scan_20250808_141445_clickjacking_screenshotter_037268": {
+      "name": "clickjacking_screenshotter",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "'dict' object is not callable"
+      ]
+    },
+    "quick_scan_20250808_141445_js_scanner_038438": {
+      "name": "js_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "'dict' object is not callable"
+      ]
+    }
+  },
+  "progress": 100.0,
+  "total_modules": 5,
+  "completed_modules": 5,
+  "deadline": 1754662665.033122,
+  "end_time": "2025-08-08T14:14:45.290761"
+}

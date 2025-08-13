@@ -1,0 +1,23 @@
+.posture-item {
+    font-size: 1.1em;
+    font-weight: 700;
+    padding: 7px 18px;
+    border-radius: 16px;
+    color: #fff;
+    background: #232526;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.posture-item.critical { background: #FF3B30; }
+.posture-item.high { background: #FF6F00; }
+.posture-item.medium { background: #FF9900; color: #232526; }
+.posture-item.low { background: #FFD600; color: #232526; }
+.posture-item.info { background: #3B82F6; }
+.posture-item span {
+    font-size: 1.15em;
+    font-weight: 800;
+    margin-left: 4px;
+} 

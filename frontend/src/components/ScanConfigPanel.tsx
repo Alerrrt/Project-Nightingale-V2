@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { X, Save, ShieldCheck, ShieldOff } from 'lucide-react';
+import { X, Save, ShieldCheck, ShieldOff, Clock } from 'lucide-react';
 import * as scanApi from '../api/scanApi';
+import Tooltip from './Tooltip';
 
 interface ScannerMeta {
+  key: string;
   name: string;
   description: string;
   owasp_category: string;
+  longRunning?: boolean;
 }
 
-type ScannersApiResponse = Record<string, Omit<ScannerMeta, 'name'>>;
+type ScannersApiResponse = Record<string, any>;
 
 interface ScanConfigPanelProps {
   isOpen: boolean;
@@ -29,8 +32,32 @@ const ScanConfigPanel: React.FC<ScanConfigPanelProps> = ({ isOpen, onClose, onSa
       setError(null);
       try {
         const data: ScannersApiResponse = await scanApi.fetchScannersList();
-        const scannersArr = Object.entries(data).map(([name, meta]) => ({ name, ...meta }));
+        const scannersArr = Object.entries(data).map(([key, meta]) => ({ key, name: (meta as any).name, description: (meta as any).description, owasp_category: (meta as any).owasp_category, longRunning: false }));
+        const longRunningScanners = [
+          'automated_cve_lookup_scanner',
+          'subdomain_dns_enumeration_scanner',
+          'ssl_tls_configuration_audit_scanner',
+          'api_fuzzing_scanner',
+        ];
+        const offByDefaultScanners = [
+          'sql_injection_scanner',
+          'broken_access_control_scanner',
+          'broken_authentication_scanner',
+          'open_redirect_scanner',
+        ];
+        scannersArr.forEach(scanner => {
+          if (longRunningScanners.includes(scanner.key)) {
+            scanner.longRunning = true;
+          }
+        });
         setScanners(scannersArr);
+        if (!initialSelectedScanners || initialSelectedScanners.length === 0) {
+          setSelectedScanners(new Set(
+            scannersArr
+              .filter(s => !s.longRunning && !offByDefaultScanners.includes(s.key))
+              .map(s => s.key)
+          ));
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load scanners.');
       } finally {
@@ -46,20 +73,20 @@ const ScanConfigPanel: React.FC<ScanConfigPanelProps> = ({ isOpen, onClose, onSa
     setSelectedScanners(new Set(initialSelectedScanners));
   }, [initialSelectedScanners]);
 
-  const handleToggleScanner = (scannerName: string) => {
+  const handleToggleScanner = (scannerKey: string) => {
     setSelectedScanners(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(scannerName)) {
-        newSet.delete(scannerName);
+      if (newSet.has(scannerKey)) {
+        newSet.delete(scannerKey);
       } else {
-        newSet.add(scannerName);
+        newSet.add(scannerKey);
       }
       return newSet;
     });
   };
   
   const handleSelectAll = () => {
-    setSelectedScanners(new Set(scanners.map(s => s.name)));
+    setSelectedScanners(new Set(scanners.map(s => s.key)));
   };
 
   const handleDeselectAll = () => {
@@ -103,18 +130,25 @@ const ScanConfigPanel: React.FC<ScanConfigPanelProps> = ({ isOpen, onClose, onSa
               <div className="space-y-2">
                 {scanners.map(scanner => (
                   <div 
-                    key={scanner.name}
-                    onClick={() => handleToggleScanner(scanner.name)}
+                    key={scanner.key}
+                    onClick={() => handleToggleScanner(scanner.key)}
                     className="flex items-center p-3 bg-surface rounded-md cursor-pointer border-2 border-transparent hover:border-primary transition-all"
                   >
                     <input
                       type="checkbox"
-                      checked={selectedScanners.has(scanner.name)}
+                      checked={selectedScanners.has(scanner.key)}
                       readOnly
                       className="h-4 w-4 rounded bg-background border-gray-600 text-primary focus:ring-primary"
                     />
-                    <div className="ml-3">
-                      <p className="font-semibold text-sm text-text">{scanner.name}</p>
+                    <div className="ml-3 flex items-center">
+                      <p className="font-semibold text-sm text-text flex items-center">
+                        {scanner.name}
+                        {scanner.longRunning && (
+                          <Tooltip content="This scanner may take several minutes to complete." position="top">
+                            <Clock className="inline-block ml-1 text-warning w-4 h-4" />
+                          </Tooltip>
+                        )}
+                      </p>
                       <p className="text-xs text-textSecondary">{scanner.description}</p>
                     </div>
                   </div>

@@ -1,0 +1,17 @@
+{
+  "name": "xss_scanner",
+  "signals": {
+    "patterns": ["<script>", "onerror=", "<img src=x onerror=", "document.cookie", "innerHTML"]
+  },
+  "mapping": {
+    "cwe": {
+      "CWE-79": { "keywords": ["xss", "cross-site scripting", "reflect", "innerhtml", "sink"] }
+    },
+    "owasp": {
+      "A03": { "keywords": ["injection", "xss"] }
+    }
+  },
+  "remediation": "Encode untrusted data in HTML context, use templating frameworks that auto-escape, avoid dangerous sinks like innerHTML, and implement a robust Content Security Policy."
+}
+
+

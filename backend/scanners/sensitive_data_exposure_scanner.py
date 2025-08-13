@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import uuid
 import re
 from typing import List, Dict, Any
@@ -6,6 +6,7 @@ import httpx
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
+import logging
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
@@ -49,7 +50,7 @@ class SensitiveDataExposureScanner(BaseScanner):
                 "target": scan_input.target,
                 "options": scan_input.options
             })
-            results = await self._perform_scan(scan_input.target, scan_input.options)
+            results = await self._perform_scan(scan_input.target, scan_input.options or {})
             self._update_metrics(True, start_time)
             logger.info("Scan completed", extra={
                 "scanner": self.__class__.__name__,
@@ -165,6 +166,9 @@ class SensitiveDataExposureScanner(BaseScanner):
             return f"***-**-{data[-4:]}"
         else:
             return f"{data[:4]}{'*' * (len(data)-8)}{data[-4:]}"
+
+    def _create_error_finding(self, description: str) -> Dict:
+        return { "type": "error", "severity": Severity.INFO, "title": "Sensitive Data Exposure Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 }
 
 
 def register(scanner_registry: ScannerRegistry) -> None:

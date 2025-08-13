@@ -1,0 +1,46 @@
+{
+  "name": "security_headers_analyzer",
+  "signals": {
+    "headers": [
+      "content-security-policy",
+      "x-frame-options",
+      "strict-transport-security",
+      "referrer-policy",
+      "x-content-type-options",
+      "permissions-policy",
+      "access-control-allow-origin",
+      "access-control-allow-credentials"
+    ]
+  },
+  "mapping": {
+    "cwe": {
+      "CWE-693": { "keywords": ["missing", "misconfigured", "header", "policy", "security headers"] },
+      "CWE-942": { "keywords": ["cors", "origin", "credentials"] }
+    },
+    "owasp": {
+      "A05": { "keywords": ["security misconfiguration", "header", "policy", "csp", "x-frame-options"] },
+      "A01": { "keywords": ["access control", "cors", "origin"] }
+    }
+  },
+  "remediation": "Set strong security headers: HSTS, X-Content-Type-Options, Referrer-Policy, a strict CSP with frame-ancestors, and a restrictive Permissions-Policy. Avoid wildcard CORS, especially with credentials."
+}
+
+{
+  "name": "security_headers_analyzer",
+  "signals": {
+    "headers": ["content-security-policy", "x-frame-options", "strict-transport-security", "referrer-policy", "permissions-policy"]
+  },
+  "mapping": {
+    "cwe": {
+      "CWE-693": { "keywords": ["missing", "misconfigured", "security header"] },
+      "CWE-1021": { "keywords": ["x-frame-options", "frame-ancestors"] }
+    },
+    "owasp": {
+      "A06": { "keywords": ["outdated components", "missing security headers"] },
+      "A05": { "keywords": ["security misconfiguration"] }
+    }
+  },
+  "remediation": "Set strong security headers: CSP with default-src 'none' and explicit allows, X-Frame-Options DENY or frame-ancestors in CSP, HSTS with preload, Referrer-Policy no-referrer, and a least-privilege Permissions-Policy."
+}
+
+

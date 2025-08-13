@@ -8,8 +8,20 @@ export interface ModuleStatus {
   findings_count?: number;
 }
 
+interface ScannerMetadata {
+  name: string;
+  description: string;
+  owasp_category: string;
+  vulnerability_types: string[];
+  scan_type: string;
+  intensity: string;
+  author: string;
+  version: string;
+}
+
 interface ModuleStatusGridProps {
   modules: ModuleStatus[];
+  scannerMetadata?: Record<string, ScannerMetadata>;
 }
 
 const statusConfig = {
@@ -43,7 +55,7 @@ const statusConfig = {
   },
 };
 
-const ModuleStatusGrid: React.FC<ModuleStatusGridProps> = ({ modules }) => {
+const ModuleStatusGrid: React.FC<ModuleStatusGridProps> = ({ modules, scannerMetadata = {} }) => {
   if (modules.length === 0) return null;
   
   return (
@@ -54,11 +66,29 @@ const ModuleStatusGrid: React.FC<ModuleStatusGridProps> = ({ modules }) => {
           const config = statusConfig[mod.status] || statusConfig.failed;
           const displayName = mod.name.replace(/_/g, ' ').replace(/ scanner/g, '').replace(/\b\w/g, l => l.toUpperCase());
 
+          // Get scanner metadata for enhanced tooltip
+          const metadata = scannerMetadata[mod.name] || scannerMetadata[mod.name.replace(/_/g, ' ')] || {};
+          const vulnerabilityTypes = metadata.vulnerability_types || [];
+          const owaspCategory = metadata.owasp_category || 'Unknown';
+          const scanType = metadata.scan_type || 'General';
+          const intensity = metadata.intensity || 'Medium';
+          
+          // Create enhanced tooltip content
+          let tooltipContent = `${displayName} - ${config.label}`;
+          if (mod.status === 'failed' && mod.error) {
+            tooltipContent = mod.error;
+          } else if (metadata.description) {
+            tooltipContent = `${metadata.description}\n\nOWASP Category: ${owaspCategory}\nScan Type: ${scanType}\nIntensity: ${intensity}`;
+            if (vulnerabilityTypes.length > 0) {
+              tooltipContent += `\n\nVulnerability Types:\n${vulnerabilityTypes.join(', ')}`;
+            }
+          }
+
           return (
             <div
               key={mod.name}
-              className={`flex items-center space-x-3 p-3 rounded-md border ${config.bgColor} ${config.borderColor} transition-all duration-300`}
-              title={mod.status === 'failed' && mod.error ? mod.error : `${displayName} - ${config.label}`}
+              className={`flex items-center space-x-3 p-3 rounded-md border ${config.bgColor} ${config.borderColor} transition-all duration-300 cursor-help`}
+              title={tooltipContent}
             >
               {config.icon}
               <div className="flex-1 overflow-hidden">

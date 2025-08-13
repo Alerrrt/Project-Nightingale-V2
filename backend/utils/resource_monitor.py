@@ -1,4 +1,4 @@
-import psutil
+﻿import psutil
 import logging
 import asyncio
 import time
@@ -82,19 +82,22 @@ class ResourceMonitor:
         """Monitor system resources at regular intervals."""
         try:
             while not self._stop_event.is_set():
-                metrics = self._collect_metrics()
-                self._metrics_history.append(metrics)
-                
-                # Trim history if it gets too large
-                if len(self._metrics_history) > self._max_history_size:
-                    self._metrics_history = self._metrics_history[-self._max_history_size:]
-                
-                # Check resource limits
-                if self._check_resource_limits(metrics):
-                    logger.warning("Resource limits exceeded")
-                    # Notify any listeners or take action
-                
-                await asyncio.sleep(interval)
+                try:
+                    metrics = self._collect_metrics()
+                    self._metrics_history.append(metrics)
+                    
+                    # Trim history if it gets too large
+                    if len(self._metrics_history) > self._max_history_size:
+                        self._metrics_history = self._metrics_history[-self._max_history_size:]
+                    
+                    # Check resource limits (only log if exceeded)
+                    if self._check_resource_limits(metrics):
+                        logger.warning(f"Resource limits exceeded - CPU: {metrics.cpu_percent:.1f}%, Memory: {metrics.memory_mb:.1f}MB, Connections: {metrics.network_connections}")
+                    
+                    await asyncio.sleep(interval)
+                except Exception as e:
+                    logger.error(f"Error collecting metrics: {e}")
+                    await asyncio.sleep(interval)  # Continue monitoring even if one collection fails
         except Exception as e:
             logger.error(f"Error in resource monitoring: {e}", exc_info=True)
             raise
@@ -103,47 +106,65 @@ class ResourceMonitor:
         """Collect current resource usage metrics."""
         current_time = datetime.now()
         
-        # Get CPU and memory metrics
-        cpu_percent = self._process.cpu_percent()
-        memory_info = self._process.memory_info()
-        memory_mb = memory_info.rss / (1024 * 1024)  # Convert to MB
-        
-        # Get network connections
-        network_connections = len(self._process.connections())
-        
-        # Get I/O metrics
-        io_counters = psutil.disk_io_counters()
-        net_counters = psutil.net_io_counters()
-        
-        # Calculate I/O rates
-        disk_io_read = 0.0
-        disk_io_write = 0.0
-        network_io_sent = 0.0
-        network_io_recv = 0.0
-        
-        if self._last_io_counters and self._last_net_counters and self._last_check_time:
-            time_diff = (current_time - self._last_check_time).total_seconds()
-            if time_diff > 0:
-                disk_io_read = (io_counters.read_bytes - self._last_io_counters.read_bytes) / time_diff
-                disk_io_write = (io_counters.write_bytes - self._last_io_counters.write_bytes) / time_diff
-                network_io_sent = (net_counters.bytes_sent - self._last_net_counters.bytes_sent) / time_diff
-                network_io_recv = (net_counters.bytes_recv - self._last_net_counters.bytes_recv) / time_diff
-        
-        # Update last values
-        self._last_io_counters = io_counters
-        self._last_net_counters = net_counters
-        self._last_check_time = current_time
-        
-        return ResourceMetrics(
-            cpu_percent=cpu_percent,
-            memory_mb=memory_mb,
-            network_connections=network_connections,
-            timestamp=current_time,
-            disk_io_read=disk_io_read,
-            disk_io_write=disk_io_write,
-            network_io_sent=network_io_sent,
-            network_io_recv=network_io_recv
-        )
+        try:
+            # Get CPU and memory metrics (with error handling)
+            cpu_percent = self._process.cpu_percent()
+            memory_info = self._process.memory_info()
+            memory_mb = memory_info.rss / (1024 * 1024)  # Convert to MB
+            
+            # Get network connections (with error handling)
+            try:
+                network_connections = len(self._process.connections())
+            except (psutil.AccessDenied, psutil.ZombieProcess):
+                network_connections = 0
+            
+            # Get I/O metrics (with error handling)
+            try:
+                io_counters = psutil.disk_io_counters()
+                net_counters = psutil.net_io_counters()
+            except (psutil.AccessDenied, AttributeError):
+                io_counters = None
+                net_counters = None
+            
+            # Calculate I/O rates
+            disk_io_read = 0.0
+            disk_io_write = 0.0
+            network_io_sent = 0.0
+            network_io_recv = 0.0
+            
+            if (self._last_io_counters and self._last_net_counters and 
+                self._last_check_time and io_counters and net_counters):
+                time_diff = (current_time - self._last_check_time).total_seconds()
+                if time_diff > 0:
+                    disk_io_read = (io_counters.read_bytes - self._last_io_counters.read_bytes) / time_diff
+                    disk_io_write = (io_counters.write_bytes - self._last_io_counters.write_bytes) / time_diff
+                    network_io_sent = (net_counters.bytes_sent - self._last_net_counters.bytes_sent) / time_diff
+                    network_io_recv = (net_counters.bytes_recv - self._last_net_counters.bytes_recv) / time_diff
+            
+            # Update last values
+            self._last_io_counters = io_counters
+            self._last_net_counters = net_counters
+            self._last_check_time = current_time
+            
+            return ResourceMetrics(
+                cpu_percent=cpu_percent,
+                memory_mb=memory_mb,
+                network_connections=network_connections,
+                timestamp=current_time,
+                disk_io_read=disk_io_read,
+                disk_io_write=disk_io_write,
+                network_io_sent=network_io_sent,
+                network_io_recv=network_io_recv
+            )
+        except Exception as e:
+            logger.error(f"Error collecting metrics: {e}")
+            # Return minimal metrics on error
+            return ResourceMetrics(
+                cpu_percent=0.0,
+                memory_mb=0.0,
+                network_connections=0,
+                timestamp=current_time
+            )
     
     def _check_resource_limits(self, metrics: ResourceMetrics) -> bool:
         """Check if current resource usage exceeds limits."""

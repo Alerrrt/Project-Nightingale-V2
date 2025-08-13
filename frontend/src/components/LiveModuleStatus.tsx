@@ -43,18 +43,23 @@ const LiveModuleStatus: React.FC<LiveModuleStatusProps> = ({ activityLogs }) => 
     return null; // Don't render if there are no logs
   }
 
+  // Only show the last 50 logs for better performance
+  const visibleLogs = activityLogs.slice(-50);
+
   return (
     <div className="bg-surface rounded-lg p-4 font-mono text-xs h-96 overflow-y-auto" ref={scrollRef}>
-      <h2 className="text-lg font-bold text-text mb-2 sticky top-0 bg-surface pb-2">Live Activity</h2>
-      {activityLogs.map((log, index) => {
+      <h2 className="text-lg font-bold text-text mb-2 sticky top-0 bg-surface pb-2">
+        Live Activity ({activityLogs.length} total)
+      </h2>
+      {visibleLogs.map((log, index) => {
         const { icon, color, content } = parseLogMessage(log.message);
         return (
-          <div key={index} className="flex items-start">
-            <span className="text-gray-500 mr-3">
+          <div key={`${log.timestamp}-${index}`} className="flex items-start">
+            <span className="text-gray-500 mr-3 flex-shrink-0">
               {new Date(log.timestamp).toLocaleTimeString()}
             </span>
-            <span className={`${color} font-bold mr-2`}>{icon}</span>
-            <span className={`${color} flex-1 whitespace-pre-wrap`}>
+            <span className={`${color} font-bold mr-2 flex-shrink-0`}>{icon}</span>
+            <span className={`${color} flex-1 whitespace-pre-wrap break-words`}>
               {content}
             </span>
           </div>

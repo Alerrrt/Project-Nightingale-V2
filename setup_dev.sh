@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 # Create Python virtual environment
 python -m venv venv || { echo "Failed to create virtualenv"; exit 1; }

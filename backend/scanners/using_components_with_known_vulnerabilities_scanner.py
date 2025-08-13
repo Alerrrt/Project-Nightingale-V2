@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import uuid
 import re
 from typing import List, Dict, Any
@@ -6,6 +6,7 @@ import httpx
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
+import logging
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
@@ -216,6 +217,9 @@ class UsingComponentsWithKnownVulnerabilitiesScanner(BaseScanner):
                 )
                 
         return findings
+
+    def _create_error_finding(self, description: str) -> Dict:
+        return { "type": "error", "severity": Severity.INFO, "title": "Known Vulnerabilities Scanner Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 }
 
 
 def register(scanner_registry: ScannerRegistry) -> None:

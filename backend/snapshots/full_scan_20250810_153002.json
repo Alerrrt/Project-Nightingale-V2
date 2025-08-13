@@ -1,0 +1,588 @@
+{
+  "id": "full_scan_20250810_153002",
+  "target": "https://www.rexcybersolutions.com/",
+  "type": "full_scan",
+  "status": "completed",
+  "start_time": "2025-08-10T15:30:02.013904",
+  "results": [
+    {
+      "id": "dc433313-9326-44bd-84c8-14881e136f94",
+      "title": "Missing CSRF Token",
+      "severity": "High",
+      "description": "Form at 'https://www.rexcybersolutions.com/' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site Request Forgery (CSRF) attacks.",
+      "short_description": "Form at 'https://www.rexcybersolutions.com/' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site Request Forgery",
+      "remediation": "",
+      "countermeasures": "",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A04:2021 - Insecure Design",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"form_action\": \"https://www.rexcybersolutions.com/\",\n  \"details\": \"No hidden input field resembling a CSRF token found.\"\n}"
+    },
+    {
+      "id": "7eb90b3a-6bfd-4773-a3e9-2764d07ee769",
+      "title": "Exposed Path Found: /robots.txt",
+      "severity": "Medium",
+      "description": "An accessible path was discovered at https://www.rexcybersolutions.com/robots.txt, which returned a status code of 200. This could expose sensitive files, directory listings, or functionality.",
+      "short_description": "An accessible path was discovered at https://www.rexcybersolutions.com/robots.txt, which returned a status code of 200. This could expose se",
+      "remediation": "Ensure that sensitive files and directories are not publicly accessible. Configure your web server to show a 404 Not Found error instead of a 403 Forbidden error for non-existent resources to avoid path enumeration. Restrict access to authorized users where necessary.",
+      "countermeasures": "Ensure that sensitive files and directories are not publicly accessible. Configure your web server to show a 404 Not Found error instead of a 403 Forbidden error for non-existent resources to avoid path enumeration. Restrict access to authorized users where necessary.",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "CWE-538",
+      "cve": "N/A",
+      "confidence": 100,
+      "category": "Unknown",
+      "impact": "Information disclosure, potential for further attacks.",
+      "cvss": 5.3,
+      "evidence": "{}"
+    },
+    {
+      "id": "51082760-e1e7-496e-be97-091e9bab897b",
+      "title": "Missing Strict-Transport-Security Header",
+      "severity": "High",
+      "description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+      "short_description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+      "remediation": "",
+      "countermeasures": "",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": null\n}"
+    },
+    {
+      "id": "ef6745d6-0309-4492-a916-8133aaf5c292",
+      "title": "Missing X-Content-Type-Options Header",
+      "severity": "Medium",
+      "description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+      "short_description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+      "remediation": "",
+      "countermeasures": "",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-Content-Type-Options\",\n  \"recommended_value\": \"nosniff\",\n  \"current_value\": null\n}"
+    },
+    {
+      "id": "1231cfda-2279-452d-a236-5cc32e9a1654",
+      "title": "Misconfigured X-Frame-Options Header",
+      "severity": "Medium",
+      "description": "The X-Frame-Options header is present but may not be optimally configured. Prevents clickjacking attacks",
+      "short_description": "The X-Frame-Options header is present but may not be optimally configured. Prevents clickjacking attacks",
+      "remediation": "",
+      "countermeasures": "",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-Frame-Options\",\n  \"recommended_value\": \"DENY\",\n  \"current_value\": \"SAMEORIGIN\"\n}"
+    },
+    {
+      "id": "1c6e1f8a-a9c6-4e57-9663-452ce2b33698",
+      "title": "Missing X-XSS-Protection Header",
+      "severity": "Medium",
+      "description": "The X-XSS-Protection header is missing. Enables browser's XSS filtering",
+      "short_description": "The X-XSS-Protection header is missing. Enables browser's XSS filtering",
+      "remediation": "",
+      "countermeasures": "",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": null\n}"
+    },
+    {
+      "id": "67bc3c36-52a5-4db9-b820-fcb54e8cbf2a",
+      "title": "Misconfigured Content-Security-Policy Header",
+      "severity": "High",
+      "description": "The Content-Security-Policy header is present but may not be optimally configured. Controls resource loading",
+      "short_description": "The Content-Security-Policy header is present but may not be optimally configured. Controls resource loading",
+      "remediation": "",
+      "countermeasures": "",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": \"frame-ancestors 'self'\"\n}"
+    },
+    {
+      "id": "301672c8-c576-410d-8496-c22451dd6125",
+      "title": "Missing Referrer-Policy Header",
+      "severity": "Low",
+      "description": "The Referrer-Policy header is missing. Controls referrer information",
+      "short_description": "The Referrer-Policy header is missing. Controls referrer information",
+      "remediation": "",
+      "countermeasures": "",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}"
+    },
+    {
+      "id": "a74e483a-6b4a-45ec-a257-84155c370c2d",
+      "title": "Missing Permissions-Policy Header",
+      "severity": "Medium",
+      "description": "The Permissions-Policy header is missing. Controls browser features",
+      "short_description": "The Permissions-Policy header is missing. Controls browser features",
+      "remediation": "",
+      "countermeasures": "",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}"
+    },
+    {
+      "id": "9db96f92-9491-4cb1-b063-0c92c08a3f5d",
+      "title": "CORS check error",
+      "severity": "Info",
+      "description": "",
+      "short_description": "",
+      "remediation": "Ensure the target is reachable and supports HTTP(S).",
+      "countermeasures": "Ensure the target is reachable and supports HTTP(S).",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "CWE-942",
+      "cve": "N/A",
+      "confidence": 80,
+      "category": "Unknown",
+      "impact": "N/A",
+      "cvss": 0,
+      "evidence": "{}"
+    },
+    {
+      "id": "7adc8ad5-e7ad-4ca9-9e4b-038809f88a0a",
+      "title": "Technology Information",
+      "severity": "Info",
+      "description": "Detected technology: Google Font API (version not identified).",
+      "short_description": "Detected technology: Google Font API (version not identified).",
+      "remediation": "N/A",
+      "countermeasures": "N/A",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 0,
+      "category": "Unknown",
+      "impact": "N/A",
+      "cvss": 0,
+      "evidence": "{}"
+    }
+  ],
+  "errors": [],
+  "sub_scans": {
+    "full_scan_20250810_153002_authentication_013921": {
+      "name": "authentication",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_authentication_scanner_014351": {
+      "name": "authentication_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_broken_access_control_scanner_014788": {
+      "name": "broken_access_control_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_brokenaccesscontrol_015412": {
+      "name": "brokenaccesscontrol",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_cors_misconfiguration_scanner_015815": {
+      "name": "cors_misconfiguration_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_corsmisconfiguration_016146": {
+      "name": "corsmisconfiguration",
+      "status": "completed",
+      "results": [
+        {
+          "id": "9db96f92-9491-4cb1-b063-0c92c08a3f5d",
+          "title": "CORS check error",
+          "severity": "Info",
+          "description": "",
+          "short_description": "",
+          "remediation": "Ensure the target is reachable and supports HTTP(S).",
+          "countermeasures": "Ensure the target is reachable and supports HTTP(S).",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "CWE-942",
+          "cve": "N/A",
+          "confidence": 80,
+          "category": "Unknown",
+          "impact": "N/A",
+          "cvss": 0,
+          "evidence": "{}"
+        }
+      ],
+      "errors": []
+    },
+    "full_scan_20250810_153002_csrf_016605": {
+      "name": "csrf",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_csrf_scanner_017040": {
+      "name": "csrf_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_csrf_token_checker_017505": {
+      "name": "csrf_token_checker",
+      "status": "completed",
+      "results": [
+        {
+          "id": "dc433313-9326-44bd-84c8-14881e136f94",
+          "title": "Missing CSRF Token",
+          "severity": "High",
+          "description": "Form at 'https://www.rexcybersolutions.com/' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site Request Forgery (CSRF) attacks.",
+          "short_description": "Form at 'https://www.rexcybersolutions.com/' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site Request Forgery",
+          "remediation": "",
+          "countermeasures": "",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A04:2021 - Insecure Design",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"form_action\": \"https://www.rexcybersolutions.com/\",\n  \"details\": \"No hidden input field resembling a CSRF token found.\"\n}"
+        }
+      ],
+      "errors": []
+    },
+    "full_scan_20250810_153002_csrftokenchecker_017904": {
+      "name": "csrftokenchecker",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_directory_file_enumeration_scanner_018460": {
+      "name": "directory_file_enumeration_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "7eb90b3a-6bfd-4773-a3e9-2764d07ee769",
+          "title": "Exposed Path Found: /robots.txt",
+          "severity": "Medium",
+          "description": "An accessible path was discovered at https://www.rexcybersolutions.com/robots.txt, which returned a status code of 200. This could expose sensitive files, directory listings, or functionality.",
+          "short_description": "An accessible path was discovered at https://www.rexcybersolutions.com/robots.txt, which returned a status code of 200. This could expose se",
+          "remediation": "Ensure that sensitive files and directories are not publicly accessible. Configure your web server to show a 404 Not Found error instead of a 403 Forbidden error for non-existent resources to avoid path enumeration. Restrict access to authorized users where necessary.",
+          "countermeasures": "Ensure that sensitive files and directories are not publicly accessible. Configure your web server to show a 404 Not Found error instead of a 403 Forbidden error for non-existent resources to avoid path enumeration. Restrict access to authorized users where necessary.",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "CWE-538",
+          "cve": "N/A",
+          "confidence": 100,
+          "category": "Unknown",
+          "impact": "Information disclosure, potential for further attacks.",
+          "cvss": 5.3,
+          "evidence": "{}"
+        }
+      ],
+      "errors": []
+    },
+    "full_scan_20250810_153002_directoryfileenumeration_018979": {
+      "name": "directoryfileenumeration",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_open_redirect_scanner_019517": {
+      "name": "open_redirect_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_openredirect_020045": {
+      "name": "openredirect",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_rate_limiting_bruteforce_scanner_020498": {
+      "name": "rate_limiting_bruteforce_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_ratelimitingbruteforce_021006": {
+      "name": "ratelimitingbruteforce",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_security_headers_analyzer_021487": {
+      "name": "security_headers_analyzer",
+      "status": "completed",
+      "results": [
+        {
+          "id": "51082760-e1e7-496e-be97-091e9bab897b",
+          "title": "Missing Strict-Transport-Security Header",
+          "severity": "High",
+          "description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+          "short_description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+          "remediation": "",
+          "countermeasures": "",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": null\n}"
+        },
+        {
+          "id": "ef6745d6-0309-4492-a916-8133aaf5c292",
+          "title": "Missing X-Content-Type-Options Header",
+          "severity": "Medium",
+          "description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+          "short_description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+          "remediation": "",
+          "countermeasures": "",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-Content-Type-Options\",\n  \"recommended_value\": \"nosniff\",\n  \"current_value\": null\n}"
+        },
+        {
+          "id": "1231cfda-2279-452d-a236-5cc32e9a1654",
+          "title": "Misconfigured X-Frame-Options Header",
+          "severity": "Medium",
+          "description": "The X-Frame-Options header is present but may not be optimally configured. Prevents clickjacking attacks",
+          "short_description": "The X-Frame-Options header is present but may not be optimally configured. Prevents clickjacking attacks",
+          "remediation": "",
+          "countermeasures": "",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-Frame-Options\",\n  \"recommended_value\": \"DENY\",\n  \"current_value\": \"SAMEORIGIN\"\n}"
+        },
+        {
+          "id": "1c6e1f8a-a9c6-4e57-9663-452ce2b33698",
+          "title": "Missing X-XSS-Protection Header",
+          "severity": "Medium",
+          "description": "The X-XSS-Protection header is missing. Enables browser's XSS filtering",
+          "short_description": "The X-XSS-Protection header is missing. Enables browser's XSS filtering",
+          "remediation": "",
+          "countermeasures": "",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": null\n}"
+        },
+        {
+          "id": "67bc3c36-52a5-4db9-b820-fcb54e8cbf2a",
+          "title": "Misconfigured Content-Security-Policy Header",
+          "severity": "High",
+          "description": "The Content-Security-Policy header is present but may not be optimally configured. Controls resource loading",
+          "short_description": "The Content-Security-Policy header is present but may not be optimally configured. Controls resource loading",
+          "remediation": "",
+          "countermeasures": "",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": \"frame-ancestors 'self'\"\n}"
+        },
+        {
+          "id": "301672c8-c576-410d-8496-c22451dd6125",
+          "title": "Missing Referrer-Policy Header",
+          "severity": "Low",
+          "description": "The Referrer-Policy header is missing. Controls referrer information",
+          "short_description": "The Referrer-Policy header is missing. Controls referrer information",
+          "remediation": "",
+          "countermeasures": "",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}"
+        },
+        {
+          "id": "a74e483a-6b4a-45ec-a257-84155c370c2d",
+          "title": "Missing Permissions-Policy Header",
+          "severity": "Medium",
+          "description": "The Permissions-Policy header is missing. Controls browser features",
+          "short_description": "The Permissions-Policy header is missing. Controls browser features",
+          "remediation": "",
+          "countermeasures": "",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}"
+        }
+      ],
+      "errors": []
+    },
+    "full_scan_20250810_153002_securityheadersanalyzer_025390": {
+      "name": "securityheadersanalyzer",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_server_side_request_forgery_scanner_030993": {
+      "name": "server_side_request_forgery_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_serversiderequestforgery_031674": {
+      "name": "serversiderequestforgery",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_sql_injection_scanner_032224": {
+      "name": "sql_injection_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_sqlinjection_032750": {
+      "name": "sqlinjection",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_ssl_tls_configuration_audit_scanner_033285": {
+      "name": "ssl_tls_configuration_audit_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_ssltlsconfigurationaudit_033787": {
+      "name": "ssltlsconfigurationaudit",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_subdomain_dns_enumeration_scanner_034347": {
+      "name": "subdomain_dns_enumeration_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_subdomaindnsenumeration_034868": {
+      "name": "subdomaindnsenumeration",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_technology_fingerprint_scanner_035428": {
+      "name": "technology_fingerprint_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "7adc8ad5-e7ad-4ca9-9e4b-038809f88a0a",
+          "title": "Technology Information",
+          "severity": "Info",
+          "description": "Detected technology: Google Font API (version not identified).",
+          "short_description": "Detected technology: Google Font API (version not identified).",
+          "remediation": "N/A",
+          "countermeasures": "N/A",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 0,
+          "category": "Unknown",
+          "impact": "N/A",
+          "cvss": 0,
+          "evidence": "{}"
+        }
+      ],
+      "errors": []
+    },
+    "full_scan_20250810_153002_technology_vulnerabilities_scanner_036040": {
+      "name": "technology_vulnerabilities_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_technologyfingerprint_036639": {
+      "name": "technologyfingerprint",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_technologyvulnerabilities_037140": {
+      "name": "technologyvulnerabilities",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_xss_037675": {
+      "name": "xss",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    },
+    "full_scan_20250810_153002_xss_scanner_038124": {
+      "name": "xss_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": []
+    }
+  },
+  "progress": 100.0,
+  "total_modules": 32,
+  "completed_modules": 32,
+  "deadline": 1754839982.013911,
+  "end_time": "2025-08-10T15:31:29.125835"
+}

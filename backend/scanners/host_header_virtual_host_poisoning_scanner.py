@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import uuid
 from typing import List, Optional, Dict, Any
 import httpx
@@ -6,11 +6,12 @@ from urllib.parse import urlparse
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
+import logging
 
 from backend.scanners.base_scanner import BaseScanner
 from ..types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
 
-logger = get_context_logger(__name__)
+logger = logging.getLogger(__name__)
 
 class HostHeaderVirtualHostPoisoningScanner(BaseScanner):
     """
@@ -25,7 +26,6 @@ class HostHeaderVirtualHostPoisoningScanner(BaseScanner):
         "version": "1.0"
     }
 
-    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="host_header_poisoning_scanner")
     async def scan(self, scan_input: ScanInput) -> List[Dict]:
         start_time = datetime.now()
         scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
@@ -36,7 +36,7 @@ class HostHeaderVirtualHostPoisoningScanner(BaseScanner):
                 "target": scan_input.target,
                 "options": scan_input.options
             })
-            results = await self._perform_scan(scan_input.target, scan_input.options)
+            results = await self._perform_scan(scan_input.target, scan_input.options or {})
             self._update_metrics(True, start_time)
             logger.info("Scan completed", extra={
                 "scanner": self.__class__.__name__,
@@ -126,4 +126,7 @@ class HostHeaderVirtualHostPoisoningScanner(BaseScanner):
                 "host": evil_host,
                 "error": str(e)
             })
-        return None 
+        return None
+
+    def _create_error_finding(self, description: str) -> Dict:
+        return { "type": "error", "severity": Severity.INFO, "title": "Host Header/Virtual Host Poisoning Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 } 

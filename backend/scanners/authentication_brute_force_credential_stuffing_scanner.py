@@ -1,4 +1,4 @@
-from datetime import datetime
+﻿from datetime import datetime
 from typing import List, Dict, Any
 import httpx
 import asyncio
@@ -6,8 +6,9 @@ from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
 from backend.scanners.base_scanner import BaseScanner
 from backend.types.models import ScanInput, Severity, OwaspCategory
+import logging
 
-logger = get_context_logger(__name__)
+logger = logging.getLogger(__name__)
 
 class AuthenticationBruteForceCredentialStuffingScanner(BaseScanner):
     """
@@ -49,7 +50,7 @@ class AuthenticationBruteForceCredentialStuffingScanner(BaseScanner):
             )
             
             # Perform scan
-            results = await self._perform_scan(scan_input.target, scan_input.options)
+            results = await self._perform_scan(scan_input.target, scan_input.options or {})
             
             # Update metrics
             self._update_metrics(True, start_time)
@@ -317,3 +318,6 @@ class AuthenticationBruteForceCredentialStuffingScanner(BaseScanner):
                 )
                 
         return findings 
+
+    def _create_error_finding(self, description: str) -> Dict:
+        return { "type": "error", "severity": Severity.INFO, "title": "Authentication Brute Force/Credential Stuffing Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 } 

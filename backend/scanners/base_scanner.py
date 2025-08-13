@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import logging
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Any
@@ -52,7 +52,6 @@ class BaseScanner(ABC):
             }
         )
 
-    @abstractmethod
     async def scan(self, scan_input: ScanInput) -> List[Dict]:
         """
         Perform a security scan.

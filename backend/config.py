@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional, List
+﻿from typing import Dict, Any, Optional, List
 from pydantic import BaseModel, Field
 from backend.types.scanner_config import ScannerRegistryConfig
 from pydantic_settings import BaseSettings
@@ -62,7 +62,17 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "your-secret-key-here"  # Change this in production
     
     # CORS Settings
-    CORS_ORIGINS: List[str] = ["*"]
+    # Note: When allow_credentials=True, "*" cannot be used. Provide explicit dev origins by default.
+    CORS_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3100",
+        "http://127.0.0.1:3100",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3002",
+        "http://127.0.0.1:3002",
+    ]
     
     # Scanner Settings
     MAX_CONCURRENT_SCANS: int = 5
@@ -74,7 +84,19 @@ class Settings(BaseSettings):
     MAX_MEMORY_MB: int = 1024
     MAX_NETWORK_CONNECTIONS: int = 1000
 
+    # WebSocket/Realtime Settings
+    WS_MAX_REQUESTS_PER_MINUTE: int = 100
+    WS_TIME_WINDOW_SECONDS: int = 60
+
+    # Scanner Orchestration Settings
+    SCANNER_TIMEOUT_SECONDS: int = 180
+    GLOBAL_SCAN_HARD_CAP_SECONDS: int = 0  # 0 or negative disables global hard cap
+
+    # Scanner Registry
+    SCANNER_PRUNING_ENABLED: bool = False
+
     class Config:
         env_file = ".env"
+        extra = "allow"
 
 settings = Settings() 

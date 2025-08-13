@@ -1,4 +1,4 @@
-import asyncio
+﻿import asyncio
 import uuid
 from typing import List, Optional, Dict, Any
 import httpx
@@ -6,11 +6,14 @@ from urllib.parse import urlparse, urlencode, parse_qs
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
+import logging
 
 from backend.scanners.base_scanner import BaseScanner
 from ..types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
+from backend.utils import get_http_client
+from backend.utils.crawler import seed_urls
 
-logger = get_context_logger(__name__)
+logger = logging.getLogger(__name__)
 
 class ServerSideRequestForgeryScanner(BaseScanner):
     """
@@ -25,7 +28,6 @@ class ServerSideRequestForgeryScanner(BaseScanner):
         "version": "1.0"
     }
 
-    @circuit_breaker(failure_threshold=3, recovery_timeout=30.0, name="ssrf_scanner")
     async def scan(self, scan_input: ScanInput) -> List[Dict]:
         start_time = datetime.now()
         scan_id = f"{self.__class__.__name__}_{start_time.strftime('%Y%m%d_%H%M%S')}"
@@ -36,7 +38,7 @@ class ServerSideRequestForgeryScanner(BaseScanner):
                 "target": scan_input.target,
                 "options": scan_input.options
             })
-            results = await self._perform_scan(scan_input.target, scan_input.options)
+            results = await self._perform_scan(scan_input.target, scan_input.options or {})
             self._update_metrics(True, start_time)
             logger.info("Scan completed", extra={
                 "scanner": self.__class__.__name__,
@@ -70,6 +72,7 @@ class ServerSideRequestForgeryScanner(BaseScanner):
         target_url = target
         logger.info(f"Starting Server-Side Request Forgery scan for {target_url}.")
 
+        # Safe, non-destructive SSRF hints: do not use OOB by default; no real internal impact.
         ssrf_payloads = [
             "http://127.0.0.1/",
             "http://localhost/",
@@ -80,26 +83,40 @@ class ServerSideRequestForgeryScanner(BaseScanner):
             "file:///C:/Windows/System32/drivers/etc/hosts",
         ]
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
+        timeout = float(options.get("timeout", 10))
+        use_seeds = bool(options.get("use_seeds", True))
+        max_urls = int(options.get("max_urls", 6))
+
+        async with get_http_client(follow_redirects=True, timeout=timeout) as client:
             tasks = []
-            parsed_url = urlparse(target_url)
-            query_params = parse_qs(parsed_url.query)
+            urls_to_test = [target_url]
+            if use_seeds:
+                try:
+                    urls_to_test.extend(await seed_urls(target_url, max_urls=max_urls))
+                except Exception:
+                    pass
 
-            for param, values in query_params.items():
-                for payload in ssrf_payloads:
-                    new_query = query_params.copy()
-                    new_query[param] = [payload]
-                    test_url = parsed_url._replace(query=urlencode(new_query, doseq=True)).geturl()
-                    tasks.append(self._check_ssrf(client, test_url, payload, param))
-
-            common_ssrf_params = ["url", "image", "file", "path", "link"]
-            for param in common_ssrf_params:
-                if param not in query_params:
+            for base in urls_to_test:
+                parsed_url = urlparse(base)
+                query_params = parse_qs(parsed_url.query)
+                for param, values in query_params.items():
                     for payload in ssrf_payloads:
                         new_query = query_params.copy()
                         new_query[param] = [payload]
                         test_url = parsed_url._replace(query=urlencode(new_query, doseq=True)).geturl()
                         tasks.append(self._check_ssrf(client, test_url, payload, param))
+
+            common_ssrf_params = ["url", "image", "file", "path", "link"]
+            for base in urls_to_test:
+                parsed_url = urlparse(base)
+                query_params = parse_qs(parsed_url.query)
+                for param in common_ssrf_params:
+                    if param not in query_params:
+                        for payload in ssrf_payloads:
+                            new_query = query_params.copy()
+                            new_query[param] = [payload]
+                            test_url = parsed_url._replace(query=urlencode(new_query, doseq=True)).geturl()
+                            tasks.append(self._check_ssrf(client, test_url, payload, param))
 
             results = await asyncio.gather(*tasks)
             for result in results:
@@ -148,4 +165,7 @@ class ServerSideRequestForgeryScanner(BaseScanner):
                     "affected_url": test_url
                 }
             logger.error(f"Error checking SSRF for {test_url}", extra={"error": str(e)})
-        return None 
+        return None
+
+    def _create_error_finding(self, description: str) -> Dict:
+        return { "type": "error", "severity": Severity.INFO, "title": "SSRF Scanner Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 } 

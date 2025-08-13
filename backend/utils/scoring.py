@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+﻿from typing import List, Dict, Any
 
 from backend.types.models import Finding, Severity, OwaspCategory
 
