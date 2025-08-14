@@ -1,225 +1,100 @@
-﻿# Security Scanner
+﻿## Project Nightingale V2 — Security Scanner
 
-A modern, scalable security scanning platform with real-time monitoring and advanced error handling.
+A modern web security scanning platform with robust concurrency, safe HTTP policies, and real-time updates.
 
-## Features
+### Highlights
 
-- **Advanced Security Scanning**: Comprehensive security scanning capabilities with support for multiple scanner types
-- **Real-time Monitoring**: Live updates and progress tracking for ongoing scans
-- **Resource Management**: Intelligent resource allocation and monitoring
-- **Error Recovery**: Circuit breaker pattern for graceful error handling
-- **Structured Logging**: JSON-formatted logs with detailed context
-- **Metrics Collection**: Comprehensive metrics for monitoring and analysis
-- **Plugin System**: Extensible plugin architecture for custom scanners
-- **API-First Design**: RESTful API with OpenAPI documentation
+- Scanners run concurrently with adaptive limits and circuit breakers
+- Shared HTTP client with retries, exponential backoff + jitter, per‑host throttling, optional SSRF guard, host allow/deny lists, and response size caps
+- Structured logging and runtime metrics (HTTP and concurrency) exposed via API
+- Snapshotting and partial results for resilience
+- FastAPI backend with WebSocket updates; React + Tailwind frontend
 
-## Architecture
+### Quick start (Docker)
 
-The system is built with a modular architecture:
-
-- **Scanner Engine**: Core scanning functionality with resource management
-- **Plugin System**: Extensible plugin architecture for custom scanners
-- **API Layer**: FastAPI-based REST API with real-time updates
-- **Monitoring**: Resource monitoring and metrics collection
-- **Error Handling**: Circuit breaker pattern for graceful failure handling
-- **Logging**: Structured logging with context and metrics
-
-## Getting Started
-
-### Prerequisites
-
-- Python 3.8+
-- PostgreSQL 12+
-- Redis (optional, for caching)
-
-### Installation
-
-1. Clone the repository:
+1) From repo root:
 ```bash
-git clone https://github.com/yourusername/security-scanner.git
-cd security-scanner
+docker compose up --build
 ```
 
-2. Create and activate a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
-```
+2) Backend API: `http://localhost:9000`
+- Docs: `http://localhost:9000/docs`
+- Health: `GET /health`
+- Scans: `POST /api/scans/start`, `GET /api/scans/{scan_id}`
+- Metrics: `GET /api/metrics/http-client`, `GET /api/metrics/concurrency`
 
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+3) Frontend: `http://localhost:3002`
 
-4. Set up environment variables:
-```bash
-cp .env.example .env
-# Edit .env with your configuration
-```
-
-5. Initialize the database:
-```bash
-alembic upgrade head
-```
-
-### Running the Application
-
-1. Start the API server:
-```bash
-uvicorn backend.main:app --reload
-```
-
-2. Access the API documentation:
-```
-http://localhost:8000/docs
-```
-
-## API Usage
-
-### Starting a Scan
-
-```python
-import requests
-
-response = requests.post(
-    "http://localhost:8000/api/scans/start",
-    json={
-        "target": "example.com",
-        "scan_type": "vulnerability",
-        "options": {
-            "intensity": "high",
-            "timeout": 300
-        }
-    }
-)
-
-scan_id = response.json()["scan_id"]
-```
-
-### Checking Scan Status
-
-```python
-status = requests.get(f"http://localhost:8000/api/scans/status/{scan_id}")
-print(status.json())
-```
-
-### Getting Real-time Updates
-
-```python
-import websockets
-
-async with websockets.connect("ws://localhost:8000/api/realtime/updates") as ws:
-    while True:
-        update = await ws.recv()
-        print(update)
-```
-
-## Development
-
-### Running Tests
-
-Backend (fast targeted tests):
+### Local dev (backend)
 
 ```bash
-python -m pytest -q backend/tests/test_enrichment_and_signature.py
+python -m venv .venv
+. .venv/bin/activate  # or .venv\Scripts\activate on Windows
+pip install -r backend/requirements.txt
+uvicorn backend.main:app --host 0.0.0.0 --port 9000 --reload
 ```
 
-Frontend (unit tests):
+### Core APIs
 
+- Start scan
 ```bash
-cd frontend && npm test
+curl -sX POST http://localhost:9000/api/scans/start \
+  -H 'content-type: application/json' \
+  -d '{"target":"https://example.com","scan_type":"full","options":{}}'
 ```
 
-### Code Style
-
-Pre-commit hooks are available. To install:
-
+- Scan status
 ```bash
-pip install pre-commit && pre-commit install
+curl -s http://localhost:9000/api/scans/{scan_id}
 ```
 
-Manual runs:
-
+- Results (compact)
 ```bash
-black . && isort . && flake8
+curl -s http://localhost:9000/api/scans/{scan_id}/results
 ```
 
-## Monitoring
-
-The application includes comprehensive monitoring:
-
-- **Resource Monitoring**: CPU, memory, and network usage
-- **Circuit Breakers**: Automatic error recovery
-- **Structured Logging**: JSON-formatted logs with context
-- **Metrics**: Prometheus metrics for monitoring
-
-### Logging
-
-Logs are written in JSON format with detailed context:
-
-```json
-{
-    "timestamp": "2023-11-15T10:30:00Z",
-    "level": "INFO",
-    "message": "Scan started",
-    "scan_id": "scan_123",
-    "target": "example.com",
-    "scan_type": "vulnerability"
-}
+- Reports
+```bash
+curl -s http://localhost:9000/api/reports/scans/{scan_id}/results
 ```
+
+### Network safety and HTTP resilience
+
+Environment variables (set in `.env` or docker‑compose):
+- `BLOCK_PRIVATE_NETWORKS` (bool): block private/loopback by default
+- `HTTP_MAX_RETRIES` (int), `HTTP_BACKOFF_BASE_SECONDS` (float), `HTTP_BACKOFF_MAX_SECONDS` (float)
+- `HTTP_PER_HOST_MIN_INTERVAL_MS` (int): min interval between requests to same host
+- `HTTP_ALLOWED_HOSTS` (list[str]): allowlist; if non‑empty, other hosts are blocked
+- `HTTP_BLOCKED_HOSTS` (list[str]): blocklist
+- `HTTP_MAX_RESPONSE_BYTES` (int): truncate response content above limit (0 disables)
+- `HTTP_ACCEPT_LANGUAGE` (str): default Accept‑Language
+
+### Concurrency and stability
+
+- Priority scheduling, adaptive concurrency by memory pressure
+- Per‑scanner circuit breaker and global breaker
+- Queue fairness and immediate start when capacity exists
 
 ### Metrics
 
-Metrics are available at `/metrics` endpoint:
+- HTTP client: cache size, active requests, retries, throttle waits, SSRF blocks
+  - `GET /api/metrics/http-client`
+- Concurrency manager: active/queued/completed/failed, avg exec time, memory usage, circuit breaker status
+  - `GET /api/metrics/concurrency`
 
-- `scanner_total_scans`: Total number of scans
-- `scanner_successful_scans`: Number of successful scans
-- `scanner_failed_scans`: Number of failed scans
-- `scanner_duration_seconds`: Scan duration in seconds
-- `resource_cpu_percent`: CPU usage percentage
-- `resource_memory_mb`: Memory usage in MB
-- `resource_network_connections`: Number of network connections
+### Testing
 
-## Environment Variables
+Run targeted backend tests:
+```bash
+python -m pytest -q backend/tests
+```
 
-Create a `.env` file in the project root (automatically created by setup scripts) with the following variables:
+### Repository layout
 
-### Backend settings
-- `BACKEND_HOST` - Host for backend server (default: 0.0.0.0)
-- `BACKEND_PORT` - Port for backend server (default: 8000)
-- `DEBUG` - Enable debug mode (default: True)
-- `SECRET_KEY` - Secret key for JWT and security (change in production!)
+- `backend/` FastAPI app, scanners, engine, utils
+- `frontend/` React app
+- `docker-compose.yml` local dev stack
 
-### CORS settings
-- `CORS_ORIGINS` - Allowed origins for CORS (default: *)
+### License
 
-### Scanner settings
-- `MAX_CONCURRENT_SCANS` - Maximum concurrent scans (default: 5)
-- `SCAN_TIMEOUT` - Scan timeout in seconds (default: 3600)
-- `MAX_RETRIES` - Maximum scan retries (default: 3)
-- `SCANNER_DEFAULT_TIMEOUT` - Default scanner timeout (default: 30)
-- `SCANNER_MAX_RETRIES` - Default scanner max retries (default: 3)
-- `SCANNER_BATCH_SIZE` - Default scanner batch size (default: 5)
-
-### Resource limits
-- `MAX_CPU_PERCENT` - Max CPU percent (default: 80)
-- `MAX_MEMORY_MB` - Max memory in MB (default: 1024)
-- `MAX_NETWORK_CONNECTIONS` - Max network connections (default: 1000)
-
-### Frontend settings
-- `REACT_APP_API_URL` - URL for frontend to reach backend API (default: http://localhost:8000)
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
- 
+MIT

@@ -2,9 +2,6 @@
 import asyncio
 import uuid
 from typing import List, Optional, Dict, Any
-import httpx
-from urllib.parse import urljoin
-from datetime import datetime
 import logging
 
 from .base_scanner import BaseScanner
@@ -12,6 +9,9 @@ from ..types.models import ScanInput, Severity, OwaspCategory
 from backend.scanners.scanner_registry import ScannerRegistry
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
+from backend.utils import get_http_client
+from urllib.parse import urljoin
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -78,7 +78,7 @@ class BackupAndSensitiveFileFinderScanner(BaseScanner):
         ]
 
         try:
-            async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+            async with get_http_client(follow_redirects=True, timeout=30) as client:
                 tasks = []
                 for file_path in common_files:
                     full_url = urljoin(target_url, file_path)

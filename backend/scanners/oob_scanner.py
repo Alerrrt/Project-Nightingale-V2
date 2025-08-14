@@ -3,6 +3,7 @@ import uuid
 from typing import List, Dict, Any
 from datetime import datetime
 import httpx
+from backend.utils import get_http_client
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
 import logging
@@ -72,7 +73,7 @@ class OobScanner(BaseScanner):
         # Perform actual OOB detection
         try:
             # Check for potential OOB vulnerabilities in request parameters
-            async with httpx.AsyncClient(timeout=30) as client:
+            async with get_http_client(timeout=30) as client:
                 response = await client.get(target)
                 
                 # Check for potential OOB indicators in response

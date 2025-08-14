@@ -1,12 +1,12 @@
 ﻿from datetime import datetime
 from typing import List, Dict, Any
-import httpx
 import re
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
 from backend.scanners.base_scanner import BaseScanner
 from backend.types.models import ScanInput, Severity, OwaspCategory
 import logging
+from backend.utils import get_http_client
 
 logger = logging.getLogger(__name__)
 
@@ -140,7 +140,7 @@ class AuthenticationScanner(BaseScanner):
             'token'
         ]
         
-        async with httpx.AsyncClient(timeout=timeout) as client:
+        async with get_http_client(timeout=timeout) as client:
             try:
                 # Check for login endpoints
                 for endpoint in login_endpoints:

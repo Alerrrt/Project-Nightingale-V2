@@ -1,7 +1,7 @@
 ﻿import asyncio
 import uuid
 from typing import List, Dict, Any
-import httpx
+from backend.utils import get_http_client
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
@@ -102,7 +102,7 @@ class SecurityMisconfigurationScanner(BaseScanner):
         findings = []
         timeout = options.get('timeout', 10)
         
-        async with httpx.AsyncClient(timeout=timeout) as client:
+        async with get_http_client(timeout=timeout) as client:
             try:
                 response = await client.get(target)
                 headers = response.headers

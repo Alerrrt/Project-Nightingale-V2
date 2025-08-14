@@ -4,7 +4,7 @@ from backend.utils.logging_config import get_context_logger
 from backend.scanners.base_scanner import BaseScanner
 from typing import List, Dict
 from backend.types.models import ScanInput, Severity, OwaspCategory
-import httpx
+from backend.utils import get_http_client
 import re
 import logging
 
@@ -94,7 +94,7 @@ class CSRFScanner(BaseScanner):
         findings = []
         timeout = options.get('timeout', 10)
         
-        async with httpx.AsyncClient(timeout=timeout) as client:
+        async with get_http_client(timeout=timeout) as client:
             try:
                 # Get the page content
                 response = await client.get(target)

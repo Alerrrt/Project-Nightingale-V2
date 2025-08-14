@@ -70,6 +70,12 @@ class ScannerConcurrencyManager:
         
         # Thread pool for CPU-bound operations
         self._thread_pool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="ScannerWorker")
+
+        # Per-scanner circuit breaker
+        self._per_scanner_failures: Dict[str, int] = {}
+        self._per_scanner_open_until: Dict[str, float] = {}
+        self._per_scanner_threshold = 3
+        self._per_scanner_cooldown = 120.0  # seconds
     
     async def start(self):
         """Start the concurrency manager."""
@@ -119,6 +125,12 @@ class ScannerConcurrencyManager:
         # Check circuit breaker
         if self._is_circuit_breaker_open():
             raise RuntimeError("Circuit breaker is open - too many failures")
+
+        # Per-scanner circuit breaker: skip scanners that are temporarily open
+        now = time.time()
+        open_until = self._per_scanner_open_until.get(scanner_name)
+        if open_until and now < open_until:
+            raise RuntimeError(f"Circuit breaker open for scanner {scanner_name}")
         
         # Create scanner task
         task = ScannerTask(
@@ -129,10 +141,18 @@ class ScannerConcurrencyManager:
             options=options,
             created_at=time.time()
         )
-        
-        # Add to queue
-        await self._task_queue.put(task)
-        logger.debug(f"Submitted scanner {scanner_name} with priority {priority.name}")
+        # If capacity is available, start immediately to avoid queue pauses
+        try:
+            if len(self._active_tasks) < self.max_concurrent_scanners and self._check_resource_limits():
+                await self._start_task(task)
+            else:
+                # Add to queue
+                await self._task_queue.put(task)
+            logger.debug(f"Submitted scanner {scanner_name} with priority {priority.name}")
+        except Exception:
+            # Fallback to queue on any error starting immediately
+            await self._task_queue.put(task)
+            logger.debug(f"Enqueued scanner {scanner_name} with priority {priority.name}")
         
         return scanner_id
     
@@ -156,13 +176,18 @@ class ScannerConcurrencyManager:
                                 await self._start_task(task)
                                 continue
                 
-                # Process regular queue
-                if not self._task_queue.empty() and len(self._active_tasks) < self.max_concurrent_scanners:
+                # Process regular queue greedily until capacity filled
+                while not self._task_queue.empty() and len(self._active_tasks) < self.max_concurrent_scanners:
                     try:
-                        task = await asyncio.wait_for(self._task_queue.get(), timeout=0.1)
+                        # If priority queues are enabled, attempt to pick a higher-priority task opportunistically
+                        task = None
+                        if self.priority_queues:
+                            task = await self._get_next_priority_task()
+                        if task is None:
+                            task = self._task_queue.get_nowait()
                         await self._start_task(task)
-                    except asyncio.TimeoutError:
-                        continue
+                    except asyncio.QueueEmpty:
+                        break
                 
                 # Check for completed tasks
                 await self._check_completed_tasks()
@@ -239,6 +264,12 @@ class ScannerConcurrencyManager:
                 if self._circuit_breaker_failures >= self._circuit_breaker_threshold:
                     self._last_circuit_breaker_trip = time.time()
                     logger.warning(f"Circuit breaker opened after {self._circuit_breaker_failures} failures")
+
+                # Per-scanner failure tracking
+                self._per_scanner_failures[task.scanner_name] = self._per_scanner_failures.get(task.scanner_name, 0) + 1
+                if self._per_scanner_failures[task.scanner_name] >= self._per_scanner_threshold:
+                    self._per_scanner_open_until[task.scanner_name] = time.time() + self._per_scanner_cooldown
+                    logger.warning(f"Per-scanner circuit opened for {task.scanner_name} for {self._per_scanner_cooldown}s")
             
         except Exception as e:
             # Mark as failed
@@ -250,6 +281,12 @@ class ScannerConcurrencyManager:
             if self._circuit_breaker_failures >= self._circuit_breaker_threshold:
                 self._last_circuit_breaker_trip = time.time()
                 logger.warning(f"Circuit breaker opened after {self._circuit_breaker_failures} failures")
+
+            # Per-scanner failure tracking
+            self._per_scanner_failures[task.scanner_name] = self._per_scanner_failures.get(task.scanner_name, 0) + 1
+            if self._per_scanner_failures[task.scanner_name] >= self._per_scanner_threshold:
+                self._per_scanner_open_until[task.scanner_name] = time.time() + self._per_scanner_cooldown
+                logger.warning(f"Per-scanner circuit opened for {task.scanner_name} for {self._per_scanner_cooldown}s")
             
             logger.error(f"Scanner {task.scanner_name} failed: {e}")
             
@@ -368,7 +405,8 @@ class ScannerConcurrencyManager:
             "current_memory_usage": self._memory_monitor.memory_percent(),
             "max_concurrent_scanners": self.max_concurrent_scanners,
             "circuit_breaker_failures": self._circuit_breaker_failures,
-            "circuit_breaker_open": self._is_circuit_breaker_open()
+            "circuit_breaker_open": self._is_circuit_breaker_open(),
+            "per_scanner_open": {k: (time.time() < v) for k, v in self._per_scanner_open_until.items()}
         }
     
     def get_task_status(self, scanner_id: str) -> Optional[Dict[str, Any]]:

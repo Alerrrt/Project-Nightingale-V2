@@ -4,7 +4,7 @@ import pickle
 import base64
 from typing import List, Dict, Any
 from datetime import datetime
-import httpx
+from backend.utils import get_http_client
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
 
@@ -92,7 +92,7 @@ class InsecureDeserializationScanner(BaseScanner):
             }
         ]
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+        async with get_http_client(follow_redirects=True, timeout=30) as client:
             for payload in test_payloads:
                 try:
                     # Try different content types
@@ -141,7 +141,7 @@ class InsecureDeserializationScanner(BaseScanner):
                                 "affected_url": target_url
                             })
 
-                except httpx.RequestError as e:
+                except Exception as e:
                     logger.error(f"Error testing deserialization", extra={
                         "target": target_url,
                         "content_type": content_type,

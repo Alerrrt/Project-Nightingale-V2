@@ -1,7 +1,7 @@
 ﻿import asyncio
 import uuid
 from typing import List, Optional, Dict, Any
-import httpx
+from backend.utils import get_http_client
 from urllib.parse import urlparse
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
@@ -81,7 +81,7 @@ class HostHeaderVirtualHostPoisoningScanner(BaseScanner):
             "[::1]",
         ]
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
+        async with get_http_client(follow_redirects=True, timeout=10) as client:
             tasks = []
             for evil_host in evil_hosts:
                 tasks.append(self._check_host_header_poisoning(client, target_url, evil_host))

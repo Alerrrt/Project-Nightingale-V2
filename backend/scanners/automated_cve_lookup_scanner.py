@@ -1,13 +1,11 @@
 ﻿import asyncio
 from typing import List, Optional, Dict
 from datetime import datetime
-import httpx
-from backend.utils.circuit_breaker import circuit_breaker
-from backend.utils.logging_config import get_context_logger
 import logging
 
 from .base_scanner import BaseScanner
 from ..types.models import ScanInput, Severity, OwaspCategory
+from backend.utils import get_http_client
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +67,7 @@ class AutomatedCVELookupScanner(BaseScanner):
         logger.info(f"Starting Automated CVE Lookup for {target_url}")
 
         try:
-            async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+            async with get_http_client(follow_redirects=True, timeout=30) as client:
                 response = await client.get(target_url)
                 response.raise_for_status()
 
@@ -119,7 +117,7 @@ class AutomatedCVELookupScanner(BaseScanner):
                         "x_powered_by": x_powered_by
                     })
 
-        except httpx.RequestError as e:
+        except Exception as e:
             logger.error(f"Error fetching target for Automated CVE Lookup", extra={
                 "target": target_url,
                 "error": str(e)

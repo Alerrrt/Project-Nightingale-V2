@@ -3,6 +3,7 @@ import uuid
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 import httpx
+from backend.utils import get_http_client
 from urllib.parse import urljoin, urlparse
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
@@ -74,7 +75,7 @@ class OpenRedirectFinderScanner(BaseScanner):
         redirect_params = ["next", "redirect", "url", "dest", "continue", "return_to"]
         evil_url = "https://evil.com/malicious_page"
 
-        async with httpx.AsyncClient(follow_redirects=False, timeout=30) as client:
+        async with get_http_client(follow_redirects=False, timeout=30) as client:
             # Fetch the main page to find potential links/forms
             try:
                 response = await client.get(base_url)
@@ -106,7 +107,7 @@ class OpenRedirectFinderScanner(BaseScanner):
         logger.info(f"Completed Open Redirect scan for {base_url}. Found {len(findings)} issues.")
         return findings
 
-    async def _check_redirect(self, client: httpx.AsyncClient, test_url: str, param: str, evil_url: str) -> Optional[Dict]:
+    async def _check_redirect(self, client, test_url: str, param: str, evil_url: str) -> Optional[Dict]:
         try:
             response = await client.get(test_url)
             # Check for 3xx redirect status codes

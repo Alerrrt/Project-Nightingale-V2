@@ -1,10 +1,11 @@
 ﻿import asyncio
 from typing import List, Dict, Any
 from datetime import datetime
-import httpx
+import logging
+
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
-import logging
+from backend.utils import get_http_client
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
@@ -94,7 +95,7 @@ class InsufficientLoggingAndMonitoringScanner(BaseScanner):
             }
         ]
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+        async with get_http_client(follow_redirects=True, timeout=30) as client:
             for test_case in test_cases:
                 try:
                     url = f"{target_url.rstrip('/')}/{test_case['path'].lstrip('/')}"
@@ -136,7 +137,7 @@ class InsufficientLoggingAndMonitoringScanner(BaseScanner):
                                 "affected_url": url
                             })
 
-                except httpx.RequestError as e:
+                except Exception as e:
                     logger.error(f"Error testing logging", extra={
                         "url": url,
                         "test_case": test_case['description'],

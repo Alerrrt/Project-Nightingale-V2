@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 import asyncio
 from typing import List, Dict, Any
-import httpx
+from backend.utils import get_http_client
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
@@ -119,7 +119,7 @@ class XxeScanner(BaseScanner):
         ]
 
         try:
-            async with httpx.AsyncClient(timeout=30) as client:
+            async with get_http_client(timeout=30) as client:
                 for content_type in content_types:
                     headers = {"Content-Type": content_type}
 

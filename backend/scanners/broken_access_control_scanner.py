@@ -1,6 +1,6 @@
 ﻿from datetime import datetime
 from typing import List, Dict, Any
-import httpx
+from backend.utils import get_http_client
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
 from backend.scanners.base_scanner import BaseScanner
@@ -133,7 +133,7 @@ class BrokenAccessControlScanner(BaseScanner):
             'support'
         ]
         
-        async with httpx.AsyncClient(timeout=timeout) as client:
+        async with get_http_client(timeout=timeout) as client:
             try:
                 # Test each protected endpoint
                 for endpoint in protected_endpoints:

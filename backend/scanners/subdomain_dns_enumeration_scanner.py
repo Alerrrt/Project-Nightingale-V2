@@ -1,7 +1,7 @@
 ﻿import asyncio
 import uuid
 from typing import List, Optional, Dict, Any
-import httpx
+from backend.utils import get_http_client
 from urllib.parse import urlparse
 import dns.resolver
 from datetime import datetime
@@ -102,7 +102,7 @@ class SubdomainDNSEnumerationScanner(BaseScanner):
 
             # Optionally, make an HTTP request to confirm it's an active web host
             try:
-                async with httpx.AsyncClient(follow_redirects=True, timeout=5) as client:
+                async with get_http_client(follow_redirects=True, timeout=5) as client:
                     # Construct a URL for the subdomain, preserving scheme from original target
                     subdomain_url = f"{urlparse(base_url).scheme}://{subdomain}"
                     response = await client.get(subdomain_url)
@@ -122,7 +122,7 @@ class SubdomainDNSEnumerationScanner(BaseScanner):
                             "recommendation": "Review this subdomain for unintended exposures or vulnerabilities. Ensure it's properly configured and secured.",
                             "affected_url": subdomain_url
                         }
-            except httpx.RequestError as e:
+            except Exception as e:
                 logger.warning(f"HTTP request failed for {subdomain}", extra={"error": str(e)})
                 return {
                     "type": "subdomain_discovered_http_unreachable",

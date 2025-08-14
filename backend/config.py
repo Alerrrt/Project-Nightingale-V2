@@ -95,6 +95,17 @@ class Settings(BaseSettings):
     # Scanner Registry
     SCANNER_PRUNING_ENABLED: bool = False
 
+    # HTTP Client / Network Safety
+    BLOCK_PRIVATE_NETWORKS: bool = False
+    HTTP_MAX_RETRIES: int = 2
+    HTTP_BACKOFF_BASE_SECONDS: float = 0.2
+    HTTP_BACKOFF_MAX_SECONDS: float = 5.0
+    HTTP_PER_HOST_MIN_INTERVAL_MS: int = 50
+    HTTP_ALLOWED_HOSTS: List[str] = []
+    HTTP_BLOCKED_HOSTS: List[str] = []
+    HTTP_MAX_RESPONSE_BYTES: int = 0  # 0 disables size limit
+    HTTP_ACCEPT_LANGUAGE: str = "en-US,en;q=0.9"
+
     class Config:
         env_file = ".env"
         extra = "allow"

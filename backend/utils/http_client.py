@@ -2,11 +2,38 @@ import asyncio
 import hashlib
 import json
 import time
-from typing import AsyncIterator, Optional, Dict, Any, Tuple
+import random
+from typing import AsyncIterator, Optional, Dict, Any, Tuple, List
 from contextlib import asynccontextmanager
 import httpx
 from collections import OrderedDict
 import logging
+from urllib.parse import urlparse
+import ipaddress
+import socket
+
+try:
+    # Optional settings integration
+    from backend.config import settings as _app_settings
+    _DEFAULT_BLOCK_PRIVATE = bool(getattr(_app_settings, 'BLOCK_PRIVATE_NETWORKS', False))
+    _DEFAULT_HTTP_MAX_RETRIES = int(getattr(_app_settings, 'HTTP_MAX_RETRIES', 2))
+    _DEFAULT_HTTP_BACKOFF_BASE = float(getattr(_app_settings, 'HTTP_BACKOFF_BASE_SECONDS', 0.2))
+    _DEFAULT_HTTP_BACKOFF_MAX = float(getattr(_app_settings, 'HTTP_BACKOFF_MAX_SECONDS', 5.0))
+    _DEFAULT_HTTP_PER_HOST_INTERVAL_MS = int(getattr(_app_settings, 'HTTP_PER_HOST_MIN_INTERVAL_MS', 50))
+    _DEFAULT_ALLOWED_HOSTS = list(getattr(_app_settings, 'HTTP_ALLOWED_HOSTS', []) or [])
+    _DEFAULT_BLOCKED_HOSTS = list(getattr(_app_settings, 'HTTP_BLOCKED_HOSTS', []) or [])
+    _DEFAULT_MAX_RESPONSE_BYTES = int(getattr(_app_settings, 'HTTP_MAX_RESPONSE_BYTES', 0))
+    _DEFAULT_ACCEPT_LANGUAGE = str(getattr(_app_settings, 'HTTP_ACCEPT_LANGUAGE', 'en-US,en;q=0.9'))
+except Exception:
+    _DEFAULT_BLOCK_PRIVATE = False
+    _DEFAULT_HTTP_MAX_RETRIES = 2
+    _DEFAULT_HTTP_BACKOFF_BASE = 0.2
+    _DEFAULT_HTTP_BACKOFF_MAX = 5.0
+    _DEFAULT_HTTP_PER_HOST_INTERVAL_MS = 50
+    _DEFAULT_ALLOWED_HOSTS = []
+    _DEFAULT_BLOCKED_HOSTS = []
+    _DEFAULT_MAX_RESPONSE_BYTES = 0
+    _DEFAULT_ACCEPT_LANGUAGE = 'en-US,en;q=0.9'
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +94,18 @@ class SharedHTTPClient:
                  max_keepalive_connections: int = 20,
                  keepalive_expiry: float = 30.0,
                  cache_max_size: int = 1000,
-                 cache_default_ttl: int = 300):
+                 cache_default_ttl: int = 300,
+                 # Retry configuration
+                 default_max_retries: int = _DEFAULT_HTTP_MAX_RETRIES,
+                 backoff_base_seconds: float = _DEFAULT_HTTP_BACKOFF_BASE,
+                 backoff_max_seconds: float = _DEFAULT_HTTP_BACKOFF_MAX,
+                 retry_status_codes: Optional[List[int]] = None,
+                 # Simple per-host throttling to avoid hammering a single origin
+                 per_host_min_interval_ms: int = _DEFAULT_HTTP_PER_HOST_INTERVAL_MS,
+                 allowed_hosts: Optional[List[str]] = None,
+                 blocked_hosts: Optional[List[str]] = None,
+                 max_response_bytes: int = _DEFAULT_MAX_RESPONSE_BYTES,
+                 accept_language: str = _DEFAULT_ACCEPT_LANGUAGE):
         
         self.max_connections = max_connections
         self.max_keepalive_connections = max_keepalive_connections
@@ -75,7 +113,29 @@ class SharedHTTPClient:
         self.cache = HTTPResponseCache(cache_max_size, cache_default_ttl)
         self._active_requests: Dict[str, asyncio.Task] = {}
         self._request_lock = asyncio.Lock()
+        self._host_lock = asyncio.Lock()
+        self._host_next_available: Dict[str, float] = {}
+        self._metrics: Dict[str, int] = {
+            "retries": 0,
+            "throttle_waits": 0,
+            "ssrf_blocks": 0,
+        }
         
+        # Retry policy
+        self.default_max_retries = default_max_retries
+        self.backoff_base_seconds = backoff_base_seconds
+        self.backoff_max_seconds = backoff_max_seconds
+        self.retry_status_codes = retry_status_codes or [429, 500, 502, 503, 504]
+        
+        # Throttling
+        self.per_host_min_interval = max(0.0, per_host_min_interval_ms / 1000.0)
+        
+        # Policy
+        self.allowed_hosts = set((allowed_hosts if allowed_hosts is not None else _DEFAULT_ALLOWED_HOSTS))
+        self.blocked_hosts = set((blocked_hosts if blocked_hosts is not None else _DEFAULT_BLOCKED_HOSTS))
+        self.max_response_bytes = max(0, int(max_response_bytes))
+        self.accept_language = accept_language
+
         # Connection pool limits
         self._limits = httpx.Limits(
             max_connections=max_connections,
@@ -90,7 +150,8 @@ class SharedHTTPClient:
                           headers: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
         """Get client configuration with defaults."""
         default_headers = {
-            "User-Agent": "NightingaleScanner/2.0 (+https://project-nightingale.dev)"
+            "User-Agent": "NightingaleScanner/2.0 (+https://project-nightingale.dev)",
+            "Accept-Language": self.accept_language,
         }
         
         merged_headers = {**default_headers, **(headers or {})}
@@ -103,10 +164,29 @@ class SharedHTTPClient:
             "limits": self._limits
         }
     
+    def _make_request_id(self, method: str, url: str, headers: Dict,
+                         body: Optional[str] = None,
+                         params: Optional[Dict[str, Any]] = None,
+                         json_payload: Optional[Any] = None,
+                         data: Optional[Any] = None) -> str:
+        try:
+            params_part = hash(frozenset((params or {}).items()))
+        except Exception:
+            params_part = hash(str(params))
+        try:
+            json_part = hash(json.dumps(json_payload, sort_keys=True)) if json_payload is not None else 0
+        except Exception:
+            json_part = hash(str(json_payload))
+        data_part = hash(str(data)) if data is not None else 0
+        return f"{method}:{url}:{hash(frozenset(headers.items()))}:{hash(body)}:{params_part}:{json_part}:{data_part}"
+
     async def _deduplicate_request(self, method: str, url: str, headers: Dict, 
-                                  body: Optional[str] = None) -> Optional[Any]:
+                                  body: Optional[str] = None,
+                                  params: Optional[Dict[str, Any]] = None,
+                                  json_payload: Optional[Any] = None,
+                                  data: Optional[Any] = None) -> Optional[Any]:
         """Check if identical request is already in progress and wait for result."""
-        request_id = f"{method}:{url}:{hash(frozenset(headers.items()))}:{hash(body)}"
+        request_id = self._make_request_id(method, url, headers, body, params, json_payload, data)
         
         async with self._request_lock:
             if request_id in self._active_requests:
@@ -121,9 +201,12 @@ class SharedHTTPClient:
             return None
     
     async def _mark_request_complete(self, method: str, url: str, headers: Dict, 
-                                    body: Optional[str] = None) -> None:
+                                    body: Optional[str] = None,
+                                    params: Optional[Dict[str, Any]] = None,
+                                    json_payload: Optional[Any] = None,
+                                    data: Optional[Any] = None) -> None:
         """Mark request as complete and remove from active requests."""
-        request_id = f"{method}:{url}:{hash(frozenset(headers.items()))}:{hash(body)}"
+        request_id = self._make_request_id(method, url, headers, body, params, json_payload, data)
         async with self._request_lock:
             if request_id in self._active_requests:
                 del self._active_requests[request_id]
@@ -133,12 +216,45 @@ class SharedHTTPClient:
                      url: str,
                      headers: Optional[Dict[str, str]] = None,
                      body: Optional[str] = None,
+                     params: Optional[Dict[str, Any]] = None,
+                     json: Optional[Any] = None,
+                     data: Optional[Any] = None,
+                     cookies: Optional[Dict[str, Any]] = None,
                      timeout: float = 30.0,
                      verify: bool = False,
                      follow_redirects: bool = True,
                      use_cache: bool = True,
-                     cache_ttl: Optional[int] = None) -> httpx.Response:
+                     cache_ttl: Optional[int] = None,
+                     # Override retry policy per call if desired
+                     max_retries: Optional[int] = None,
+                     backoff_base_seconds: Optional[float] = None,
+                     backoff_max_seconds: Optional[float] = None,
+                     retry_status_codes: Optional[List[int]] = None,
+                     # SSRF guard options
+                     block_private_networks: Optional[bool] = None) -> httpx.Response:
         """Make an HTTP request with caching and deduplication."""
+        # Host allow/deny
+        parsed = urlparse(url)
+        host = parsed.hostname or ''
+        if self.allowed_hosts and host not in self.allowed_hosts:
+            logger.warning("HTTP blocked by allowlist", extra={"url": url, "host": host, "component": "http_client"})
+            raise RuntimeError("Blocked by allowlist policy")
+        if self.blocked_hosts and host in self.blocked_hosts:
+            logger.warning("HTTP blocked by blocklist", extra={"url": url, "host": host, "component": "http_client"})
+            raise RuntimeError("Blocked by blocklist policy")
+
+        # SSRF safeguard (configurable)
+        allow_public_only = _DEFAULT_BLOCK_PRIVATE if block_private_networks is None else bool(block_private_networks)
+        if allow_public_only and not self._is_public_url(url):
+            try:
+                self._metrics["ssrf_blocks"] += 1
+            except Exception:
+                pass
+            logger.warning(
+                "HTTP request blocked by SSRF safeguard",
+                extra={"url": url, "component": "http_client", "reason": "private_network"}
+            )
+            raise RuntimeError("Blocked by SSRF safeguard: private or disallowed network destination")
         
         # Check cache first
         if use_cache and method.upper() in ['GET', 'HEAD']:
@@ -147,7 +263,7 @@ class SharedHTTPClient:
                 return cached_response
         
         # Check for duplicate requests
-        dedup_result = await self._deduplicate_request(method, url, headers or {}, body)
+        dedup_result = await self._deduplicate_request(method, url, headers or {}, body, params, json, data)
         if dedup_result:
             return dedup_result
         
@@ -155,25 +271,206 @@ class SharedHTTPClient:
         async def _make_request():
             try:
                 config = self._get_client_config(timeout, verify, follow_redirects, headers)
+                chosen_max_retries = self.default_max_retries if max_retries is None else max(0, int(max_retries))
+                chosen_backoff_base = self.backoff_base_seconds if backoff_base_seconds is None else max(0.0, float(backoff_base_seconds))
+                chosen_backoff_max = self.backoff_max_seconds if backoff_max_seconds is None else max(0.0, float(backoff_max_seconds))
+                chosen_retry_statuses = self.retry_status_codes if retry_status_codes is None else list(retry_status_codes)
+
+                last_exc: Optional[Exception] = None
+                attempt = 0
                 async with httpx.AsyncClient(**config) as client:
-                    response = await client.request(method, url, headers=config['headers'], content=body)
-                    
-                    # Cache successful GET/HEAD responses
-                    if use_cache and method.upper() in ['GET', 'HEAD'] and response.status_code < 400:
-                        await self.cache.set(method, url, headers or {}, body, response, cache_ttl)
-                    
-                    return response
+                    while attempt <= chosen_max_retries:
+                        # Per-host throttle
+                        try:
+                            await self._throttle_host(url)
+                        except Exception:
+                            # Throttling should never break the request; continue anyway
+                            pass
+
+                        try:
+                            response = await client.request(
+                                method,
+                                url,
+                                headers=config['headers'],
+                                content=body,
+                                params=params,
+                                json=json,
+                                data=data,
+                                cookies=cookies,
+                            )
+                            # Optionally cap response size for safety (streaming not used here; lightweight check)
+                            if self.max_response_bytes and len(response.content or b"") > self.max_response_bytes:
+                                logger.warning(
+                                    "HTTP response truncated by size limit",
+                                    extra={"url": url, "limit_bytes": self.max_response_bytes, "component": "http_client"}
+                                )
+                                # Create a shallow clone with truncated content
+                                truncated = httpx.Response(
+                                    status_code=response.status_code,
+                                    headers=response.headers,
+                                    request=response.request,
+                                    content=(response.content or b"")[: self.max_response_bytes],
+                                )
+                                response = truncated
+                            # Retry on certain response codes
+                            if response.status_code in chosen_retry_statuses:
+                                if attempt >= chosen_max_retries:
+                                    break
+                                # Honor Retry-After when available
+                                retry_after = 0.0
+                                try:
+                                    ra = response.headers.get('Retry-After')
+                                    if ra:
+                                        if ra.isdigit():
+                                            retry_after = float(ra)
+                                        else:
+                                            # HTTP-date not parsed; ignore for simplicity
+                                            pass
+                                except Exception:
+                                    pass
+                                await self._sleep_with_backoff(attempt, chosen_backoff_base, chosen_backoff_max, retry_after)
+                                try:
+                                    self._metrics["retries"] += 1
+                                except Exception:
+                                    pass
+                                logger.info(
+                                    "HTTP retry due to status",
+                                    extra={
+                                        "url": url,
+                                        "status": response.status_code,
+                                        "attempt": attempt + 1,
+                                        "component": "http_client"
+                                    }
+                                )
+                                attempt += 1
+                                continue
+                            # Success path
+                            if use_cache and method.upper() in ['GET', 'HEAD'] and response.status_code < 400:
+                                await self.cache.set(method, url, headers or {}, body, response, cache_ttl)
+                            return response
+                        except (httpx.ConnectTimeout, httpx.ReadTimeout, httpx.WriteTimeout, httpx.ConnectError, httpx.ReadError, httpx.RemoteProtocolError) as e:
+                            last_exc = e
+                            if attempt >= chosen_max_retries:
+                                raise
+                            await self._sleep_with_backoff(attempt, chosen_backoff_base, chosen_backoff_max)
+                            try:
+                                self._metrics["retries"] += 1
+                            except Exception:
+                                pass
+                            logger.info(
+                                "HTTP retry due to network error",
+                                extra={
+                                    "url": url,
+                                    "error": type(e).__name__,
+                                    "attempt": attempt + 1,
+                                    "component": "http_client"
+                                }
+                            )
+                            attempt += 1
+                        except Exception as e:
+                            # Non-network exception: don't retry by default
+                            last_exc = e
+                            raise
+                    # End of while
+                    # No early return; either out of retries or last response to be returned
+                    if 'response' in locals():
+                        return response
+                    if last_exc:
+                        raise last_exc
+                    # Fallback
+                    raise RuntimeError("HTTP request failed without response and without exception")
             finally:
-                await self._mark_request_complete(method, url, headers or {}, body)
+                await self._mark_request_complete(method, url, headers or {}, body, params, json, data)
         
         # Create and track the task
         task = asyncio.create_task(_make_request())
-        request_id = f"{method}:{url}:{hash(frozenset((headers or {}).items()))}:{hash(body)}"
+        request_id = self._make_request_id(method, url, headers or {}, body, params, json, data)
         
         async with self._request_lock:
             self._active_requests[request_id] = task
         
         return await task
+
+    def _is_public_url(self, url: str) -> bool:
+        """Return True if the URL resolves to a public IP and uses http/https."""
+        try:
+            parsed = urlparse(url)
+            if parsed.scheme not in ("http", "https"):
+                return False
+            host = parsed.hostname
+            if not host:
+                return False
+            # If host is already an IP, check directly
+            try:
+                ip_obj = ipaddress.ip_address(host)
+                return self._is_public_ip(ip_obj)
+            except ValueError:
+                pass
+            # Resolve hostname to IPs; if any private, treat as private
+            try:
+                infos = socket.getaddrinfo(host, None)
+                for info in infos:
+                    addr = info[4][0]
+                    try:
+                        ip_obj = ipaddress.ip_address(addr)
+                        if not self._is_public_ip(ip_obj):
+                            return False
+                    except ValueError:
+                        return False
+                return True if infos else False
+            except Exception:
+                # If we cannot resolve, be conservative and block
+                return False
+        except Exception:
+            return False
+
+    @staticmethod
+    def _is_public_ip(ip_obj: ipaddress._BaseAddress) -> bool:
+        """True if IP is not private, loopback, link-local, multicast, or reserved."""
+        return not (
+            ip_obj.is_private
+            or ip_obj.is_loopback
+            or ip_obj.is_link_local
+            or ip_obj.is_reserved
+            or ip_obj.is_multicast
+        )
+
+    async def _sleep_with_backoff(self, attempt: int, base: float, max_backoff: float, floor_seconds: float = 0.0) -> None:
+        """Sleep using exponential backoff with jitter and optional floor (Retry-After)."""
+        exp = base * (2 ** attempt)
+        delay = min(max_backoff, exp)
+        # Full jitter
+        jitter = random.uniform(0, delay)
+        sleep_for = max(floor_seconds, jitter)
+        await asyncio.sleep(sleep_for)
+
+    async def _throttle_host(self, url: str) -> None:
+        """Apply a simple per-host minimum interval between requests to avoid hammering a single origin."""
+        if self.per_host_min_interval <= 0:
+            return
+        try:
+            host = urlparse(url).netloc
+        except Exception:
+            host = ''
+        if not host:
+            return
+        now = time.time()
+        async with self._host_lock:
+            next_allowed = self._host_next_available.get(host, 0.0)
+            if now < next_allowed:
+                wait_for = next_allowed - now
+                try:
+                    self._metrics["throttle_waits"] += 1
+                except Exception:
+                    pass
+                logger.debug(
+                    "Per-host throttle wait",
+                    extra={"host": host, "wait_seconds": round(wait_for, 4), "component": "http_client"}
+                )
+                await asyncio.sleep(wait_for)
+                now = time.time()
+            # Set next available time
+            self._host_next_available[host] = now + self.per_host_min_interval
     
     async def get(self, url: str, **kwargs) -> httpx.Response:
         """Convenience method for GET requests."""
@@ -197,7 +494,10 @@ class SharedHTTPClient:
             "cache_size": len(self.cache.cache),
             "active_requests": len(self._active_requests),
             "max_connections": self.max_connections,
-            "max_keepalive": self.max_keepalive_connections
+            "max_keepalive": self.max_keepalive_connections,
+            "retries": self._metrics.get("retries", 0),
+            "throttle_waits": self._metrics.get("throttle_waits", 0),
+            "ssrf_blocks": self._metrics.get("ssrf_blocks", 0),
         }
 
 # Global shared client instance

@@ -3,6 +3,7 @@ import uuid
 import re
 from typing import List, Dict, Any
 import httpx
+from backend.utils import get_http_client
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
@@ -84,7 +85,7 @@ class SensitiveDataExposureScanner(BaseScanner):
         target_url = target
         logger.info(f"Starting Sensitive Data Exposure scan for {target_url}.")
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=10) as client:
+        async with get_http_client(follow_redirects=True, timeout=10) as client:
             try:
                 # Get the main page content
                 response = await client.get(target_url)

@@ -1,6 +1,6 @@
 ﻿from datetime import datetime
 from typing import List, Dict, Any
-import httpx
+from backend.utils import get_http_client
 import asyncio
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
@@ -127,7 +127,7 @@ class AuthenticationBruteForceScanner(BaseScanner):
             {'username': 'admin', 'password': 'baseball'}
         ])
         
-        async with httpx.AsyncClient(timeout=timeout) as client:
+        async with get_http_client(timeout=timeout) as client:
             try:
                 # Check for login endpoints
                 for endpoint in login_endpoints:

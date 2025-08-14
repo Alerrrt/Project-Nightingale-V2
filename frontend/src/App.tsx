@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Shield, Globe, Settings, Play, Pause, Clock, ChevronsRight, FileText, Zap, Menu, X as CloseIcon, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { Shield, Globe, Settings, Pause, Clock, ChevronsRight, FileText, Zap, Menu, X as CloseIcon, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import ScanHistory from './components/ScanHistory';
 import { useScan } from './context/ScanContext';
 import { defaultScanProgress, defaultScanStats } from './context/ScanContext';
 import * as scanApi from './api/scanApi';
 import { useToast } from './components/ToastProvider';
 import ScannersList from './components/ScannersList';
-import VulnerabilityList, { GroupedVulnerability, VulnerabilityData } from './components/VulnerabilityList';
+import VulnerabilityList, { GroupedVulnerability } from './components/VulnerabilityList';
 import VulnerabilityDetails from './components/VulnerabilityDetails';
 import ScanProgress from './components/ScanProgress';
 import LiveModuleStatus from './components/LiveModuleStatus';
@@ -15,11 +15,11 @@ import ScanHistoryModal from './components/ScanHistoryModal';
 import ScanConfigPanel from './components/ScanConfigPanel';
 import TechnologyVulnerabilities from './components/TechnologyVulnerabilities';
 import JavaScriptVulnerabilities from './components/JavaScriptVulnerabilities';
-import Tooltip from './components/Tooltip';
 import ModuleStatusGrid from './components/ModuleStatusGrid';
 import SecurityPostureChart from './components/SecurityPostureChart';
 import './posture-summary.css';
 import HeroLanding from './components/HeroLanding';
+import SiteSnippetCard from './components/SiteSnippetCard';
 
 // Helper for timeout
 function timeoutPromise(ms: number) {
@@ -72,6 +72,7 @@ const App: React.FC = () => {
   const [customScanners, setCustomScanners] = useState<string[]>([]);
   const [isScannersOpen, setIsScannersOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [denseMode, setDenseMode] = useState(false);
   const prevIsScanning = useRef(false);
   const [scanTimedOut, setScanTimedOut] = useState(false);
   const [hasSubmittedUrl, setHasSubmittedUrl] = useState(false);
@@ -173,21 +174,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleCancelScan = async () => {
-    if (!scanId) return;
-    setCancelLoading(true);
-    try {
-      await scanApi.stopScan(scanId);
-      setIsScanning(false);
-      setScanId(null);
-      showToast('Scan cancelled.', 'success');
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to cancel scan.';
-      showToast(message, 'error');
-    } finally {
-      setCancelLoading(false);
-    }
-  };
+  // Note: cancel handled via stopScan from context; dedicated handler removed to avoid duplication.
 
   const handleViewReportFromHistory = async (historicalScanId: string) => {
     try {
@@ -216,31 +203,7 @@ const App: React.FC = () => {
     handleScanToggle('custom_scan');
   };
 
-  const groupedVulnerabilities = useMemo(() => {
-    const groups: Record<string, GroupedVulnerability> = {};
-    if (!vulnerabilities) return [];
-    vulnerabilities.forEach(vuln => {
-      const groupKey = `${vuln.title}-${vuln.cwe}`;
-      if (!groups[groupKey]) {
-        groups[groupKey] = {
-          groupKey,
-          title: vuln.title,
-          severity: vuln.severity,
-          cwe: vuln.cwe,
-          cve: vuln.cve,
-          description: vuln.description,
-          remediation: vuln.remediation,
-          confidence: vuln.confidence,
-          cvss: vuln.cvss,
-          instances: [],
-          count: 0,
-        };
-      }
-      groups[groupKey].instances.push(vuln);
-      groups[groupKey].count++;
-    });
-    return Object.values(groups).sort((a, b) => b.cvss - a.cvss);
-  }, [vulnerabilities]);
+  // Grouped vulnerabilities for results view are computed in groupedGeneralVulnerabilities below
 
   const technologyVulnerabilities = useMemo(() => {
     if (!vulnerabilities) return [];
@@ -393,15 +356,25 @@ const App: React.FC = () => {
         {/* Main Content */}
         <main className="flex-1 p-6 h-screen overflow-y-auto w-full">
           <header className="flex justify-between items-center mb-6">
-              <div className="hidden md:flex items-center space-x-3">
-                <div className="flex items-center space-x-2 text-sm">
-                  <span className={`h-2.5 w-2.5 rounded-full ${isScanning ? 'bg-warning animate-pulse' : 'bg-success'}`} />
-                  <span className="text-textSecondary">{isScanning ? 'Scan in Progress' : 'System Online'}</span>
-                </div>
-                <button title="Settings" className="p-2 rounded-md bg-surface hover:bg-opacity-80">
-                  <Settings className="h-5 w-5" />
-                </button>
+            <div className="hidden md:flex items-center space-x-3">
+              <div className="flex items-center space-x-2 text-sm">
+                <span className={`h-2.5 w-2.5 rounded-full ${isScanning ? 'bg-warning animate-pulse' : 'bg-success'}`} />
+                <span className="text-textSecondary">{isScanning ? 'Scan in Progress' : 'System Online'}</span>
               </div>
+              <button title="Settings" className="p-2 rounded-md bg-surface hover:bg-opacity-80 focus-ring">
+                <Settings className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 text-xs rounded-full border border-border/60 bg-surface/60 text-textSecondary">Nightingale</span>
+              <button
+                className={`px-3 py-1 text-xs rounded-md border ${denseMode ? 'bg-primary text-background border-primary' : 'bg-surface text-text border-border'} focus-ring`}
+                title="Toggle dense mode"
+                onClick={() => setDenseMode(v => !v)}
+              >
+                {denseMode ? 'Dense: On' : 'Dense: Off'}
+              </button>
+            </div>
           </header>
 
           {error && (
@@ -419,13 +392,26 @@ const App: React.FC = () => {
           {/* Progressive UI Reveal - Show scanning interface first */}
           {isScanning && (
             <>
-              <LiveModuleStatus activityLogs={activityLogs} />
-              <ScanProgress scanProgress={scanProgress} isScanning={isScanning} />
-              <ModuleStatusGrid modules={modules} scannerMetadata={scannerMetadata} />
-              <SecurityPostureChart
-                vulnerabilities={vulnerabilities}
-                loading={isScanning && vulnerabilities.length === 0}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 items-stretch">
+                <div className="h-full bg-surface/70 border border-border rounded-xl p-1">
+                  <ScanProgress scanProgress={scanProgress} isScanning={isScanning} dense={denseMode} />
+                </div>
+                <div className="h-full">
+                  <SiteSnippetCard targetUrl={scanProgress?.currentUrl || targetInput} />
+                </div>
+              </div>
+              <div className="bg-surface/70 border border-border rounded-xl p-4">
+                <ModuleStatusGrid modules={modules} scannerMetadata={scannerMetadata} />
+              </div>
+              <div className="mt-6 grid grid-cols-1 gap-6">
+                <SecurityPostureChart
+                  vulnerabilities={vulnerabilities}
+                  loading={isScanning && vulnerabilities.length === 0}
+                />
+                <div className="bg-surface/70 border border-border rounded-xl p-4">
+                  <LiveModuleStatus activityLogs={activityLogs} />
+                </div>
+              </div>
             </>
           )}
           

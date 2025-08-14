@@ -3,6 +3,7 @@ import uuid
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 import httpx
+from backend.utils import get_http_client
 from urllib.parse import urljoin
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
@@ -64,7 +65,7 @@ class PathTraversalTesterScanner(BaseScanner):
         common_params = ["file", "path", "page", "doc", "view", "filename"]
 
         try:
-            async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+            async with get_http_client(follow_redirects=True, timeout=30) as client:
                 tasks = []
                 for param in common_params:
                     for payload in path_traversal_payloads:

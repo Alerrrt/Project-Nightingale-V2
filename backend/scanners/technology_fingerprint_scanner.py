@@ -1,5 +1,5 @@
 ﻿import asyncio
-import httpx
+from backend.utils import get_http_client
 from typing import List, Dict, Any, Optional
 
 from Wappalyzer import Wappalyzer, WebPage
@@ -10,16 +10,40 @@ from backend.utils.enrichment import EnrichmentService
 from backend.utils.logging_config import get_context_logger
 from backend.utils import get_http_client
 
-# Mapping from Wappalyzer categories to OSV ecosystems where possible.
-# This is a best-effort mapping and might need refinement.
+# Mapping from Wappalyzer categories to OSV ecosystems where possible (best-effort).
 ECOSYSTEM_MAPPING = {
     "javascript-frameworks": "npm",
     "javascript-libraries": "npm",
-    "web-servers": None, # e.g., Nginx, Apache - often not in package managers
-    "web-frameworks": None, # e.g., Django, Ruby on Rails - could be PyPI, RubyGems etc.
-    "programming-languages": None, # e.g., PHP, Python
-    "cms": None, # e.g., WordPress, Joomla - often have their own vulnerability databases
-    "blogs": "npm", # e.g., Ghost
+    "web-servers": None, # e.g., Nginx, Apache - not in package managers
+    "web-frameworks": None, # try tech-specific mapping below
+    "programming-languages": None,
+    "cms": None,
+    "blogs": "npm",
+    "frontend-frameworks": "npm",
+    "ui-frameworks": "npm",
+}
+
+# Direct tech→ecosystem overrides for common frameworks/libraries
+TECH_ECOSYSTEM_OVERRIDES = {
+    # Python
+    "django": "PyPI",
+    "flask": "PyPI",
+    "fastapi": "PyPI",
+    "requests": "PyPI",
+    # Ruby
+    "rails": "RubyGems",
+    "sinatra": "RubyGems",
+    # Java
+    "spring": "Maven",
+    "spring boot": "Maven",
+    # PHP (Packagist)
+    "laravel": "Packagist",
+    "symfony": "Packagist",
+    # JS (npm)
+    "react": "npm",
+    "vue": "npm",
+    "angular": "npm",
+    "jquery": "npm",
 }
 
 class TechnologyFingerprintScanner(BaseScanner):
@@ -39,6 +63,7 @@ class TechnologyFingerprintScanner(BaseScanner):
         # or would run it in a thread pool on startup. For now, use cached version.
         self.wappalyzer = Wappalyzer.latest()
         self._enrichment = EnrichmentService()
+        self._osv_cache: Dict[str, Any] = {}
 
     async def scan(self, scan_input: ScanInput) -> List[Dict]:
         """
@@ -57,9 +82,49 @@ class TechnologyFingerprintScanner(BaseScanner):
         findings = []
         try:
             async with get_http_client(verify=False, follow_redirects=True, timeout=20.0) as client:
-                response = await client.get(target)
-                webpage = WebPage(str(response.url), response.text, response.headers)
+                # Optional headless render (behind flag). Fallback to static HTML on failure.
+                html_text: str = ""
+                final_url: str = target
+                if options.get("render_dom"):
+                    try:
+                        html_text, final_url = await self._render_dom_playwright(target, timeout_ms=15000)
+                    except Exception:
+                        # Fallback to static fetch
+                        pass
+
+                if not html_text:
+                    # Fetch HTML and attempt simple heuristics for version hints in headers and meta
+                    response = await client.get(target)
+                    final_url = str(response.url)
+                    headers = {k.lower(): v for k, v in response.headers.items()}
+                    html_text = response.text or ""
+                else:
+                    # When headless path used we still need headers; issue a lightweight HEAD
+                    try:
+                        head_resp = await client.head(final_url)
+                        headers = {k.lower(): v for k, v in head_resp.headers.items()}
+                    except Exception:
+                        headers = {}
+
+                webpage = WebPage(str(final_url), html_text, headers)
                 technologies = self.wappalyzer.analyze_with_versions_and_categories(webpage)
+
+                # Heuristic extraction: meta generator, server header, powered-by
+                try:
+                    signatures = self._extract_signature_versions(html_text, headers)
+                    # Merge signature results
+                    for name, info in signatures.items():
+                        entry = technologies.setdefault(name, {"versions": [], "categories": []})
+                        # Merge versions
+                        for v in info.get("versions", []):
+                            if v not in entry["versions"]:
+                                entry["versions"].append(v)
+                        # Merge categories
+                        for c in info.get("categories", []):
+                            if c not in entry["categories"]:
+                                entry["categories"].append(c)
+                except Exception:
+                    pass
         except Exception as e:
             self.logger.error(f"Failed to analyze {target}: {e}")
             return [self._create_error_finding(f"Could not fetch or analyze the target URL: {e}")]
@@ -90,6 +155,81 @@ class TechnologyFingerprintScanner(BaseScanner):
 
         return findings
 
+    def _extract_signature_versions(self, html_text: str, headers: Dict[str, str]) -> Dict[str, Dict[str, Any]]:
+        """Extract technology names and versions using static signatures.
+
+        Returns a mapping: name -> { versions: [..], categories: [..] }
+        """
+        result: Dict[str, Dict[str, Any]] = {}
+        try:
+            import re
+            # meta generator
+            mg = re.search(r'<meta[^>]+name=["\']generator["\'][^>]+content=["\']([^"\']+)["\']', html_text, re.I)
+            if mg:
+                gen = mg.group(1)
+                parts = gen.split('/')
+                name = parts[0].strip().lower()
+                ver = parts[-1].strip() if len(parts) > 1 else None
+                result.setdefault(name, {"versions": [], "categories": ["meta"]})
+                if ver and ver not in result[name]["versions"]:
+                    result[name]["versions"].append(ver)
+
+            # script src patterns: common libs with semver
+            for lib, ver in re.findall(r'src=["\'][^"\']*(jquery|react|vue|angular)[^\d]*([0-9]+\.[0-9]+\.[0-9]+)[^"\']*["\']', html_text, re.I)[:10]:
+                key = lib.lower()
+                result.setdefault(key, {"versions": [], "categories": ["javascript-libraries"]})
+                if ver not in result[key]["versions"]:
+                    result[key]["versions"].append(ver)
+
+            # Headers: Server / X-Powered-By
+            server = headers.get('server') if headers else None
+            powered_by = headers.get('x-powered-by') if headers else None
+            if server:
+                s_name, s_ver = (server.split('/') + [None])[:2]
+                key = (s_name or '').lower()
+                result.setdefault(key, {"versions": [], "categories": ["web-servers"]})
+                if s_ver and s_ver not in result[key]["versions"]:
+                    result[key]["versions"].append(s_ver)
+            if powered_by:
+                p_name, p_ver = (powered_by.split('/') + [None])[:2]
+                key = (p_name or '').lower()
+                result.setdefault(key, {"versions": [], "categories": ["x-powered-by"]})
+                if p_ver and p_ver not in result[key]["versions"]:
+                    result[key]["versions"].append(p_ver)
+        except Exception:
+            pass
+        return result
+
+    async def _render_dom_playwright(self, url: str, timeout_ms: int = 15000) -> (str, str):
+        """Render DOM using Playwright if available. Returns (html, final_url)."""
+        try:
+            from playwright.async_api import async_playwright
+        except Exception as e:
+            raise RuntimeError("Playwright not installed") from e
+
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            context = await browser.new_context()
+            page = await context.new_page()
+            await page.goto(url, timeout=timeout_ms, wait_until='networkidle')
+            content = await page.content()
+            final_url = page.url
+            await context.close()
+            await browser.close()
+            return content, final_url
+
+    def _map_ecosystem(self, tech_name: str, categories: List[str]) -> Optional[str]:
+        name_key = (tech_name or '').lower().strip()
+        if name_key in TECH_ECOSYSTEM_OVERRIDES:
+            return TECH_ECOSYSTEM_OVERRIDES[name_key]
+        # Category hint fallback
+        for cat_name in categories:
+            cat_slug = cat_name.lower().replace(' ', '-')
+            eco = ECOSYSTEM_MAPPING.get(cat_slug)
+            if eco:
+                return eco
+        return None
+
     async def _lookup_cves(self, tech_name: str, version: Optional[str], categories: List[str]) -> List[Dict]:
         """
         Looks up vulnerabilities for a given technology and version using the OSV.dev API.
@@ -97,13 +237,8 @@ class TechnologyFingerprintScanner(BaseScanner):
         if not version:
             return [self._create_info_finding(f"Detected technology: {tech_name} (version not identified).", f"tech:{tech_name}")]
 
-        # Try to map Wappalyzer category to OSV ecosystem
-        ecosystem = None
-        for cat_name in categories:
-            cat_slug = cat_name.lower().replace(' ', '-')
-            if cat_slug in ECOSYSTEM_MAPPING:
-                ecosystem = ECOSYSTEM_MAPPING[cat_slug]
-                break
+        # Map to OSV ecosystem via overrides or categories
+        ecosystem = self._map_ecosystem(tech_name, categories)
 
         query = {
             "version": version,
@@ -113,10 +248,17 @@ class TechnologyFingerprintScanner(BaseScanner):
             query["package"]["ecosystem"] = ecosystem
         
         try:
-            async with httpx.AsyncClient() as client:
-                resp = await client.post("https://api.osv.dev/v1/query", json=query, timeout=10)
-                resp.raise_for_status()
-                data = resp.json()
+            cache_key = f"{query['package'].get('ecosystem','')}/{query['package']['name']}@{version}"
+            if cache_key in self._osv_cache:
+                data = self._osv_cache[cache_key]
+            else:
+                async with get_http_client(timeout=10) as client:
+                    resp = await client.post("https://api.osv.dev/v1/query", body=json.dumps(query))
+                    if resp.status_code >= 400:
+                        raise httpx.HTTPStatusError("OSV error", request=None, response=resp)
+                    data = resp.json()
+                # Basic in-memory cache to avoid repeated OSV hits during a run
+                self._osv_cache[cache_key] = data
 
             if "vulns" in data and data["vulns"]:
                 return [self._create_finding_from_osv(vuln, tech_name, version) for vuln in data["vulns"]]

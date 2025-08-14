@@ -8,6 +8,51 @@
   body {
     @apply bg-background text-text;
   }
+
+  .card-surface {
+    background: color-mix(in oklab, #1E1E1E 92%, transparent);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(51,51,51,0.65);
+    border-radius: 12px;
+  }
+
+  /* Reduced motion respectful scanning sweep */
+  @media (prefers-reduced-motion: no-preference) {
+    .scan-sweep::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -150%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(34,211,238,0) 0%, rgba(34,211,238,0.18) 50%, rgba(34,211,238,0) 100%);
+      filter: blur(8px);
+      animation: sweep 2.2s cubic-bezier(0.2,0.8,0.2,1) infinite;
+    }
+  }
+
+  @keyframes sweep {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(300%); }
+  }
+
+  /* Skeleton utility */
+  .skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.12) 37%, rgba(255,255,255,0.06) 63%);
+    background-size: 400% 100%;
+    animation: skeleton-loading 1.2s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-loading {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+  }
+
+  /* Accessible focus ring utility */
+  .focus-ring:focus-visible {
+    outline: 2px solid #22D3EE; /* primary */
+    outline-offset: 2px;
+  }
   
   /* Custom scrollbar for webkit browsers */
   ::-webkit-scrollbar {

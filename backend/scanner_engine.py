@@ -24,9 +24,11 @@ try:
     from backend.config import settings as _settings
     SCANNER_TIMEOUT = float(getattr(_settings, 'SCANNER_TIMEOUT_SECONDS', 300))
     GLOBAL_HARD_CAP = int(getattr(_settings, 'GLOBAL_SCAN_HARD_CAP_SECONDS', 1800))  # 30 minutes default
+    SCANNER_MAX_RETRIES = int(getattr(_settings, 'SCANNER_MAX_RETRIES', 1))
 except Exception:
     SCANNER_TIMEOUT = 300.0
     GLOBAL_HARD_CAP = 1800
+    SCANNER_MAX_RETRIES = 1
 
 def _transform_finding_for_frontend(finding_data: Dict, target: str) -> Dict:
     """Normalize raw module finding to a frontend-facing structure.
@@ -398,6 +400,22 @@ class ScannerEngine:
                 broadcast_id, "module_status", 
                 {"name": scan_type, "status": "running", "scan_id": broadcast_id}
             )
+            # Record sub-scan start time for accurate ETA
+            if parent_scan_id and parent_scan_id in self._scan_results:
+                sub_scan_entry = self._scan_results[parent_scan_id]["sub_scans"].get(scan_id)
+                if sub_scan_entry is not None:
+                    sub_scan_entry["start_time"] = datetime.now().isoformat()
+            # Phase: mark as running once the first module starts
+            if parent_scan_id and parent_scan_id in self._scan_results:
+                parent = self._scan_results[parent_scan_id]
+                if parent.get("progress", 0) == 0:
+                    try:
+                        await manager.broadcast_scan_update(
+                            broadcast_id, "scan_phase",
+                            {"phase": "Running scanners…", "scan_id": broadcast_id}
+                        )
+                    except Exception:
+                        pass
 
             await manager.broadcast_scan_update(
                 broadcast_id, "activity_log",
@@ -410,11 +428,36 @@ class ScannerEngine:
                 if parent and datetime.now().timestamp() > parent.get("deadline", float("inf")):
                     raise asyncio.TimeoutError("Scan deadline exceeded")
 
-            # Execute scanner with timeout
-            results: List[Dict[str, Any]] = await asyncio.wait_for(
-                scanner_instance.scan(scan_input), 
-                timeout=SCANNER_TIMEOUT
-            )
+            # Execute scanner with timeout and limited retries for transient issues
+            results: List[Dict[str, Any]] = []
+            last_exc: Optional[Exception] = None
+            for attempt in range(0, max(1, SCANNER_MAX_RETRIES) + 1):
+                try:
+                    # Adaptive timeout: shorter for fast/critical modules, longer for heavy ones
+                    adaptive_timeout = SCANNER_TIMEOUT
+                    name_lower = scan_type.lower()
+                    if any(k in name_lower for k in ["headers", "csrf", "clickjacking", "robots", "cors"]):
+                        adaptive_timeout = min(SCANNER_TIMEOUT, 120)
+                    elif any(k in name_lower for k in ["subdomain", "ssl", "tls", "api_fuzz", "fuzz"]):
+                        adaptive_timeout = max(SCANNER_TIMEOUT, 420)
+
+                    results = await asyncio.wait_for(
+                        scanner_instance.scan(scan_input), 
+                        timeout=adaptive_timeout
+                    )
+                    last_exc = None
+                    break
+                except asyncio.TimeoutError as te:
+                    last_exc = te
+                    logger.warning(f"Timeout in {scan_type} attempt {attempt+1}; will{'' if attempt < SCANNER_MAX_RETRIES else ' not'} retry")
+                    if attempt >= SCANNER_MAX_RETRIES:
+                        raise
+                except Exception as e:
+                    # Retry only once for generic/transient exceptions
+                    last_exc = e
+                    logger.warning(f"Transient error in {scan_type} attempt {attempt+1}: {e}")
+                    if attempt >= SCANNER_MAX_RETRIES:
+                        raise
 
             # Process and transform results
             transformed_results = await self._process_scanner_results(
@@ -442,7 +485,8 @@ class ScannerEngine:
                     sub_scan_data.update({
                         "status": "completed",
                         "results": transformed_results,
-                        "execution_time": execution_time
+                        "execution_time": execution_time,
+                        "end_time": datetime.now().isoformat()
                     })
                     self._scan_results[parent_scan_id]["results"].extend(transformed_results)
                     
@@ -558,6 +602,14 @@ class ScannerEngine:
 
                 # Check if all modules have finished (regardless of success/failure)
                 if parent_scan["completed_modules"] >= parent_scan["total_modules"]:
+                    # Phase: aggregating results just before completion
+                    try:
+                        await manager.broadcast_scan_update(
+                            broadcast_id, "scan_phase",
+                            {"phase": "Aggregating results…", "scan_id": broadcast_id}
+                        )
+                    except Exception:
+                        pass
                     parent_scan["status"] = "completed"
                     parent_scan["end_time"] = datetime.now().isoformat()
                     
@@ -611,6 +663,13 @@ class ScannerEngine:
                             "timestamp": datetime.now().isoformat()
                         }
                     )
+                    try:
+                        await manager.broadcast_scan_update(
+                            broadcast_id, "scan_phase",
+                            {"phase": "Completed", "scan_id": broadcast_id}
+                        )
+                    except Exception:
+                        pass
                     
                     logger.info(f"Scan {broadcast_id} completed successfully with {len(parent_scan.get('results', []))} findings")
                     

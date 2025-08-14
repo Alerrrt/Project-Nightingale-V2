@@ -2,12 +2,12 @@
 import uuid
 from typing import List, Optional, Dict, Any
 from datetime import datetime
-import httpx
 import json
 from urllib.parse import urljoin
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
 import logging
+from backend.utils import get_http_client
 
 from .base_scanner import BaseScanner
 from ..types.models import ScanInput, Severity, OwaspCategory
@@ -92,7 +92,7 @@ class ApiFuzzingScanner(BaseScanner):
             f"{target_url}/users/create",
         ]
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+        async with get_http_client(follow_redirects=True, timeout=30) as client:
             tasks = []
             for endpoint in potential_json_endpoints:
                 for payload_name, payload_value in fuzzing_payloads.items():
@@ -114,7 +114,7 @@ class ApiFuzzingScanner(BaseScanner):
         logger.info(f"Completed API Fuzzing scan for {target_url}. Found {len(findings)} issues.")
         return findings
 
-    async def _fuzz_endpoint(self, client: httpx.AsyncClient, url: str, payload: str, headers: Dict[str, str], payload_type: str) -> Optional[Dict]:
+    async def _fuzz_endpoint(self, client: get_http_client, url: str, payload: str, headers: Dict[str, str], payload_type: str) -> Optional[Dict]:
         try:
             response = await client.post(url, headers=headers, content=payload, timeout=5)
             
@@ -136,7 +136,7 @@ class ApiFuzzingScanner(BaseScanner):
                     "recommendation": "Implement robust input validation and error handling for all API endpoints. Avoid exposing sensitive error messages or stack traces.",
                     "affected_url": url
                 }
-        except httpx.RequestError as e:
+        except Exception as e:
             logger.error(f"Error fuzzing endpoint", extra={
                 "url": url,
                 "payload_type": payload_type,

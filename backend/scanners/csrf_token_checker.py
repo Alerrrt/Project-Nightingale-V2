@@ -1,7 +1,7 @@
 ﻿import asyncio
 from typing import List, Dict, Any
 from datetime import datetime
-import httpx
+from backend.utils import get_http_client
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from backend.utils.circuit_breaker import circuit_breaker
@@ -71,7 +71,7 @@ class CsrfTokenCheckerScanner(BaseScanner):
         target_url = target
         logger.info(f"Starting CSRF Token Check for {target_url}")
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+        async with get_http_client(follow_redirects=True, timeout=30) as client:
             try:
                 response = await client.get(target_url)
                 response.raise_for_status()
@@ -117,7 +117,7 @@ class CsrfTokenCheckerScanner(BaseScanner):
                     # 2. Attempt to submit the form without the token or with an invalid token.
                     # 3. Analyze server response to confirm token validation.
 
-            except httpx.RequestError as e:
+            except Exception as e:
                 logger.error(f"Error fetching target for CSRF token check", extra={
                     "target": target_url,
                     "error": str(e)

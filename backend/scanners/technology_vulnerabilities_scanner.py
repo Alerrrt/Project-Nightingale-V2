@@ -4,6 +4,7 @@ from backend.scanners.base_scanner import BaseScanner
 from backend.types.models import ScanInput, Severity
 from typing import List, Dict
 from .technology_fingerprint_scanner import TechnologyFingerprintScanner
+from backend.utils.enrichment import EnrichmentService
 
 class TechnologyVulnerabilitiesScanner(BaseScanner):
     async def scan(self, scan_input: ScanInput) -> List[Dict]:
@@ -16,7 +17,17 @@ class TechnologyVulnerabilitiesScanner(BaseScanner):
         # Delegate to TechnologyFingerprintScanner to avoid duplicate logic.
         try:
             delegate = TechnologyFingerprintScanner()
-            return await delegate._perform_scan(target, options)
+            findings = await delegate._perform_scan(target, options)
+            # Ensure more aggressive enrichment for tech findings
+            enr = EnrichmentService()
+            enriched: List[Dict] = []
+            for f in findings:
+                try:
+                    f = await enr.enrich_finding(f)
+                except Exception:
+                    pass
+                enriched.append(f)
+            return enriched
         except Exception as e:
             logger.error(f"Failed to analyze {target}: {e}")
             return [self._create_error_finding(f"Could not fetch or analyze the target URL: {e}")]

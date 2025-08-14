@@ -112,7 +112,12 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
         const { type, data, timestamp } = message; // Destructure the message
 
         // Handle different types of messages from the backend
-        if (type === 'scan_progress') {
+        if (type === 'scan_phase') {
+          setScanProgress(prev => ({
+            ...(prev || ({} as any)),
+            phase: (data && data.phase) || 'Running scanners…'
+          }));
+        } else if (type === 'scan_progress') {
           const progress = data.progress;
           // Use backend-provided ETA if available, otherwise fall back to frontend calculation
           let eta = data.eta_formatted || '...';
@@ -140,10 +145,10 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
           
           setScanProgress(prev => ({ 
             ...prev, 
-            progress: data.progress, 
+            progress: typeof data.progress === 'number' ? data.progress : (prev?.progress || 0), 
             eta,
-            completedModules: data.completed_modules || prev.completedModules,
-            totalModules: data.total_modules || prev.totalModules
+            completedModules: data.completed_modules ?? prev.completedModules,
+            totalModules: data.total_modules ?? prev.totalModules
           }));
         } else if (type === 'current_target_url') {
           setScanProgress(prev => ({ ...prev, currentUrl: data.url }));

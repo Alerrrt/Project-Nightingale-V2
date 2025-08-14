@@ -1,6 +1,6 @@
 ﻿from datetime import datetime
 from typing import List, Dict, Any
-import httpx
+from backend.utils import get_http_client
 import json
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
@@ -73,7 +73,7 @@ class ApiSecurityScanner(BaseScanner):
             'Accept-Version', 'API-Version', 'X-API-Version', 'Version'
         ]
         version_values = ['1', '2', '3', 'latest', 'stable', 'beta', 'alpha']
-        async with httpx.AsyncClient(timeout=timeout) as client:
+        async with get_http_client(timeout=timeout) as client:
             try:
                 for endpoint in api_endpoints:
                     url = f"{target.rstrip('/')}/{endpoint.lstrip('/')}"

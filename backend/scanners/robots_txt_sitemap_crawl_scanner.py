@@ -2,6 +2,7 @@
 import uuid
 from typing import List, Optional, Dict, Any
 import httpx
+from backend.utils import get_http_client
 from urllib.parse import urljoin, urlparse
 import re
 from datetime import datetime
@@ -75,7 +76,7 @@ class RobotsTxtSitemapCrawlScanner(BaseScanner):
         sitemap_url = f"{base_url}/sitemap.xml"
 
         try:
-            async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+            async with get_http_client(follow_redirects=True, timeout=30) as client:
                 # Check robots.txt
                 try:
                     response = await client.get(robots_url)

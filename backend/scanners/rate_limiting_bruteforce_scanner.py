@@ -1,13 +1,13 @@
 ﻿import asyncio
 from typing import List, Dict, Any
 from datetime import datetime
-import httpx
-from backend.utils.circuit_breaker import circuit_breaker
-from backend.utils.logging_config import get_context_logger
 import logging
 
 from .base_scanner import BaseScanner
 from ..types.models import ScanInput, Severity, OwaspCategory
+from backend.utils import get_http_client
+from backend.utils.circuit_breaker import circuit_breaker
+from backend.utils.logging_config import get_context_logger
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +79,7 @@ class RateLimitingBruteforceScanner(BaseScanner):
         test_username = "testuser"
         common_passwords = ["password", "123456", "admin", "qwerty"]
 
-        async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+        async with get_http_client(follow_redirects=True, timeout=30) as client:
             for password in common_passwords:
                 try:
                     data = {"username": test_username, "password": password}
@@ -108,7 +108,7 @@ class RateLimitingBruteforceScanner(BaseScanner):
                             "affected_url": login_endpoint
                         })
 
-                except httpx.RequestError as e:
+                except Exception as e:
                     logger.error(f"Error during bruteforce attempt", extra={
                         "url": login_endpoint,
                         "username": test_username,

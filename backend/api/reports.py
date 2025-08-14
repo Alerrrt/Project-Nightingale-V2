@@ -8,6 +8,8 @@ from pathlib import Path
 from datetime import datetime
 from backend.scanner_engine import ScannerEngine
 from backend.utils.snapshot_store import load_snapshot
+from fastapi import HTTPException
+import httpx
 from backend.utils.newsletter_store import store_email
 
 # Try to import reportlab for PDF generation
@@ -193,6 +195,12 @@ async def subscribe_newsletter(payload: Dict[str, Any]):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+def _safe_hex(color_hex: str):
+    try:
+        return colors.HexColor(color_hex)
+    except Exception:
+        return colors.purple
+
 def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) -> io.BytesIO:
     """Generate an enhanced dashboard-style PDF report matching the screenshot layout exactly."""
     buffer = io.BytesIO()
@@ -293,8 +301,8 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
     
     header_table = Table(header_data, colWidths=[4*inch, 3*inch])
     header_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (0, 0), colors.darkblue),
-        ('BACKGROUND', (1, 0), (1, 1), colors.darkgrey),
+        ('BACKGROUND', (0, 0), (0, 0), _safe_hex('#0B1F3A')),
+        ('BACKGROUND', (1, 0), (1, 1), _safe_hex('#1E293B')),
         ('TEXTCOLOR', (0, 0), (0, 0), colors.white),
         ('TEXTCOLOR', (1, 0), (1, 1), colors.white),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
@@ -302,14 +310,33 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
         ('FONTSIZE', (0, 0), (0, 0), 20),
         ('FONTSIZE', (1, 0), (1, 1), 12),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.darkblue, colors.darkgrey]),
-        ('GRID', (0, 0), (-1, -1), 1, colors.white)
+        ('ROWBACKGROUNDS', (0, 0), (-1, -1), [_safe_hex('#0B1F3A'), _safe_hex('#1E293B')]),
+        ('GRID', (0, 0), (-1, -1), 0.5, _safe_hex('#334155'))
     ]))
     
     story.append(header_table)
     story.append(Spacer(1, 20))
     
     # 2. CENTRAL SECTION - Website Details and Risk Level
+    # Try to fetch site preview for favicon/title/image
+    site_title = target_url
+    site_image_path = None
+    try:
+      preview_url = f"http://localhost:{os.environ.get('PORT','9000')}/api/site_preview?url={target_url}"
+      with httpx.Client(timeout=5.0, follow_redirects=True) as client:
+          resp = client.get(preview_url)
+          if resp.status_code == 200:
+              preview = resp.json()
+              site_title = preview.get('title') or site_title
+              img_url = preview.get('image')
+              if img_url:
+                  img_resp = client.get(img_url)
+                  if img_resp.status_code == 200:
+                      tmp = io.BytesIO(img_resp.content)
+                      tmp.seek(0)
+                      site_image_path = tmp
+    except Exception:
+      pass
     central_data = [
         ["Website URL:", target_url],
         ["Report Generated:", report_date],
@@ -322,9 +349,9 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
     
     central_table = Table(central_data, colWidths=[2*inch, 4*inch])
     central_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (0, -1), colors.darkblue),
-        ('BACKGROUND', (1, 0), (1, -2), colors.darkgrey),
-        ('BACKGROUND', (0, -1), (1, -1), colors.red),
+        ('BACKGROUND', (0, 0), (0, -1), _safe_hex('#0B1F3A')),
+        ('BACKGROUND', (1, 0), (1, -2), _safe_hex('#1E293B')),
+        ('BACKGROUND', (0, -1), (1, -1), _safe_hex('#7F1D1D')),
         ('TEXTCOLOR', (0, 0), (0, -1), colors.white),
         ('TEXTCOLOR', (1, 0), (1, -2), colors.white),
         ('TEXTCOLOR', (0, -1), (1, -1), colors.white),
@@ -334,11 +361,19 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
         ('FONTNAME', (0, -1), (1, -1), 'Helvetica-Bold'),
         ('FONTSIZE', (0, -1), (1, -1), 24),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('GRID', (0, 0), (-1, -1), 1, colors.white)
+        ('GRID', (0, 0), (-1, -1), 0.5, _safe_hex('#334155'))
     ]))
     
     story.append(central_table)
     story.append(Spacer(1, 20))
+
+    # Optional: include preview image block under header when available
+    if site_image_path:
+        try:
+            story.append(Image(site_image_path, width=3.2*inch, height=1.8*inch))
+            story.append(Spacer(1, 12))
+        except Exception:
+            pass
     
     # 3. BOTTOM LEFT - Vulnerabilities Identified (Bar Chart)
     # Create horizontal bar chart for vulnerabilities
@@ -350,21 +385,30 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
     bc.y = 0
     bc.width = 3.5*inch
     bc.height = 1.5*inch
-    bc.data = [
+    # ReportLab expects a sequence of sequences for data
+    bc.data = [[
         severity_counts["critical"],
         severity_counts["high"], 
         severity_counts["medium"],
         severity_counts["low"]
-    ]
+    ]]
     bc.categoryAxis.categoryNames = ['Critical', 'High', 'Medium', 'Low']
     bc.valueAxis.valueMin = 0
     bc.valueAxis.valueMax = max(severity_counts.values()) * 1.2 if max(severity_counts.values()) > 0 else 100
     
-    # Set colors matching the screenshot
-    bc.bars[0].fillColor = colors.darkpurple
-    bc.bars[1].fillColor = colors.purple
-    bc.bars[2].fillColor = colors.mediumpurple
-    bc.bars[3].fillColor = colors.lightpurple
+    # Set colors matching the screenshot (validated hex)
+    from reportlab.lib import colors as _c
+    bar_colors = [
+        _safe_hex('#7C3AED'),  # critical
+        _safe_hex('#8B5CF6'),  # high
+        _safe_hex('#A78BFA'),  # medium
+        _safe_hex('#C4B5FD'),  # low
+    ]
+    for i, col in enumerate(bar_colors):
+        try:
+            bc.bars[i].fillColor = col
+        except Exception:
+            pass
     
     drawing.add(bc)
     
@@ -379,8 +423,8 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
     
     # 4. BOTTOM RIGHT - Risk Levels (Pie Chart)
     # Create pie chart for risk levels
-    pie_drawing = Drawing(3*inch, 2*inch)
-    
+    pie_drawing = Drawing(3*inch, 2.2*inch)
+
     # Calculate percentages for pie chart
     if total_findings > 0:
         critical_pct = (severity_counts["critical"] / total_findings) * 100
@@ -390,34 +434,20 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
         info_pct = (severity_counts["info"] / total_findings) * 100
     else:
         critical_pct = high_pct = medium_pct = low_pct = info_pct = 0
-    
-    # Create pie chart
-    pie = Drawing(2*inch, 2*inch)
-    
-    # Draw pie segments (simplified representation)
-    center_x, center_y = 1*inch, 1*inch
-    radius = 0.8*inch
-    
-    # Critical segment
-    if critical_pct > 0:
-        critical_angle = (critical_pct / 100) * 360
-        pie.add(Circle(center_x, center_y, radius, fillColor=colors.darkpurple))
-    
-    # High segment
-    if high_pct > 0:
-        high_angle = (high_pct / 100) * 360
-        pie.add(Circle(center_x, center_y, radius * 0.8, fillColor=colors.purple))
-    
-    # Medium segment
-    if medium_pct > 0:
-        medium_angle = (medium_pct / 100) * 360
-        pie.add(Circle(center_x, center_y, radius * 0.6, fillColor=colors.mediumpurple))
-    
-    # Low segment
-    if low_pct > 0:
-        low_angle = (low_pct / 100) * 360
-        pie.add(Circle(center_x, center_y, radius * 0.4, fillColor=colors.lightpurple))
-    
+    # Use ReportLab Pie chart for accurate rendering
+    from reportlab.graphics.charts.piecharts import Pie
+    pie = Pie()
+    pie.x = 15
+    pie.y = 15
+    pie.width = 120
+    pie.height = 120
+    pie.data = [critical_pct, high_pct, medium_pct, low_pct]
+    pie.labels = ['Critical', 'High', 'Medium', 'Low']
+    pie.slices.strokeWidth = 0.5
+    pie.slices[0].fillColor = _safe_hex('#7C3AED')
+    pie.slices[1].fillColor = _safe_hex('#8B5CF6')
+    pie.slices[2].fillColor = _safe_hex('#A78BFA')
+    pie.slices[3].fillColor = _safe_hex('#C4B5FD')
     pie_drawing.add(pie)
     
     # Add title
@@ -435,7 +465,7 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
         ["Low", f"{low_pct:.1f}%"]
     ]
     
-    legend_table = Table(legend_data, colWidths=[1*inch, 0.5*inch])
+    legend_table = Table(legend_data, colWidths=[1*inch, 0.7*inch])
     legend_table.setStyle(TableStyle([
         ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
         ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
@@ -458,17 +488,17 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
         ["Overall Severity:", f"{overall_severity:.0f}%"]
     ]
     
-    severity_table = Table(severity_data, colWidths=[1.5*inch, 1*inch])
+    severity_table = Table(severity_data, colWidths=[1.6*inch, 1.1*inch])
     severity_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (0, -2), colors.darkblue),
-        ('BACKGROUND', (1, 0), (1, -2), colors.darkgrey),
-        ('BACKGROUND', (0, -1), (1, -1), colors.red),
+        ('BACKGROUND', (0, 0), (0, -2), _safe_hex('#0B1F3A')),
+        ('BACKGROUND', (1, 0), (1, -2), _safe_hex('#1E293B')),
+        ('BACKGROUND', (0, -1), (1, -1), _safe_hex('#7F1D1D')),
         ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
         ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
         ('FONTSIZE', (0, -1), (1, -1), 18),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('GRID', (0, 0), (-1, -1), 1, colors.white)
+        ('GRID', (0, 0), (-1, -1), 0.5, _safe_hex('#334155'))
     ]))
     
     story.append(severity_table)
@@ -507,8 +537,8 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
     
     metadata_table = Table(metadata_data, colWidths=[2*inch, 4*inch])
     metadata_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (0, -1), colors.darkblue),
-        ('BACKGROUND', (1, 0), (1, -1), colors.darkgrey),
+        ('BACKGROUND', (0, 0), (0, -1), _safe_hex('#0B1F3A')),
+        ('BACKGROUND', (1, 0), (1, -1), _safe_hex('#1E293B')),
         ('TEXTCOLOR', (0, 0), (0, -1), colors.white),
         ('TEXTCOLOR', (1, 0), (1, -1), colors.white),
         ('ALIGN', (0, 0), (0, -1), 'LEFT'),
@@ -516,7 +546,7 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
         ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
         ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('GRID', (0, 0), (-1, -1), 1, colors.white)
+        ('GRID', (0, 0), (-1, -1), 0.5, _safe_hex('#334155'))
     ]))
     
     story.append(metadata_table)

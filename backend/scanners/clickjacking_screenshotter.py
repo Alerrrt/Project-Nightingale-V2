@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 import asyncio
 from typing import List, Dict, Any
-import httpx
+from backend.utils import get_http_client
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
@@ -66,7 +66,7 @@ class ClickjackingScreenshotterScanner(BaseScanner):
         })
 
         try:
-            async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
+            async with get_http_client(follow_redirects=True, timeout=30) as client:
                 response = await client.get(target_url)
                 response.raise_for_status()
 
@@ -135,7 +135,7 @@ class ClickjackingScreenshotterScanner(BaseScanner):
                         "affected_url": target_url
                     })
 
-        except httpx.RequestError as e:
+        except Exception as e:
             logger.warning("Request error during clickjacking check", extra={
                 "url": target_url,
                 "error": str(e),

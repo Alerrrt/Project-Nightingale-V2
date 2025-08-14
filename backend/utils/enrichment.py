@@ -202,6 +202,21 @@ class EnrichmentService:
                 except Exception:
                     pass
 
+            # If OSV aliases include CVE but finding lacks CVSS, fetch from NVD
+            try:
+                if not classifier.get("cvss"):
+                    aliases = classifier.get("aliases") if isinstance(classifier, dict) else None
+                    if isinstance(aliases, list):
+                        for alias in aliases:
+                            if isinstance(alias, str) and alias.upper().startswith("CVE-"):
+                                nvd2 = await self._fetch_nvd_by_cve(alias)
+                                if nvd2 and nvd2.get("cvss") is not None:
+                                    finding["cvss"] = max(finding.get("cvss", 0.0) or 0.0, float(nvd2["cvss"]))
+                                    classifier["cvss"] = finding["cvss"]
+                                    break
+            except Exception:
+                pass
+
             # Fill back
             finding["references"] = references
             finding["classifier"] = classifier

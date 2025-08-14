@@ -2,7 +2,7 @@
 import uuid
 import re
 from typing import List, Dict, Any
-import httpx
+from backend.utils import get_http_client
 from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
@@ -158,7 +158,7 @@ class UsingComponentsWithKnownVulnerabilitiesScanner(BaseScanner):
             r'([\d\.]+)\.[a-zA-Z]+'
         ]
         
-        async with httpx.AsyncClient(timeout=timeout) as client:
+        async with get_http_client(timeout=timeout) as client:
             try:
                 # Test each component endpoint
                 for endpoint in component_endpoints:

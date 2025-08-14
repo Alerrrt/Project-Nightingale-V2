@@ -1,9 +1,11 @@
 ﻿from typing import List, Dict, Any
 from datetime import datetime
+import logging
+
 import httpx
+from backend.utils import get_http_client
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
-import logging
 
 from .base_scanner import BaseScanner
 from ..types.models import ScanInput, Severity, OwaspCategory
@@ -61,7 +63,7 @@ class MisconfigurationScanner(BaseScanner):
         logger.info("Starting misconfiguration scan", extra={"target": target_url})
 
         try:
-            async with httpx.AsyncClient(timeout=30) as client:
+            async with get_http_client(timeout=30) as client:
                 response = await client.get(target_url)
                 
                 # Check for server information disclosure
