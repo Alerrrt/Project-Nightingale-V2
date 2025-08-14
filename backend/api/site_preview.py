@@ -112,6 +112,7 @@ async def _fetch_preview(url: str) -> Dict[str, Any]:
     }
 
 
+@router.get("")
 @router.get("/")
 async def get_site_preview(url: str = Query(..., description="Target URL to preview")):
     if not url.lower().startswith("http"):

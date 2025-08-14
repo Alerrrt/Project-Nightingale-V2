@@ -7,7 +7,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '')
   // Use backend service name for Docker-internal access, fallback to localhost for local dev
-  const apiTarget = env.VITE_API_URL || 'http://localhost:9000'
+  // Default to local dev backend on 8000; Docker sets VITE_API_URL to http://backend:9000
+  const apiTarget = env.VITE_API_URL || 'http://localhost:8000'
   
   console.log('Vite config - API target:', apiTarget)
   

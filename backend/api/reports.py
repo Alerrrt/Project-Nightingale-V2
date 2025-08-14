@@ -322,7 +322,9 @@ def generate_enhanced_dashboard_pdf(scan_data: Dict[str, Any], target_url: str) 
     site_title = target_url
     site_image_path = None
     try:
-      preview_url = f"http://localhost:{os.environ.get('PORT','9000')}/api/site_preview?url={target_url}"
+      # Use configured backend port if available; keep route compatible with alias
+      backend_port = os.environ.get('PORT') or os.environ.get('BACKEND_PORT') or '9000'
+      preview_url = f"http://localhost:{backend_port}/api/site_preview?url={target_url}"
       with httpx.Client(timeout=5.0, follow_redirects=True) as client:
           resp = client.get(preview_url)
           if resp.status_code == 200:
