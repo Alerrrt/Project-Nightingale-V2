@@ -102,6 +102,9 @@ async def _fetch_preview(url: str) -> Dict[str, Any]:
     final_url = url
     image = _resolve(final_url, image)
     favicon = _resolve(final_url, favicon)
+    # Fallback: if no Open Graph/Twitter image, use the favicon so UI shows something
+    if not image and favicon:
+        image = favicon
 
     return {
         "finalUrl": final_url,
@@ -115,6 +118,12 @@ async def _fetch_preview(url: str) -> Dict[str, Any]:
 @router.get("")
 @router.get("/")
 async def get_site_preview(url: str = Query(..., description="Target URL to preview")):
+    """Return a resilient preview payload.
+
+    Never fails for normal inputs; on error returns a minimal payload
+    using origin favicon and hostname as title so the UI always has
+    something to render.
+    """
     if not url.lower().startswith("http"):
         url = "http://" + url
     if not _def_cache:
@@ -127,7 +136,30 @@ async def get_site_preview(url: str = Query(..., description="Target URL to prev
         _cache_set(url, data)
         _save_cache()
         return data
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    except Exception:
+        # Fallback: construct minimal preview from the origin
+        try:
+            parsed = urlparse(url)
+            origin = f"{parsed.scheme}://{parsed.netloc}"
+            fallback = {
+                "finalUrl": url,
+                "title": parsed.netloc or url,
+                "description": None,
+                "image": f"{origin}/favicon.ico",
+                "favicon": f"{origin}/favicon.ico",
+            }
+            _cache_set(url, fallback)
+            _save_cache()
+            return fallback
+        except Exception as e:
+            # Last resort
+            return {
+                "finalUrl": url,
+                "title": url,
+                "description": None,
+                "image": None,
+                "favicon": None,
+                "error": str(e)
+            }
 
 

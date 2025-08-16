@@ -30,6 +30,10 @@ except Exception:
     GLOBAL_HARD_CAP = 1800
     SCANNER_MAX_RETRIES = 1
 
+# Enforce an upper bound per scanner so the whole scan can finish within a strict window
+# Cap single scanner runtime to at most 90s or the configured timeout, whichever is lower
+PER_SCANNER_CAP_SECONDS = min(90.0, SCANNER_TIMEOUT)
+
 def _transform_finding_for_frontend(finding_data: Dict, target: str) -> Dict:
     """Normalize raw module finding to a frontend-facing structure.
 
@@ -263,61 +267,111 @@ class ScannerEngine:
                 }
             }
 
-            # Start all designated scanners using concurrency manager
+            # Immediately broadcast initial progress and target to the UI so it doesn't show 0/0
             try:
-                for scanner_name in scanners_to_run:
-                    scanner_class = self.scanner_registry.get_scanner(scanner_name)
-                    if not scanner_class:
-                        logger.warning(f"Scanner '{scanner_name}' not found in registry, skipping.")
-                        continue
+                from backend.api.websocket import get_connection_manager  # local import to avoid circular
+                manager = get_connection_manager()
+                # Emit in the same order the frontend expects: phase -> progress -> target
+                await manager.broadcast_scan_update(
+                    scan_id,
+                    "scan_phase",
+                    {"phase": "Initializing...", "scan_id": scan_id}
+                )
+                await manager.broadcast_scan_update(
+                    scan_id,
+                    "scan_progress",
+                    {
+                        "progress": 0,
+                        "eta_seconds": 0,
+                        "eta_formatted": "...",
+                        "completed_modules": 0,
+                        "total_modules": len(scanners_to_run),
+                    }
+                )
+                await manager.broadcast_scan_update(
+                    scan_id,
+                    "current_target_url",
+                    {"url": target}
+                )
+            except Exception:
+                # Non-fatal if realtime updates fail here; the UI will catch up on first module
+                pass
 
-                    sub_scan_id = f"{scan_id}_{scanner_name}_{datetime.now().strftime('%f')}"
-                    logger.info(f"Starting sub-scan for {scanner_name} with ID: {sub_scan_id}")
-                    
-                    # Determine scanner priority based on type
-                    priority = self._get_scanner_priority(scanner_name)
-                    
-                    # Submit to concurrency manager
-                    try:
-                        # Create a proper closure to avoid lambda closure issues
-                        def create_scanner_coro(scanner_name: str, sub_scan_id: str, scan_input: ScanInput, parent_scan_id: str):
-                            async def scanner_wrapper():
-                                return await self._run_scan(sub_scan_id, scanner_name, scan_input, parent_scan_id=parent_scan_id)
-                            return scanner_wrapper
-                        
-                        scanner_coro = create_scanner_coro(scanner_name, sub_scan_id, scan_input, scan_id)
-                        
-                        await self._concurrency_manager.submit_scanner(
-                            scanner_id=sub_scan_id,
-                            scanner_name=scanner_name,
-                            coro=scanner_coro,
-                            options=options or {},
-                            priority=priority
-                        )
-                    
-                        # Initialize sub-scan results
-                        self._scan_results[scan_id]["sub_scans"][sub_scan_id] = {
-                            "name": scanner_name,
-                            "status": "queued",
-                            "results": [],
-                            "errors": [],
-                            "priority": priority.name
-                        }
-                        
-                    except Exception as e:
-                        logger.error(f"Failed to submit scanner {scanner_name}: {e}")
-                        # Mark as failed
-                        self._scan_results[scan_id]["sub_scans"][sub_scan_id] = {
-                            "name": scanner_name,
-                            "status": "failed",
-                            "results": [],
-                            "errors": [str(e)]
-                        }
-                        self._scan_results[scan_id]["errors"].append(f"Scanner {scanner_name} failed to start: {e}")
-                
-                # Start a background task to monitor scan completion and force completion if needed
+            # Start all designated scanners using concurrency manager (staged execution)
+            try:
+                tier_a_keywords = [
+                    'robots_txt_sitemap_crawl_scanner', 'security_headers_analyzer',
+                    'cors_misconfiguration_scanner', 'csrf_token_checker', 'clickjacking_screenshotter',
+                    'js_scanner', 'technology', 'fingerprint'
+                ]
+                tier_b_keywords = ['xss', 'xss_scanner', 'sqlinjection', 'sql_injection_scanner', 'path_traversal', 'open_redirect']
+                tier_c_keywords = ['api_fuzz', 'fuzz', 'ssl', 'tls', 'subdomain']
+
+                def classify_tier(name: str) -> str:
+                    n = name.lower()
+                    if any(k in n for k in tier_a_keywords):
+                        return 'A'
+                    if any(k in n for k in tier_b_keywords):
+                        return 'B'
+                    if any(k in n for k in tier_c_keywords):
+                        return 'C'
+                    return 'B'
+
+                tier_groups: Dict[str, List[str]] = {'A': [], 'B': [], 'C': []}
+                for s in scanners_to_run:
+                    tier_groups[classify_tier(s)].append(s)
+
+                async def submit_scanners(names: List[str]):
+                    for scanner_name in names:
+                        scanner_class = self.scanner_registry.get_scanner(scanner_name)
+                        if not scanner_class:
+                            logger.warning(f"Scanner '{scanner_name}' not found in registry, skipping.")
+                            continue
+
+                        sub_scan_id = f"{scan_id}_{scanner_name}_{datetime.now().strftime('%f')}"
+                        logger.info(f"Starting sub-scan for {scanner_name} with ID: {sub_scan_id}")
+                        priority = self._get_scanner_priority(scanner_name)
+                        try:
+                            def create_scanner_coro(scanner_name: str, sub_scan_id: str, scan_input: ScanInput, parent_scan_id: str):
+                                async def scanner_wrapper():
+                                    return await self._run_scan(sub_scan_id, scanner_name, scan_input, parent_scan_id=parent_scan_id)
+                                return scanner_wrapper
+                            scanner_coro = create_scanner_coro(scanner_name, sub_scan_id, scan_input, scan_id)
+                            await self._concurrency_manager.submit_scanner(
+                                scanner_id=sub_scan_id,
+                                scanner_name=scanner_name,
+                                coro=scanner_coro,
+                                options={**(options or {}), "target": target},
+                                priority=priority
+                            )
+                            self._scan_results[scan_id]["sub_scans"][sub_scan_id] = {
+                                "name": scanner_name,
+                                "status": "queued",
+                                "results": [],
+                                "errors": [],
+                                "priority": priority.name
+                            }
+                        except Exception as e:
+                            logger.error(f"Failed to submit scanner {scanner_name}: {e}")
+                            self._scan_results[scan_id]["sub_scans"][sub_scan_id] = {
+                                "name": scanner_name,
+                                "status": "failed",
+                                "results": [],
+                                "errors": [str(e)]
+                            }
+                            self._scan_results[scan_id]["errors"].append(f"Scanner {scanner_name} failed to start: {e}")
+
+                # Stage A (fast/high-signal)
+                await submit_scanners(tier_groups['A'])
+                await asyncio.sleep(0.1)
+                # Stage B (core probes)
+                await submit_scanners(tier_groups['B'])
+                # Stage C (heavy/conditional)
+                await submit_scanners(tier_groups['C'])
+
+                # Monitor completion
                 asyncio.create_task(self._monitor_scan_completion(scan_id, len(scanners_to_run)))
-                
+
             except Exception as e:
                 logger.error(f"Failed to start scanners: {e}")
                 self._scan_results[scan_id]["status"] = "failed"
@@ -434,30 +488,36 @@ class ScannerEngine:
             for attempt in range(0, max(1, SCANNER_MAX_RETRIES) + 1):
                 try:
                     # Adaptive timeout: shorter for fast/critical modules, longer for heavy ones
-                    adaptive_timeout = SCANNER_TIMEOUT
+                    adaptive_timeout = min(SCANNER_TIMEOUT, PER_SCANNER_CAP_SECONDS)
                     name_lower = scan_type.lower()
                     if any(k in name_lower for k in ["headers", "csrf", "clickjacking", "robots", "cors"]):
-                        adaptive_timeout = min(SCANNER_TIMEOUT, 120)
+                        adaptive_timeout = min(adaptive_timeout, 60)
                     elif any(k in name_lower for k in ["subdomain", "ssl", "tls", "api_fuzz", "fuzz"]):
-                        adaptive_timeout = max(SCANNER_TIMEOUT, 420)
+                        # Heavy modules still must respect the per-scanner cap
+                        adaptive_timeout = min(max(SCANNER_TIMEOUT, 120), PER_SCANNER_CAP_SECONDS)
 
-                    results = await asyncio.wait_for(
-                        scanner_instance.scan(scan_input), 
-                        timeout=adaptive_timeout
-                    )
+                    # Use asyncio.create_task to ensure non-blocking execution
+                    scan_task = asyncio.create_task(scanner_instance.scan(scan_input))
+                    results = await asyncio.wait_for(scan_task, timeout=adaptive_timeout)
                     last_exc = None
                     break
                 except asyncio.TimeoutError as te:
                     last_exc = te
                     logger.warning(f"Timeout in {scan_type} attempt {attempt+1}; will{'' if attempt < SCANNER_MAX_RETRIES else ' not'} retry")
                     if attempt >= SCANNER_MAX_RETRIES:
-                        raise
+                        # Don't let timeouts block other scanners - return empty results
+                        logger.error(f"Scanner {scan_type} failed after {SCANNER_MAX_RETRIES + 1} attempts due to timeout")
+                        results = []
+                        break
                 except Exception as e:
                     # Retry only once for generic/transient exceptions
                     last_exc = e
                     logger.warning(f"Transient error in {scan_type} attempt {attempt+1}: {e}")
                     if attempt >= SCANNER_MAX_RETRIES:
-                        raise
+                        # Don't let exceptions block other scanners - return empty results
+                        logger.error(f"Scanner {scan_type} failed after {SCANNER_MAX_RETRIES + 1} attempts: {e}")
+                        results = []
+                        break
 
             # Process and transform results
             transformed_results = await self._process_scanner_results(
@@ -570,7 +630,8 @@ class ScannerEngine:
                 
                 logger.info(f"Module {scan_type} finished. Total progress: {parent_scan['completed_modules']}/{parent_scan['total_modules']}")
 
-                progress = (parent_scan["completed_modules"] / parent_scan["total_modules"]) * 100
+                total = max(1, parent_scan["total_modules"])  # avoid division by zero
+                progress = (parent_scan["completed_modules"] / total) * 100
                 parent_scan["progress"] = progress
                 
                 # Calculate improved timing estimates
@@ -587,18 +648,22 @@ class ScannerEngine:
                 timing_data["estimated_completion"] = current_time + eta_seconds if eta_seconds > 0 else None
                 parent_scan["timing_data"] = timing_data
                 
-                await manager.broadcast_scan_update(
-                    broadcast_id, "scan_progress",
-                    {
-                        "progress": progress, 
-                        "scan_id": broadcast_id,
-                        "eta_seconds": eta_seconds,
-                        "eta_formatted": eta_formatted,
-                        "elapsed_seconds": elapsed_time,
-                        "completed_modules": parent_scan["completed_modules"],
-                        "total_modules": parent_scan["total_modules"]
-                    }
-                )
+                # Broadcast progress update immediately
+                try:
+                    await manager.broadcast_scan_update(
+                        broadcast_id, "scan_progress",
+                        {
+                            "progress": progress, 
+                            "scan_id": broadcast_id,
+                            "eta_seconds": eta_seconds,
+                            "eta_formatted": eta_formatted,
+                            "elapsed_seconds": elapsed_time,
+                            "completed_modules": parent_scan["completed_modules"],
+                            "total_modules": parent_scan["total_modules"]
+                        }
+                    )
+                except Exception as e:
+                    logger.warning(f"Failed to broadcast progress update: {e}")
 
                 # Check if all modules have finished (regardless of success/failure)
                 if parent_scan["completed_modules"] >= parent_scan["total_modules"]:
@@ -903,12 +968,17 @@ class ScannerEngine:
         ]
 
     async def _monitor_scan_completion(self, scan_id: str, total_modules: int):
-        """Monitor scan completion and force completion if needed."""
+        """Monitor scan completion and force completion if needed within global cap."""
         try:
-            # Wait for a reasonable time for scans to complete
-            # Allow more time per module and ensure all scanners can finish
-            max_wait_time = max(600, total_modules * 60)  # At least 10 minutes or 1 minute per module
+            # Enforce a strict global cap (from settings) with a small buffer for aggregation
+            global_cap = max(60, int(GLOBAL_HARD_CAP) if GLOBAL_HARD_CAP and GLOBAL_HARD_CAP > 0 else 180)
+            max_wait_time = min(global_cap, 180)  # hard requirement: 180s max
             start_time = time.time()
+
+            # Ticker: broadcast progress/ETA every second if values change
+            last_progress_sent = -1.0
+            from backend.api.websocket import get_connection_manager
+            manager = get_connection_manager()
             
             while time.time() - start_time < max_wait_time:
                 if scan_id not in self._scan_results:
@@ -920,6 +990,26 @@ class ScannerEngine:
                     logger.info(f"Scan {scan_id} completed normally, stopping monitor")
                     return
                 
+                # Emit periodic progress/ETA if changed
+                try:
+                    progress = float(scan_data.get("progress") or 0.0)
+                    if abs(progress - last_progress_sent) >= 0.5:
+                        elapsed = time.time() - start_time
+                        eta_seconds = max(0.0, (elapsed / (progress or 1e-6)) * 100 - elapsed) if progress > 0 else 0.0
+                        await manager.broadcast_scan_update(
+                            scan_id, "scan_progress",
+                            {
+                                "progress": progress,
+                                "eta_seconds": eta_seconds,
+                                "eta_formatted": self._format_eta(eta_seconds),
+                                "completed_modules": int(scan_data.get("completed_modules") or 0),
+                                "total_modules": int(scan_data.get("total_modules") or 0),
+                            }
+                        )
+                        last_progress_sent = progress
+                except Exception:
+                    pass
+
                 # Check if all modules have finished
                 finished_modules = sum(
                     1 for sub_scan in scan_data.get("sub_scans", {}).values()
@@ -931,7 +1021,7 @@ class ScannerEngine:
                     await self._force_scan_completion(scan_id)
                     return
                 
-                await asyncio.sleep(2)  # Reduced from 5 to 2 seconds for faster response
+                await asyncio.sleep(1)  # 1s ticker
             
             # If we reach here, force completion due to timeout
             logger.warning(f"Scan {scan_id} timed out after {max_wait_time}s, forcing completion")

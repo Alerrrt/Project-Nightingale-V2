@@ -1,0 +1,759 @@
+{
+  "id": "full_scan_20250814_125034",
+  "target": "https://www.rexcybersolutions.com/",
+  "type": "full_scan",
+  "status": "running",
+  "start_time": "2025-08-14T12:50:34.845706",
+  "results": [],
+  "errors": [
+    "Scanner securityheadersanalyzer failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner securitymisconfiguration failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner sensitive_data_exposure_scanner failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner sensitivedataexposure failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner server_side_request_forgery_scanner failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner serversiderequestforgery failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner ssl_tls_configuration_audit_scanner failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner ssltlsconfigurationaudit failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner subdomain_dns_enumeration_scanner failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner subdomaindnsenumeration failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner using_components_with_known_vulnerabilities_scanner failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner usingcomponentswithknownvulnerabilities failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner xxe failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner xxe_scanner failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner technology_fingerprint_scanner failed with error: 'MessageQueue' object has no attribute '_queue'",
+    "Scanner technology_vulnerabilities_scanner failed with error: 'MessageQueue' object has no attribute '_queue'"
+  ],
+  "sub_scans": {
+    "full_scan_20250814_125034_api_fuzzing_scanner_845798": {
+      "name": "api_fuzzing_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:34.957197",
+      "execution_time": 0.5078496932983398,
+      "end_time": "2025-08-14T12:50:35.464373"
+    },
+    "full_scan_20250814_125034_api_security_scanner_847067": {
+      "name": "api_security_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:34.958142",
+      "end_time": "2025-08-14T12:52:13.149395"
+    },
+    "full_scan_20250814_125034_apifuzzing_847969": {
+      "name": "apifuzzing",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:34.962220",
+      "execution_time": 0.5248632431030273,
+      "end_time": "2025-08-14T12:50:35.483330"
+    },
+    "full_scan_20250814_125034_apisecurity_848963": {
+      "name": "apisecurity",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:34.963385",
+      "end_time": "2025-08-14T12:52:13.150943"
+    },
+    "full_scan_20250814_125034_authentication_849912": {
+      "name": "authentication",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:34.964519",
+      "end_time": "2025-08-14T12:52:13.164657"
+    },
+    "full_scan_20250814_125034_authentication_brute_force_credential_stuffing_scanner_851165": {
+      "name": "authentication_brute_force_credential_stuffing_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:34.965428",
+      "end_time": "2025-08-14T12:52:13.167895"
+    },
+    "full_scan_20250814_125034_authentication_brute_force_scanner_854399": {
+      "name": "authentication_brute_force_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:34.972422",
+      "end_time": "2025-08-14T12:52:13.189652"
+    },
+    "full_scan_20250814_125034_authentication_bypass_scanner_855311": {
+      "name": "authentication_bypass_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:34.973366",
+      "end_time": "2025-08-14T12:52:13.662832"
+    },
+    "full_scan_20250814_125034_authentication_scanner_856234": {
+      "name": "authentication_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:34.974155",
+      "end_time": "2025-08-14T12:52:13.664892"
+    },
+    "full_scan_20250814_125034_authenticationbruteforce_857185": {
+      "name": "authenticationbruteforce",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:34.975196",
+      "end_time": "2025-08-14T12:52:13.666505"
+    },
+    "full_scan_20250814_125034_authenticationbruteforcecredentialstuffing_857912": {
+      "name": "authenticationbruteforcecredentialstuffing",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:34.976010",
+      "end_time": "2025-08-14T12:52:13.676859"
+    },
+    "full_scan_20250814_125034_authenticationbypass_859630": {
+      "name": "authenticationbypass",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:34.986714",
+      "end_time": "2025-08-14T12:52:13.187941"
+    },
+    "full_scan_20250814_125034_automated_cve_lookup_scanner_860490": {
+      "name": "automated_cve_lookup_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:34.987942",
+      "end_time": "2025-08-14T12:52:13.684699"
+    },
+    "full_scan_20250814_125034_automatedcvelookup_861125": {
+      "name": "automatedcvelookup",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:34.988996",
+      "end_time": "2025-08-14T12:52:13.681972"
+    },
+    "full_scan_20250814_125034_broken_access_control_scanner_861854": {
+      "name": "broken_access_control_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:34.989794",
+      "end_time": "2025-08-14T12:52:13.695431"
+    },
+    "full_scan_20250814_125034_broken_authentication_scanner_862558": {
+      "name": "broken_authentication_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:34.990673",
+      "end_time": "2025-08-14T12:52:13.697993"
+    },
+    "full_scan_20250814_125034_brokenaccesscontrol_866564": {
+      "name": "brokenaccesscontrol",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:34.992095",
+      "end_time": "2025-08-14T12:52:13.700046"
+    },
+    "full_scan_20250814_125034_brokenauthentication_867393": {
+      "name": "brokenauthentication",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:34.992906",
+      "end_time": "2025-08-14T12:52:13.701975"
+    },
+    "full_scan_20250814_125034_clickjacking_screenshotter_868138": {
+      "name": "clickjacking_screenshotter",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:34.993826",
+      "end_time": "2025-08-14T12:52:13.704068"
+    },
+    "full_scan_20250814_125034_clickjackingscreenshotter_875072": {
+      "name": "clickjackingscreenshotter",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:34.994948",
+      "end_time": "2025-08-14T12:52:13.716407"
+    },
+    "full_scan_20250814_125034_csrf_875780": {
+      "name": "csrf",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:34.995723",
+      "end_time": "2025-08-14T12:52:13.718086"
+    },
+    "full_scan_20250814_125034_csrf_scanner_876500": {
+      "name": "csrf_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:34.997536",
+      "end_time": "2025-08-14T12:52:13.737859"
+    },
+    "full_scan_20250814_125034_csrf_token_checker_877353": {
+      "name": "csrf_token_checker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:35.006590",
+      "end_time": "2025-08-14T12:52:13.739983"
+    },
+    "full_scan_20250814_125034_csrftokenchecker_881100": {
+      "name": "csrftokenchecker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:35.007511",
+      "end_time": "2025-08-14T12:52:13.742684"
+    },
+    "full_scan_20250814_125034_directory_file_enumeration_scanner_882034": {
+      "name": "directory_file_enumeration_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.008318",
+      "end_time": "2025-08-14T12:52:13.735842"
+    },
+    "full_scan_20250814_125034_directoryfileenumeration_888729": {
+      "name": "directoryfileenumeration",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.009188",
+      "end_time": "2025-08-14T12:52:13.744654"
+    },
+    "full_scan_20250814_125034_insecure_deserialization_scanner_889531": {
+      "name": "insecure_deserialization_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.010171",
+      "execution_time": 0.38177013397216797,
+      "end_time": "2025-08-14T12:50:35.391271"
+    },
+    "full_scan_20250814_125034_insecure_design_scanner_893499": {
+      "name": "insecure_design_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.013282",
+      "end_time": "2025-08-14T12:52:13.752453"
+    },
+    "full_scan_20250814_125034_insecuredeserialization_894163": {
+      "name": "insecuredeserialization",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.014194",
+      "execution_time": 0.40161609649658203,
+      "end_time": "2025-08-14T12:50:35.415310"
+    },
+    "full_scan_20250814_125034_insecuredesign_896695": {
+      "name": "insecuredesign",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.014975",
+      "end_time": "2025-08-14T12:52:13.769749"
+    },
+    "full_scan_20250814_125034_insufficient_logging_and_monitoring_scanner_897685": {
+      "name": "insufficient_logging_and_monitoring_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.015774",
+      "end_time": "2025-08-14T12:52:13.771815"
+    },
+    "full_scan_20250814_125034_insufficientloggingandmonitoring_898537": {
+      "name": "insufficientloggingandmonitoring",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.016913"
+    },
+    "full_scan_20250814_125034_js_902886": {
+      "name": "js",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.017655"
+    },
+    "full_scan_20250814_125034_js_scanner_903796": {
+      "name": "js_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.018423"
+    },
+    "full_scan_20250814_125034_misconfiguration_904631": {
+      "name": "misconfiguration",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.029055"
+    },
+    "full_scan_20250814_125034_misconfiguration_scanner_905318": {
+      "name": "misconfiguration_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.029800"
+    },
+    "full_scan_20250814_125034_oob_905978": {
+      "name": "oob",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.030556"
+    },
+    "full_scan_20250814_125034_oob_scanner_907978": {
+      "name": "oob_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.031358"
+    },
+    "full_scan_20250814_125034_open_redirect_finder_908879": {
+      "name": "open_redirect_finder",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.032190"
+    },
+    "full_scan_20250814_125034_open_redirect_scanner_909783": {
+      "name": "open_redirect_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.033114"
+    },
+    "full_scan_20250814_125034_openredirect_917666": {
+      "name": "openredirect",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.033911"
+    },
+    "full_scan_20250814_125034_openredirectfinder_918671": {
+      "name": "openredirectfinder",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.034801"
+    },
+    "full_scan_20250814_125034_path_traversal_tester_919309": {
+      "name": "path_traversal_tester",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.037415"
+    },
+    "full_scan_20250814_125034_pathtraversaltester_920109": {
+      "name": "pathtraversaltester",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.038234"
+    },
+    "full_scan_20250814_125034_rate_limiting_bruteforce_scanner_920780": {
+      "name": "rate_limiting_bruteforce_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.039015"
+    },
+    "full_scan_20250814_125034_ratelimitingbruteforce_921545": {
+      "name": "ratelimitingbruteforce",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.039702"
+    },
+    "full_scan_20250814_125034_robots_txt_sitemap_crawl_scanner_922213": {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.040607"
+    },
+    "full_scan_20250814_125034_robotstxtsitemapcrawl_924192": {
+      "name": "robotstxtsitemapcrawl",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.048449"
+    },
+    "full_scan_20250814_125034_security_headers_analyzer_932189": {
+      "name": "security_headers_analyzer",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:50:35.049230"
+    },
+    "full_scan_20250814_125034_security_misconfiguration_scanner_933059": {
+      "name": "security_misconfiguration_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:50:35.049993"
+    },
+    "full_scan_20250814_125034_securityheadersanalyzer_933805": {
+      "name": "securityheadersanalyzer",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner securityheadersanalyzer failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:13.191895",
+      "end_time": "2025-08-14T12:52:13.335928"
+    },
+    "full_scan_20250814_125034_securitymisconfiguration_935477": {
+      "name": "securitymisconfiguration",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner securitymisconfiguration failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:13.391635",
+      "end_time": "2025-08-14T12:52:13.447763"
+    },
+    "full_scan_20250814_125034_sensitive_data_exposure_scanner_936248": {
+      "name": "sensitive_data_exposure_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner sensitive_data_exposure_scanner failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:13.475141",
+      "end_time": "2025-08-14T12:52:13.516868"
+    },
+    "full_scan_20250814_125034_sensitivedataexposure_936778": {
+      "name": "sensitivedataexposure",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner sensitivedataexposure failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:13.554921",
+      "end_time": "2025-08-14T12:52:13.623634"
+    },
+    "full_scan_20250814_125034_server_side_request_forgery_scanner_937269": {
+      "name": "server_side_request_forgery_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner server_side_request_forgery_scanner failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:13.774553",
+      "end_time": "2025-08-14T12:52:13.832114"
+    },
+    "full_scan_20250814_125034_serversiderequestforgery_937659": {
+      "name": "serversiderequestforgery",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner serversiderequestforgery failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:13.862196",
+      "end_time": "2025-08-14T12:52:13.923512"
+    },
+    "full_scan_20250814_125034_sql_injection_scanner_938069": {
+      "name": "sql_injection_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T12:50:35.524099"
+    },
+    "full_scan_20250814_125034_sqlinjection_938439": {
+      "name": "sqlinjection",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T12:50:35.524873"
+    },
+    "full_scan_20250814_125034_ssl_tls_configuration_audit_scanner_938854": {
+      "name": "ssl_tls_configuration_audit_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner ssl_tls_configuration_audit_scanner failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:13.950273",
+      "end_time": "2025-08-14T12:52:14.054974"
+    },
+    "full_scan_20250814_125034_ssltlsconfigurationaudit_939209": {
+      "name": "ssltlsconfigurationaudit",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner ssltlsconfigurationaudit failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:14.082929",
+      "end_time": "2025-08-14T12:52:14.135085"
+    },
+    "full_scan_20250814_125034_subdomain_dns_enumeration_scanner_939576": {
+      "name": "subdomain_dns_enumeration_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner subdomain_dns_enumeration_scanner failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:14.168402",
+      "end_time": "2025-08-14T12:52:14.208546"
+    },
+    "full_scan_20250814_125034_subdomaindnsenumeration_940223": {
+      "name": "subdomaindnsenumeration",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner subdomaindnsenumeration failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:14.227999",
+      "end_time": "2025-08-14T12:52:14.281315"
+    },
+    "full_scan_20250814_125034_technology_fingerprint_scanner_940826": {
+      "name": "technology_fingerprint_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner technology_fingerprint_scanner failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "LOW",
+      "start_time": "2025-08-14T12:52:15.087890",
+      "end_time": "2025-08-14T12:52:15.124909"
+    },
+    "full_scan_20250814_125034_technology_vulnerabilities_scanner_941326": {
+      "name": "technology_vulnerabilities_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner technology_vulnerabilities_scanner failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "LOW",
+      "start_time": "2025-08-14T12:52:15.506107",
+      "end_time": "2025-08-14T12:52:15.547823"
+    },
+    "full_scan_20250814_125034_technologyfingerprint_941756": {
+      "name": "technologyfingerprint",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_125034_technologyvulnerabilities_942201": {
+      "name": "technologyvulnerabilities",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_125034_using_components_with_known_vulnerabilities_scanner_942696": {
+      "name": "using_components_with_known_vulnerabilities_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner using_components_with_known_vulnerabilities_scanner failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:14.301229",
+      "end_time": "2025-08-14T12:52:14.353212"
+    },
+    "full_scan_20250814_125034_usingcomponentswithknownvulnerabilities_951826": {
+      "name": "usingcomponentswithknownvulnerabilities",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner usingcomponentswithknownvulnerabilities failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:14.376032",
+      "end_time": "2025-08-14T12:52:14.427574"
+    },
+    "full_scan_20250814_125034_xss_952585": {
+      "name": "xss",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T12:50:35.545298"
+    },
+    "full_scan_20250814_125034_xss_scanner_953073": {
+      "name": "xss_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T12:50:35.547105"
+    },
+    "full_scan_20250814_125034_xxe_953562": {
+      "name": "xxe",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner xxe failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:14.465223",
+      "end_time": "2025-08-14T12:52:14.503679"
+    },
+    "full_scan_20250814_125034_xxe_scanner_953970": {
+      "name": "xxe_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner xxe_scanner failed with error: 'MessageQueue' object has no attribute '_queue'"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:52:14.527910",
+      "end_time": "2025-08-14T12:52:14.572362"
+    }
+  },
+  "progress": 63.888888888888886,
+  "total_modules": 72,
+  "completed_modules": 46,
+  "deadline": 1755176014.845735,
+  "performance_metrics": {
+    "http_cache_stats": {},
+    "scanner_timing": {
+      "insecure_deserialization_scanner": 0.38177013397216797,
+      "insecuredeserialization": 0.40161609649658203,
+      "api_fuzzing_scanner": 0.5078496932983398,
+      "apifuzzing": 0.5248632431030273
+    },
+    "resource_usage": {}
+  },
+  "timing_data": {
+    "start_time": 1755175834.845744,
+    "estimated_completion": 1755175991.8339007,
+    "scanner_estimates": {},
+    "last_progress_update": 1755175935.143733
+  }
+}

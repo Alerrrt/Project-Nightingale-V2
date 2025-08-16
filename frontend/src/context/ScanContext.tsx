@@ -85,6 +85,10 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
   const [error, setError] = useState<string | null>(null);
   const ws = useRef<WebSocket | null>(null);
   const scanStartTime = useRef<Date | null>(null);
+  const pollingTimer = useRef<number | null>(null);
+  const wsHeartbeat = useRef<number | null>(null);
+  const fallbackTimeout = useRef<number | null>(null);
+  const lastWsMessageAt = useRef<number>(0);
 
   const stopScan = () => {
     if (ws.current && ws.current.readyState === WebSocket.OPEN && scanId) {
@@ -96,20 +100,67 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (scanId && isScanning) {
-      // Use the 'ws' scheme for WebSocket connections
-      // The host is the same as the window, and Vite will proxy it.
-      const wsUrl = `ws://${window.location.host}/api/ws/${scanId}`;
+      // Use the correct WebSocket endpoint exposed under /api in the backend
+      const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+      const wsUrl = `${scheme}://${window.location.host}/api/ws/${scanId}`;
       ws.current = new WebSocket(wsUrl);
 
       ws.current.onopen = () => {
         setError(null);
         console.log('WebSocket connection established');
         scanStartTime.current = new Date();
+
+        // Start a short grace window: if we don't get any WS messages, enable polling fallback
+        if (fallbackTimeout.current == null) {
+          fallbackTimeout.current = window.setTimeout(() => {
+            if (lastWsMessageAt.current === 0) {
+              // No messages received within grace window — start polling as fallback
+              if (pollingTimer.current == null) {
+                pollingTimer.current = window.setInterval(async () => {
+                  try {
+                    const res = await fetch(`/api/scans/${scanId}`);
+                    if (!res.ok) return;
+                    const json = await res.json();
+                    setScanProgress(prev => ({
+                      ...prev,
+                      progress: typeof json.progress === 'number' ? json.progress : (prev?.progress || 0),
+                      completedModules: json.completed_modules ?? prev.completedModules,
+                      totalModules: json.total_modules ?? prev.totalModules,
+                      phase: (json.progress > 0 && (!prev?.phase || prev.phase.trim().length === 0)) ? 'Running scanners…' : (prev?.phase || ''),
+                    }));
+                  } catch {}
+                }, 2000);
+              }
+            }
+          }, 4000);
+        }
+
+        // Lightweight heartbeat ping to keep proxies from idling the socket
+        if (wsHeartbeat.current == null) {
+          wsHeartbeat.current = window.setInterval(() => {
+            try {
+              if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+                ws.current.send(JSON.stringify({ type: 'ping' }));
+              }
+            } catch {}
+          }, 25000);
+        }
       };
 
       ws.current.onmessage = (event) => {
         const message = JSON.parse(event.data);
         const { type, data, timestamp } = message; // Destructure the message
+
+        // Mark that we are receiving WS data; if polling is running, stop it
+        lastWsMessageAt.current = Date.now();
+        if (pollingTimer.current != null) {
+          clearInterval(pollingTimer.current);
+          pollingTimer.current = null;
+        }
+        if (fallbackTimeout.current != null) {
+          clearTimeout(fallbackTimeout.current);
+          fallbackTimeout.current = null;
+        }
 
         // Handle different types of messages from the backend
         if (type === 'scan_phase') {
@@ -146,6 +197,10 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
           setScanProgress(prev => ({ 
             ...prev, 
             progress: typeof data.progress === 'number' ? data.progress : (prev?.progress || 0), 
+            // If backend hasn't sent phase yet, infer it when progress > 0
+            phase: (prev?.phase && prev.phase.trim().length > 0)
+              ? prev.phase
+              : (typeof progress === 'number' && progress > 0 ? 'Running scanners…' : 'Initializing...'),
             eta,
             completedModules: data.completed_modules ?? prev.completedModules,
             totalModules: data.total_modules ?? prev.totalModules
@@ -214,16 +269,47 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
 
       ws.current.onclose = () => {
         console.log('WebSocket connection closed');
+        // If socket closes during an active scan, enable polling fallback immediately
         if (isScanning) {
-          setError('Real-time connection to the server was lost.');
-          setIsScanning(false);
+          if (pollingTimer.current == null) {
+            pollingTimer.current = window.setInterval(async () => {
+              try {
+                const res = await fetch(`/api/scans/${scanId}`);
+                if (!res.ok) return;
+                const json = await res.json();
+                setScanProgress(prev => ({
+                  ...prev,
+                  progress: typeof json.progress === 'number' ? json.progress : (prev?.progress || 0),
+                  completedModules: json.completed_modules ?? prev.completedModules,
+                  totalModules: json.total_modules ?? prev.totalModules,
+                  phase: (json.progress > 0 && (!prev?.phase || prev.phase.trim().length === 0)) ? 'Running scanners…' : (prev?.phase || ''),
+                }));
+              } catch {}
+            }, 2000);
+          }
         }
       };
 
       ws.current.onerror = (err) => {
         console.error('WebSocket error:', err);
         setError('A real-time connection error occurred.');
-        setIsScanning(false);
+        // Don't stop the scan on transient WS errors; switch to polling fallback
+        if (pollingTimer.current == null) {
+          pollingTimer.current = window.setInterval(async () => {
+            try {
+              const res = await fetch(`/api/scans/${scanId}`);
+              if (!res.ok) return;
+              const json = await res.json();
+              setScanProgress(prev => ({
+                ...prev,
+                progress: typeof json.progress === 'number' ? json.progress : (prev?.progress || 0),
+                completedModules: json.completed_modules ?? prev.completedModules,
+                totalModules: json.total_modules ?? prev.totalModules,
+                phase: (json.progress > 0 && (!prev?.phase || prev.phase.trim().length === 0)) ? 'Running scanners…' : (prev?.phase || ''),
+              }));
+            } catch {}
+          }, 2000);
+        }
       };
     }
 
@@ -231,6 +317,19 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
         ws.current.close();
       }
+      if (wsHeartbeat.current != null) {
+        clearInterval(wsHeartbeat.current);
+        wsHeartbeat.current = null;
+      }
+      if (pollingTimer.current != null) {
+        clearInterval(pollingTimer.current);
+        pollingTimer.current = null;
+      }
+      if (fallbackTimeout.current != null) {
+        clearTimeout(fallbackTimeout.current);
+        fallbackTimeout.current = null;
+      }
+      lastWsMessageAt.current = 0;
     };
   }, [scanId, isScanning]);
 

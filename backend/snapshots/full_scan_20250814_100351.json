@@ -1,0 +1,2503 @@
+{
+  "id": "full_scan_20250814_100351",
+  "target": "http://testphp.vulnweb.com/",
+  "type": "full_scan",
+  "status": "running",
+  "start_time": "2025-08-14T10:03:51.833186",
+  "results": [
+    {
+      "id": "06a4e87e-a76a-4a1c-a388-4955dda89b56",
+      "title": "Missing CSRF Protection",
+      "severity": "High",
+      "description": "Form submission lacks CSRF protection mechanisms",
+      "short_description": "Form submission lacks CSRF protection mechanisms",
+      "remediation": "Implement CSRF protection using one or more of: CSRF tokens, SameSite cookies, or custom headers.",
+      "countermeasures": "Implement CSRF protection using one or more of: CSRF tokens, SameSite cookies, or custom headers.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A01:2021 - Broken Access Control",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"form_preview\": \"<form action=\\\"search.php?test=query\\\" method=\\\"post\\\"> \\n      <label>search art</label> \\n      <input name=\\\"searchFor\\\" type=\\\"text\\\" size=\\\"10\\\"> \\n      <input name=\\\"goButton\\\" type=\\\"submit\\\" value=\\\"go\\\"> \\n    \",\n  \"missing_protections\": {\n    \"csrf_token\": true,\n    \"samesite_cookie\": true,\n    \"custom_header\": true\n  }\n}",
+      "scanner": "csrf",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "577b9b04-3bb2-407d-b1df-02d897169bc5",
+      "title": "Missing CSRF Token",
+      "severity": "High",
+      "description": "Form at 'http://testphp.vulnweb.com/search.php?test=query' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site Request Forgery (CSRF) attacks.",
+      "short_description": "Form at 'http://testphp.vulnweb.com/search.php?test=query' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site R",
+      "remediation": "Implement anti-CSRF tokens for all state-changing operations via forms. Ensure tokens are unique per session/request and validated on the server-side.",
+      "countermeasures": "Implement anti-CSRF tokens for all state-changing operations via forms. Ensure tokens are unique per session/request and validated on the server-side.",
+      "location": "http://testphp.vulnweb.com/search.php?test=query",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A04:2021 - Insecure Design",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"form_action\": \"http://testphp.vulnweb.com/search.php?test=query\",\n  \"details\": \"No hidden input field resembling a CSRF token found.\"\n}",
+      "scanner": "csrftokenchecker",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "d0de9cf0-d6c2-49f8-a9cf-45949a989b98",
+      "title": "Missing Strict-Transport-Security Header",
+      "severity": "High",
+      "description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+      "short_description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+      "remediation": "Add the Strict-Transport-Security header with value: max-age=31536000; includeSubDomains; preload",
+      "countermeasures": "Add the Strict-Transport-Security header with value: max-age=31536000; includeSubDomains; preload",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "5a1b40ad-294d-4969-9c0f-d801435edfb7",
+      "title": "Missing X-Content-Type-Options Header",
+      "severity": "Medium",
+      "description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+      "short_description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+      "remediation": "Add the X-Content-Type-Options header with value: nosniff",
+      "countermeasures": "Add the X-Content-Type-Options header with value: nosniff",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"X-Content-Type-Options\",\n  \"recommended_value\": \"nosniff\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"X-Content-Type-Options\",\n  \"recommended_value\": \"nosniff\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "04591409-3304-4fc8-b828-3946c17ea3e7",
+      "title": "Missing X-Frame-Options Header",
+      "severity": "Medium",
+      "description": "The X-Frame-Options header is missing. Prevents clickjacking attacks",
+      "short_description": "The X-Frame-Options header is missing. Prevents clickjacking attacks",
+      "remediation": "Add the X-Frame-Options header with value: DENY",
+      "countermeasures": "Add the X-Frame-Options header with value: DENY",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"X-Frame-Options\",\n  \"recommended_value\": \"DENY\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"X-Frame-Options\",\n  \"recommended_value\": \"DENY\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "bbb2cd7e-a947-4749-8304-dd671cf6abb0",
+      "title": "Missing X-XSS-Protection Header",
+      "severity": "Low",
+      "description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+      "short_description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+      "remediation": "Add the X-XSS-Protection header with value: 1; mode=block",
+      "countermeasures": "Add the X-XSS-Protection header with value: 1; mode=block",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "1c7ed770-4266-4ed6-88e6-7e1922f9da73",
+      "title": "Missing Content-Security-Policy Header",
+      "severity": "High",
+      "description": "The Content-Security-Policy header is missing. Controls resource loading",
+      "short_description": "The Content-Security-Policy header is missing. Controls resource loading",
+      "remediation": "Add the Content-Security-Policy header with value: default-src 'self'",
+      "countermeasures": "Add the Content-Security-Policy header with value: default-src 'self'",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "a94e9ccf-d73f-4b2e-946a-7147332ba434",
+      "title": "Missing Referrer-Policy Header",
+      "severity": "Low",
+      "description": "The Referrer-Policy header is missing. Controls referrer information",
+      "short_description": "The Referrer-Policy header is missing. Controls referrer information",
+      "remediation": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+      "countermeasures": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "023324f4-4b7e-4aac-84c0-86d8fbb817b4",
+      "title": "Missing Permissions-Policy Header",
+      "severity": "Medium",
+      "description": "The Permissions-Policy header is missing. Controls browser features",
+      "short_description": "The Permissions-Policy header is missing. Controls browser features",
+      "remediation": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+      "countermeasures": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "87b02539-bf44-4262-8c91-3325ef8331f5",
+      "title": "Missing Cross-Origin-Opener-Policy Header",
+      "severity": "Medium",
+      "description": "The Cross-Origin-Opener-Policy header is missing. Helps isolate browsing context (COOP)",
+      "short_description": "The Cross-Origin-Opener-Policy header is missing. Helps isolate browsing context (COOP)",
+      "remediation": "Add the Cross-Origin-Opener-Policy header with value: same-origin",
+      "countermeasures": "Add the Cross-Origin-Opener-Policy header with value: same-origin",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "c57a6ea2-f62e-4da7-b1ba-adba924af9ba",
+      "title": "Missing Cross-Origin-Embedder-Policy Header",
+      "severity": "Medium",
+      "description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+      "short_description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+      "remediation": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+      "countermeasures": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "c4a1e5fb-399f-434f-a8ff-8407542e0aa2",
+      "title": "Missing Cross-Origin-Resource-Policy Header",
+      "severity": "Low",
+      "description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+      "short_description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+      "remediation": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+      "countermeasures": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "3d0833fc-bb5f-45a6-bc8d-8a4cd8e3f86d",
+      "title": "Missing X-Permitted-Cross-Domain-Policies Header",
+      "severity": "Low",
+      "description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+      "short_description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+      "remediation": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+      "countermeasures": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "e8e973d4-1d0c-460b-9a1e-4599683fec42",
+      "title": "Potential Clickjacking Vulnerability - X-Frame-Options",
+      "severity": "Medium",
+      "description": "The page might be vulnerable to Clickjacking. X-Frame-Options header is either missing or not set to 'DENY'/'SAMEORIGIN'.",
+      "short_description": "The page might be vulnerable to Clickjacking. X-Frame-Options header is either missing or not set to 'DENY'/'SAMEORIGIN'.",
+      "remediation": "Implement the X-Frame-Options header with 'DENY' or 'SAMEORIGIN'. Additionally, consider implementing Content-Security-Policy with frame-ancestors directive for better protection.",
+      "countermeasures": "Implement the X-Frame-Options header with 'DENY' or 'SAMEORIGIN'. Additionally, consider implementing Content-Security-Policy with frame-ancestors directive for better protection.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"x_frame_options_header\": \"Missing\",\n  \"csp_header\": \"Missing\",\n  \"csp_report_only_header\": \"Missing\",\n  \"details\": \"The page could potentially be framed by an attacker due to missing or weak X-Frame-Options header.\"\n}",
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"x_frame_options_header\": \"Missing\",\n  \"csp_header\": \"Missing\",\n  \"csp_report_only_header\": \"Missing\",\n  \"details\": \"The page could potentially be framed by an attacker due to missing or weak X-Frame-Options header.\"\n}"
+      ],
+      "scanner": "clickjacking_screenshotter",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "CWE-1021",
+          "url": "https://cwe.mitre.org/data/definitions/1021.html"
+        },
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {
+        "cwe": "CWE-1021",
+        "owasp": "A05"
+      }
+    },
+    {
+      "id": "5d1a4f1f-2a9d-4910-9fb0-211ebb33e9e3",
+      "title": "Potential Clickjacking Vulnerability - CSP",
+      "severity": "Medium",
+      "description": "The page might be vulnerable to Clickjacking. Content-Security-Policy header is either missing or does not include frame-ancestors directive.",
+      "short_description": "The page might be vulnerable to Clickjacking. Content-Security-Policy header is either missing or does not include frame-ancestors directive",
+      "remediation": "Implement Content-Security-Policy with frame-ancestors directive. For maximum security, use 'frame-ancestors 'none'' to prevent all framing, or 'frame-ancestors 'self'' to allow only same-origin framing.",
+      "countermeasures": "Implement Content-Security-Policy with frame-ancestors directive. For maximum security, use 'frame-ancestors 'none'' to prevent all framing, or 'frame-ancestors 'self'' to allow only same-origin framing.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"x_frame_options_header\": \"Missing\",\n  \"csp_header\": \"Missing\",\n  \"csp_report_only_header\": \"Missing\",\n  \"details\": \"The page could potentially be framed by an attacker due to missing or weak Content-Security-Policy frame-ancestors directive.\"\n}",
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"x_frame_options_header\": \"Missing\",\n  \"csp_header\": \"Missing\",\n  \"csp_report_only_header\": \"Missing\",\n  \"details\": \"The page could potentially be framed by an attacker due to missing or weak Content-Security-Policy frame-ancestors directive.\"\n}"
+      ],
+      "scanner": "clickjacking_screenshotter",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "CWE-1021",
+          "url": "https://cwe.mitre.org/data/definitions/1021.html"
+        },
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {
+        "cwe": "CWE-1021",
+        "owasp": "A05"
+      }
+    },
+    {
+      "id": "6ed54c16-a5a2-431a-b2c3-16e202ec2059",
+      "title": "Server Information Disclosure",
+      "severity": "Medium",
+      "description": "Server header reveals technology information: nginx/1.19.0",
+      "short_description": "Server header reveals technology information: nginx/1.19.0",
+      "remediation": "Configure server to not reveal version information.",
+      "countermeasures": "Configure server to not reveal version information.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"server_header\": \"nginx/1.19.0\"\n}",
+        "{\n  \"server_header\": \"nginx/1.19.0\"\n}",
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"server_header\": \"nginx/1.19.0\"\n}",
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"server_header\": \"nginx/1.19.0\"\n}"
+      ],
+      "scanner": "misconfiguration",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "d9915253-03df-49de-9d8c-5a24afd13606",
+      "title": "Missing Security Header: Strict-Transport-Security",
+      "severity": "Medium",
+      "description": "HSTS header missing",
+      "short_description": "HSTS header missing",
+      "remediation": "Implement the Strict-Transport-Security header to enhance security.",
+      "countermeasures": "Implement the Strict-Transport-Security header to enhance security.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"Strict-Transport-Security\"\n}",
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"Strict-Transport-Security\"\n}"
+      ],
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "35d4f51e-1cda-4acd-9721-16d33cf59de7",
+      "title": "Missing Security Header: X-Content-Type-Options",
+      "severity": "Medium",
+      "description": "X-Content-Type-Options header missing",
+      "short_description": "X-Content-Type-Options header missing",
+      "remediation": "Implement the X-Content-Type-Options header to enhance security.",
+      "countermeasures": "Implement the X-Content-Type-Options header to enhance security.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"X-Content-Type-Options\"\n}",
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"X-Content-Type-Options\"\n}"
+      ],
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "8c8d7c49-b725-46e4-93da-f1188ab292f7",
+      "title": "Missing Security Header: X-Frame-Options",
+      "severity": "Medium",
+      "description": "X-Frame-Options header missing",
+      "short_description": "X-Frame-Options header missing",
+      "remediation": "Implement the X-Frame-Options header to enhance security.",
+      "countermeasures": "Implement the X-Frame-Options header to enhance security.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"X-Frame-Options\"\n}",
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"X-Frame-Options\"\n}"
+      ],
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "bc9f1c87-cb1d-418e-99e6-72c5dac2ae40",
+      "title": "Missing Security Header: X-XSS-Protection",
+      "severity": "Medium",
+      "description": "X-XSS-Protection header missing",
+      "short_description": "X-XSS-Protection header missing",
+      "remediation": "Implement the X-XSS-Protection header to enhance security.",
+      "countermeasures": "Implement the X-XSS-Protection header to enhance security.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"X-XSS-Protection\"\n}",
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"X-XSS-Protection\"\n}"
+      ],
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "eba88a69-9231-4eb1-a945-0ae5ce9efaaf",
+      "title": "Missing Security Header: Content-Security-Policy",
+      "severity": "Medium",
+      "description": "Content-Security-Policy header missing",
+      "short_description": "Content-Security-Policy header missing",
+      "remediation": "Implement the Content-Security-Policy header to enhance security.",
+      "countermeasures": "Implement the Content-Security-Policy header to enhance security.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"Content-Security-Policy\"\n}",
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"Content-Security-Policy\"\n}"
+      ],
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "ec45023c-0488-4849-919c-8a3f3b8423cd",
+      "title": "Missing Security Header: Referrer-Policy",
+      "severity": "Medium",
+      "description": "Referrer-Policy header missing",
+      "short_description": "Referrer-Policy header missing",
+      "remediation": "Implement the Referrer-Policy header to enhance security.",
+      "countermeasures": "Implement the Referrer-Policy header to enhance security.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"Referrer-Policy\"\n}",
+        "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"Referrer-Policy\"\n}"
+      ],
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "b619354d-3029-472b-bacb-74b3d6d7b24c",
+      "title": "Sensitive Data Exposure",
+      "severity": "High",
+      "description": "Potential Email exposure detected in the response.",
+      "short_description": "Potential Email exposure detected in the response.",
+      "remediation": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+      "countermeasures": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A04:2021 - Insecure Design",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"w*s@acunetix.com\",\n  \"context\": \"> | <a href=\\\"mailto:wvs@acunetix.com\\\">Contact Us</a> | <\"\n}",
+        "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"w*s@acunetix.com\",\n  \"context\": \"> | <a href=\\\"mailto:wvs@acunetix.com\\\">Contact Us</a> | <\"\n}"
+      ],
+      "scanner": "sensitive_data_exposure_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "d764e37f-621a-4986-a618-95081b21cda3",
+      "title": "Information Disclosure",
+      "severity": "Medium",
+      "description": "Server is revealing Server version information in response headers.",
+      "short_description": "Server is revealing Server version information in response headers.",
+      "remediation": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+      "countermeasures": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A04:2021 - Insecure Design",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"server\",\n  \"value\": \"nginx/1.19.0\"\n}",
+        "{\n  \"header\": \"server\",\n  \"value\": \"nginx/1.19.0\"\n}",
+        "{\n  \"header\": \"x-powered-by\",\n  \"value\": \"PHP/5.6.40-38+ubuntu20.04.1+deb.sury.org+1\"\n}"
+      ],
+      "scanner": "sensitive_data_exposure_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "4ea7e509-824b-48b2-b052-ca8ee066a058",
+      "title": "SSL/TLS Connection Error",
+      "severity": "Medium",
+      "description": "Could not establish SSL/TLS connection to testphp.vulnweb.com:443: timed out. This might indicate an issue with SSL/TLS setup or an unreachable host.",
+      "short_description": "Could not establish SSL/TLS connection to testphp.vulnweb.com:443: timed out. This might indicate an issue with SSL/TLS setup or an unreacha",
+      "remediation": "Ensure SSL/TLS is properly configured on the server and the port is open.",
+      "countermeasures": "Ensure SSL/TLS is properly configured on the server and the port is open.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"details\": \"timed out\"\n}",
+        "{\n  \"details\": \"timed out\"\n}"
+      ],
+      "scanner": "ssl_tls_configuration_audit_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "8f26e8f4-ada1-414a-8dab-1441ff40b27a",
+      "title": "Technology Information",
+      "severity": "Info",
+      "description": "Detected technology: DreamWeaver (version not identified).",
+      "short_description": "Detected technology: DreamWeaver (version not identified).",
+      "remediation": "N/A",
+      "countermeasures": "N/A",
+      "location": "tech:DreamWeaver",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 0,
+      "category": "Unknown",
+      "impact": "N/A",
+      "cvss": 0,
+      "evidence": [
+        "{}",
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "scanner": "technology_fingerprint_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "6b505f36-d238-4b3f-a34e-773db60090b0",
+      "title": "Technology Fingerprint Error",
+      "severity": "Info",
+      "description": "Error during CVE lookup: name 'httpx' is not defined",
+      "short_description": "Error during CVE lookup: name 'httpx' is not defined",
+      "remediation": "N/A",
+      "countermeasures": "N/A",
+      "location": "Scanner",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 0,
+      "category": "Unknown",
+      "impact": "N/A",
+      "cvss": 0,
+      "evidence": [
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "scanner": "technology_fingerprint_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "3fd5d9c1-c784-45cc-bcb9-789b6bf11bd2",
+      "title": "Technology Information",
+      "severity": "Info",
+      "description": "Detected technology: Ubuntu (version not identified).",
+      "short_description": "Detected technology: Ubuntu (version not identified).",
+      "remediation": "N/A",
+      "countermeasures": "N/A",
+      "location": "tech:Ubuntu",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 0,
+      "category": "Unknown",
+      "impact": "N/A",
+      "cvss": 0,
+      "evidence": [
+        "{}",
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "scanner": "technology_fingerprint_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    }
+  ],
+  "errors": [],
+  "sub_scans": {
+    "full_scan_20250814_100351_api_fuzzing_scanner_833234": {
+      "name": "api_fuzzing_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:03:51.896428",
+      "execution_time": 0.34316205978393555,
+      "end_time": "2025-08-14T10:03:52.238041"
+    },
+    "full_scan_20250814_100351_api_security_scanner_834139": {
+      "name": "api_security_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:03:51.898736",
+      "end_time": "2025-08-14T10:07:08.308376"
+    },
+    "full_scan_20250814_100351_apifuzzing_835025": {
+      "name": "apifuzzing",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:03:51.900711",
+      "execution_time": 0.3628401756286621,
+      "end_time": "2025-08-14T10:03:52.263217"
+    },
+    "full_scan_20250814_100351_apisecurity_835974": {
+      "name": "apisecurity",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:03:51.911099",
+      "end_time": "2025-08-14T10:07:08.311119"
+    },
+    "full_scan_20250814_100351_authentication_836667": {
+      "name": "authentication",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:03:51.914787",
+      "end_time": "2025-08-14T10:07:08.328984"
+    },
+    "full_scan_20250814_100351_authentication_brute_force_credential_stuffing_scanner_837328": {
+      "name": "authentication_brute_force_credential_stuffing_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:03:51.916765",
+      "end_time": "2025-08-14T10:07:08.331100"
+    },
+    "full_scan_20250814_100351_authentication_brute_force_scanner_838008": {
+      "name": "authentication_brute_force_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:03:51.918499",
+      "end_time": "2025-08-14T10:07:08.337295"
+    },
+    "full_scan_20250814_100351_authentication_bypass_scanner_838722": {
+      "name": "authentication_bypass_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:03:51.920236",
+      "end_time": "2025-08-14T10:07:08.344272"
+    },
+    "full_scan_20250814_100351_authentication_scanner_839314": {
+      "name": "authentication_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:03:51.922425",
+      "end_time": "2025-08-14T10:07:08.346195"
+    },
+    "full_scan_20250814_100351_authenticationbruteforce_840456": {
+      "name": "authenticationbruteforce",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:03:51.924051",
+      "end_time": "2025-08-14T10:07:08.349618"
+    },
+    "full_scan_20250814_100351_authenticationbruteforcecredentialstuffing_841274": {
+      "name": "authenticationbruteforcecredentialstuffing",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:03:51.930549",
+      "end_time": "2025-08-14T10:07:08.363300"
+    },
+    "full_scan_20250814_100351_authenticationbypass_842075": {
+      "name": "authenticationbypass",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:03:51.934429",
+      "end_time": "2025-08-14T10:07:08.365546"
+    },
+    "full_scan_20250814_100351_automated_cve_lookup_scanner_845999": {
+      "name": "automated_cve_lookup_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:03:51.935936",
+      "end_time": "2025-08-14T10:07:08.367330"
+    },
+    "full_scan_20250814_100351_automatedcvelookup_846795": {
+      "name": "automatedcvelookup",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:03:51.937768",
+      "end_time": "2025-08-14T10:07:08.351798"
+    },
+    "full_scan_20250814_100351_broken_access_control_scanner_847520": {
+      "name": "broken_access_control_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:03:51.940498",
+      "end_time": "2025-08-14T10:07:08.369059"
+    },
+    "full_scan_20250814_100351_broken_authentication_scanner_848262": {
+      "name": "broken_authentication_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:03:52.334116",
+      "end_time": "2025-08-14T10:07:08.746888"
+    },
+    "full_scan_20250814_100351_brokenaccesscontrol_848801": {
+      "name": "brokenaccesscontrol",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:07:08.673473",
+      "end_time": "2025-08-14T10:10:23.754554"
+    },
+    "full_scan_20250814_100351_brokenauthentication_849311": {
+      "name": "brokenauthentication",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:03:52.336128",
+      "end_time": "2025-08-14T10:09:19.969189"
+    },
+    "full_scan_20250814_100351_clickjacking_screenshotter_849801": {
+      "name": "clickjacking_screenshotter",
+      "status": "completed",
+      "results": [
+        {
+          "id": "e8e973d4-1d0c-460b-9a1e-4599683fec42",
+          "title": "Potential Clickjacking Vulnerability - X-Frame-Options",
+          "severity": "Medium",
+          "description": "The page might be vulnerable to Clickjacking. X-Frame-Options header is either missing or not set to 'DENY'/'SAMEORIGIN'.",
+          "short_description": "The page might be vulnerable to Clickjacking. X-Frame-Options header is either missing or not set to 'DENY'/'SAMEORIGIN'.",
+          "remediation": "Implement the X-Frame-Options header with 'DENY' or 'SAMEORIGIN'. Additionally, consider implementing Content-Security-Policy with frame-ancestors directive for better protection.",
+          "countermeasures": "Implement the X-Frame-Options header with 'DENY' or 'SAMEORIGIN'. Additionally, consider implementing Content-Security-Policy with frame-ancestors directive for better protection.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"x_frame_options_header\": \"Missing\",\n  \"csp_header\": \"Missing\",\n  \"csp_report_only_header\": \"Missing\",\n  \"details\": \"The page could potentially be framed by an attacker due to missing or weak X-Frame-Options header.\"\n}",
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"x_frame_options_header\": \"Missing\",\n  \"csp_header\": \"Missing\",\n  \"csp_report_only_header\": \"Missing\",\n  \"details\": \"The page could potentially be framed by an attacker due to missing or weak X-Frame-Options header.\"\n}"
+          ],
+          "scanner": "clickjacking_screenshotter",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "CWE-1021",
+              "url": "https://cwe.mitre.org/data/definitions/1021.html"
+            },
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {
+            "cwe": "CWE-1021",
+            "owasp": "A05"
+          }
+        },
+        {
+          "id": "5d1a4f1f-2a9d-4910-9fb0-211ebb33e9e3",
+          "title": "Potential Clickjacking Vulnerability - CSP",
+          "severity": "Medium",
+          "description": "The page might be vulnerable to Clickjacking. Content-Security-Policy header is either missing or does not include frame-ancestors directive.",
+          "short_description": "The page might be vulnerable to Clickjacking. Content-Security-Policy header is either missing or does not include frame-ancestors directive",
+          "remediation": "Implement Content-Security-Policy with frame-ancestors directive. For maximum security, use 'frame-ancestors 'none'' to prevent all framing, or 'frame-ancestors 'self'' to allow only same-origin framing.",
+          "countermeasures": "Implement Content-Security-Policy with frame-ancestors directive. For maximum security, use 'frame-ancestors 'none'' to prevent all framing, or 'frame-ancestors 'self'' to allow only same-origin framing.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"x_frame_options_header\": \"Missing\",\n  \"csp_header\": \"Missing\",\n  \"csp_report_only_header\": \"Missing\",\n  \"details\": \"The page could potentially be framed by an attacker due to missing or weak Content-Security-Policy frame-ancestors directive.\"\n}",
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"x_frame_options_header\": \"Missing\",\n  \"csp_header\": \"Missing\",\n  \"csp_report_only_header\": \"Missing\",\n  \"details\": \"The page could potentially be framed by an attacker due to missing or weak Content-Security-Policy frame-ancestors directive.\"\n}"
+          ],
+          "scanner": "clickjacking_screenshotter",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "CWE-1021",
+              "url": "https://cwe.mitre.org/data/definitions/1021.html"
+            },
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {
+            "cwe": "CWE-1021",
+            "owasp": "A05"
+          }
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:07:08.675071",
+      "execution_time": 131.0365047454834,
+      "end_time": "2025-08-14T10:09:19.711113"
+    },
+    "full_scan_20250814_100351_clickjackingscreenshotter_850318": {
+      "name": "clickjackingscreenshotter",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:07:08.684870",
+      "execution_time": 131.07859921455383,
+      "end_time": "2025-08-14T10:09:19.762972"
+    },
+    "full_scan_20250814_100351_csrf_850823": {
+      "name": "csrf",
+      "status": "completed",
+      "results": [
+        {
+          "id": "06a4e87e-a76a-4a1c-a388-4955dda89b56",
+          "title": "Missing CSRF Protection",
+          "severity": "High",
+          "description": "Form submission lacks CSRF protection mechanisms",
+          "short_description": "Form submission lacks CSRF protection mechanisms",
+          "remediation": "Implement CSRF protection using one or more of: CSRF tokens, SameSite cookies, or custom headers.",
+          "countermeasures": "Implement CSRF protection using one or more of: CSRF tokens, SameSite cookies, or custom headers.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A01:2021 - Broken Access Control",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"form_preview\": \"<form action=\\\"search.php?test=query\\\" method=\\\"post\\\"> \\n      <label>search art</label> \\n      <input name=\\\"searchFor\\\" type=\\\"text\\\" size=\\\"10\\\"> \\n      <input name=\\\"goButton\\\" type=\\\"submit\\\" value=\\\"go\\\"> \\n    \",\n  \"missing_protections\": {\n    \"csrf_token\": true,\n    \"samesite_cookie\": true,\n    \"custom_header\": true\n  }\n}",
+          "scanner": "csrf",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:07:08.649986",
+      "execution_time": 130.8990068435669,
+      "end_time": "2025-08-14T10:09:19.548401"
+    },
+    "full_scan_20250814_100351_csrf_scanner_851209": {
+      "name": "csrf_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:07:08.653445",
+      "end_time": "2025-08-14T10:09:19.570190"
+    },
+    "full_scan_20250814_100351_csrf_token_checker_851681": {
+      "name": "csrf_token_checker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:07:08.655212",
+      "end_time": "2025-08-14T10:09:19.572209"
+    },
+    "full_scan_20250814_100351_csrftokenchecker_852013": {
+      "name": "csrftokenchecker",
+      "status": "completed",
+      "results": [
+        {
+          "id": "577b9b04-3bb2-407d-b1df-02d897169bc5",
+          "title": "Missing CSRF Token",
+          "severity": "High",
+          "description": "Form at 'http://testphp.vulnweb.com/search.php?test=query' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site Request Forgery (CSRF) attacks.",
+          "short_description": "Form at 'http://testphp.vulnweb.com/search.php?test=query' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site R",
+          "remediation": "Implement anti-CSRF tokens for all state-changing operations via forms. Ensure tokens are unique per session/request and validated on the server-side.",
+          "countermeasures": "Implement anti-CSRF tokens for all state-changing operations via forms. Ensure tokens are unique per session/request and validated on the server-side.",
+          "location": "http://testphp.vulnweb.com/search.php?test=query",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A04:2021 - Insecure Design",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"form_action\": \"http://testphp.vulnweb.com/search.php?test=query\",\n  \"details\": \"No hidden input field resembling a CSRF token found.\"\n}",
+          "scanner": "csrftokenchecker",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:07:08.657318",
+      "execution_time": 130.9356667995453,
+      "end_time": "2025-08-14T10:09:19.592476"
+    },
+    "full_scan_20250814_100351_directory_file_enumeration_scanner_852811": {
+      "name": "directory_file_enumeration_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:07:08.687298",
+      "end_time": "2025-08-14T10:10:24.254777"
+    },
+    "full_scan_20250814_100351_directoryfileenumeration_853261": {
+      "name": "directoryfileenumeration",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:07:09.150536",
+      "end_time": "2025-08-14T10:10:24.229104"
+    },
+    "full_scan_20250814_100351_insecure_deserialization_scanner_853622": {
+      "name": "insecure_deserialization_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:19.828817",
+      "execution_time": 0.013614654541015625,
+      "end_time": "2025-08-14T10:09:19.841836"
+    },
+    "full_scan_20250814_100351_insecure_design_scanner_854004": {
+      "name": "insecure_design_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:19.876273",
+      "end_time": "2025-08-14T10:12:28.658377"
+    },
+    "full_scan_20250814_100351_insecuredeserialization_854361": {
+      "name": "insecuredeserialization",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:19.878821",
+      "execution_time": 0.004857540130615234,
+      "end_time": "2025-08-14T10:09:19.883093"
+    },
+    "full_scan_20250814_100351_insecuredesign_855595": {
+      "name": "insecuredesign",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:19.930043",
+      "end_time": "2025-08-14T10:12:28.718421"
+    },
+    "full_scan_20250814_100351_insufficient_logging_and_monitoring_scanner_859574": {
+      "name": "insufficient_logging_and_monitoring_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:19.932084",
+      "end_time": "2025-08-14T10:13:35.884563"
+    },
+    "full_scan_20250814_100351_insufficientloggingandmonitoring_861035": {
+      "name": "insufficientloggingandmonitoring",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:19.935395",
+      "end_time": "2025-08-14T10:13:35.886478"
+    },
+    "full_scan_20250814_100351_js_862241": {
+      "name": "js",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:19.937681",
+      "end_time": "2025-08-14T10:10:23.752070"
+    },
+    "full_scan_20250814_100351_js_scanner_863567": {
+      "name": "js_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:20.328237",
+      "end_time": "2025-08-14T10:10:24.231350"
+    },
+    "full_scan_20250814_100351_misconfiguration_864045": {
+      "name": "misconfiguration",
+      "status": "completed",
+      "results": [
+        {
+          "id": "6ed54c16-a5a2-431a-b2c3-16e202ec2059",
+          "title": "Server Information Disclosure",
+          "severity": "Medium",
+          "description": "Server header reveals technology information: nginx/1.19.0",
+          "short_description": "Server header reveals technology information: nginx/1.19.0",
+          "remediation": "Configure server to not reveal version information.",
+          "countermeasures": "Configure server to not reveal version information.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"server_header\": \"nginx/1.19.0\"\n}",
+            "{\n  \"server_header\": \"nginx/1.19.0\"\n}",
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"server_header\": \"nginx/1.19.0\"\n}",
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"server_header\": \"nginx/1.19.0\"\n}"
+          ],
+          "scanner": "misconfiguration",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:20.340204",
+      "execution_time": 0.005450010299682617,
+      "end_time": "2025-08-14T10:09:20.344824"
+    },
+    "full_scan_20250814_100351_misconfiguration_scanner_864461": {
+      "name": "misconfiguration_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:20.377216",
+      "execution_time": 0.007502555847167969,
+      "end_time": "2025-08-14T10:09:20.384405"
+    },
+    "full_scan_20250814_100351_oob_864970": {
+      "name": "oob",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:20.828051",
+      "execution_time": 0.10333490371704102,
+      "end_time": "2025-08-14T10:09:20.931232"
+    },
+    "full_scan_20250814_100351_oob_scanner_865379": {
+      "name": "oob_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:20.830168",
+      "execution_time": 0.13367319107055664,
+      "end_time": "2025-08-14T10:09:20.963267"
+    },
+    "full_scan_20250814_100351_open_redirect_finder_865729": {
+      "name": "open_redirect_finder",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:21.329323",
+      "end_time": "2025-08-14T10:13:35.889340"
+    },
+    "full_scan_20250814_100351_open_redirect_scanner_866042": {
+      "name": "open_redirect_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:09:21.331353",
+      "end_time": "2025-08-14T10:10:24.232719"
+    },
+    "full_scan_20250814_100351_openredirect_866360": {
+      "name": "openredirect",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:24.139009",
+      "end_time": "2025-08-14T10:13:35.876609"
+    },
+    "full_scan_20250814_100351_openredirectfinder_866631": {
+      "name": "openredirectfinder",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:24.141387",
+      "end_time": "2025-08-14T10:13:34.123578"
+    },
+    "full_scan_20250814_100351_path_traversal_tester_867005": {
+      "name": "path_traversal_tester",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:24.143571",
+      "end_time": "2025-08-14T10:13:35.901709"
+    },
+    "full_scan_20250814_100351_pathtraversaltester_867430": {
+      "name": "pathtraversaltester",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:24.145753",
+      "end_time": "2025-08-14T10:13:34.133892"
+    },
+    "full_scan_20250814_100351_rate_limiting_bruteforce_scanner_867859": {
+      "name": "rate_limiting_bruteforce_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:24.148696",
+      "end_time": "2025-08-14T10:13:34.623511"
+    },
+    "full_scan_20250814_100351_ratelimitingbruteforce_868254": {
+      "name": "ratelimitingbruteforce",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:24.642220",
+      "end_time": "2025-08-14T10:13:34.625599"
+    },
+    "full_scan_20250814_100351_robots_txt_sitemap_crawl_scanner_868764": {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:24.644514",
+      "end_time": "2025-08-14T10:13:34.628471"
+    },
+    "full_scan_20250814_100351_robotstxtsitemapcrawl_869177": {
+      "name": "robotstxtsitemapcrawl",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:24.646538",
+      "end_time": "2025-08-14T10:13:34.630484"
+    },
+    "full_scan_20250814_100351_security_headers_analyzer_869614": {
+      "name": "security_headers_analyzer",
+      "status": "completed",
+      "results": [
+        {
+          "id": "d0de9cf0-d6c2-49f8-a9cf-45949a989b98",
+          "title": "Missing Strict-Transport-Security Header",
+          "severity": "High",
+          "description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+          "short_description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+          "remediation": "Add the Strict-Transport-Security header with value: max-age=31536000; includeSubDomains; preload",
+          "countermeasures": "Add the Strict-Transport-Security header with value: max-age=31536000; includeSubDomains; preload",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "5a1b40ad-294d-4969-9c0f-d801435edfb7",
+          "title": "Missing X-Content-Type-Options Header",
+          "severity": "Medium",
+          "description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+          "short_description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+          "remediation": "Add the X-Content-Type-Options header with value: nosniff",
+          "countermeasures": "Add the X-Content-Type-Options header with value: nosniff",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"X-Content-Type-Options\",\n  \"recommended_value\": \"nosniff\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"X-Content-Type-Options\",\n  \"recommended_value\": \"nosniff\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "04591409-3304-4fc8-b828-3946c17ea3e7",
+          "title": "Missing X-Frame-Options Header",
+          "severity": "Medium",
+          "description": "The X-Frame-Options header is missing. Prevents clickjacking attacks",
+          "short_description": "The X-Frame-Options header is missing. Prevents clickjacking attacks",
+          "remediation": "Add the X-Frame-Options header with value: DENY",
+          "countermeasures": "Add the X-Frame-Options header with value: DENY",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"X-Frame-Options\",\n  \"recommended_value\": \"DENY\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"X-Frame-Options\",\n  \"recommended_value\": \"DENY\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "bbb2cd7e-a947-4749-8304-dd671cf6abb0",
+          "title": "Missing X-XSS-Protection Header",
+          "severity": "Low",
+          "description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+          "short_description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+          "remediation": "Add the X-XSS-Protection header with value: 1; mode=block",
+          "countermeasures": "Add the X-XSS-Protection header with value: 1; mode=block",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "1c7ed770-4266-4ed6-88e6-7e1922f9da73",
+          "title": "Missing Content-Security-Policy Header",
+          "severity": "High",
+          "description": "The Content-Security-Policy header is missing. Controls resource loading",
+          "short_description": "The Content-Security-Policy header is missing. Controls resource loading",
+          "remediation": "Add the Content-Security-Policy header with value: default-src 'self'",
+          "countermeasures": "Add the Content-Security-Policy header with value: default-src 'self'",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "a94e9ccf-d73f-4b2e-946a-7147332ba434",
+          "title": "Missing Referrer-Policy Header",
+          "severity": "Low",
+          "description": "The Referrer-Policy header is missing. Controls referrer information",
+          "short_description": "The Referrer-Policy header is missing. Controls referrer information",
+          "remediation": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+          "countermeasures": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "023324f4-4b7e-4aac-84c0-86d8fbb817b4",
+          "title": "Missing Permissions-Policy Header",
+          "severity": "Medium",
+          "description": "The Permissions-Policy header is missing. Controls browser features",
+          "short_description": "The Permissions-Policy header is missing. Controls browser features",
+          "remediation": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+          "countermeasures": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "87b02539-bf44-4262-8c91-3325ef8331f5",
+          "title": "Missing Cross-Origin-Opener-Policy Header",
+          "severity": "Medium",
+          "description": "The Cross-Origin-Opener-Policy header is missing. Helps isolate browsing context (COOP)",
+          "short_description": "The Cross-Origin-Opener-Policy header is missing. Helps isolate browsing context (COOP)",
+          "remediation": "Add the Cross-Origin-Opener-Policy header with value: same-origin",
+          "countermeasures": "Add the Cross-Origin-Opener-Policy header with value: same-origin",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "c57a6ea2-f62e-4da7-b1ba-adba924af9ba",
+          "title": "Missing Cross-Origin-Embedder-Policy Header",
+          "severity": "Medium",
+          "description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+          "short_description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+          "remediation": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+          "countermeasures": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "c4a1e5fb-399f-434f-a8ff-8407542e0aa2",
+          "title": "Missing Cross-Origin-Resource-Policy Header",
+          "severity": "Low",
+          "description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+          "short_description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+          "remediation": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+          "countermeasures": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "3d0833fc-bb5f-45a6-bc8d-8a4cd8e3f86d",
+          "title": "Missing X-Permitted-Cross-Domain-Policies Header",
+          "severity": "Low",
+          "description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+          "short_description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+          "remediation": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+          "countermeasures": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:07:08.659805",
+      "execution_time": 131.0017442703247,
+      "end_time": "2025-08-14T10:09:19.661262"
+    },
+    "full_scan_20250814_100351_security_misconfiguration_scanner_869995": {
+      "name": "security_misconfiguration_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "d9915253-03df-49de-9d8c-5a24afd13606",
+          "title": "Missing Security Header: Strict-Transport-Security",
+          "severity": "Medium",
+          "description": "HSTS header missing",
+          "short_description": "HSTS header missing",
+          "remediation": "Implement the Strict-Transport-Security header to enhance security.",
+          "countermeasures": "Implement the Strict-Transport-Security header to enhance security.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"Strict-Transport-Security\"\n}",
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"Strict-Transport-Security\"\n}"
+          ],
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "35d4f51e-1cda-4acd-9721-16d33cf59de7",
+          "title": "Missing Security Header: X-Content-Type-Options",
+          "severity": "Medium",
+          "description": "X-Content-Type-Options header missing",
+          "short_description": "X-Content-Type-Options header missing",
+          "remediation": "Implement the X-Content-Type-Options header to enhance security.",
+          "countermeasures": "Implement the X-Content-Type-Options header to enhance security.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"X-Content-Type-Options\"\n}",
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"X-Content-Type-Options\"\n}"
+          ],
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "8c8d7c49-b725-46e4-93da-f1188ab292f7",
+          "title": "Missing Security Header: X-Frame-Options",
+          "severity": "Medium",
+          "description": "X-Frame-Options header missing",
+          "short_description": "X-Frame-Options header missing",
+          "remediation": "Implement the X-Frame-Options header to enhance security.",
+          "countermeasures": "Implement the X-Frame-Options header to enhance security.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"X-Frame-Options\"\n}",
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"X-Frame-Options\"\n}"
+          ],
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "bc9f1c87-cb1d-418e-99e6-72c5dac2ae40",
+          "title": "Missing Security Header: X-XSS-Protection",
+          "severity": "Medium",
+          "description": "X-XSS-Protection header missing",
+          "short_description": "X-XSS-Protection header missing",
+          "remediation": "Implement the X-XSS-Protection header to enhance security.",
+          "countermeasures": "Implement the X-XSS-Protection header to enhance security.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"X-XSS-Protection\"\n}",
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"X-XSS-Protection\"\n}"
+          ],
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "eba88a69-9231-4eb1-a945-0ae5ce9efaaf",
+          "title": "Missing Security Header: Content-Security-Policy",
+          "severity": "Medium",
+          "description": "Content-Security-Policy header missing",
+          "short_description": "Content-Security-Policy header missing",
+          "remediation": "Implement the Content-Security-Policy header to enhance security.",
+          "countermeasures": "Implement the Content-Security-Policy header to enhance security.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"Content-Security-Policy\"\n}",
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"Content-Security-Policy\"\n}"
+          ],
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "ec45023c-0488-4849-919c-8a3f3b8423cd",
+          "title": "Missing Security Header: Referrer-Policy",
+          "severity": "Medium",
+          "description": "Referrer-Policy header missing",
+          "short_description": "Referrer-Policy header missing",
+          "remediation": "Implement the Referrer-Policy header to enhance security.",
+          "countermeasures": "Implement the Referrer-Policy header to enhance security.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"Referrer-Policy\"\n}",
+            "{\n  \"url\": \"http://testphp.vulnweb.com/\",\n  \"missing_header\": \"Referrer-Policy\"\n}"
+          ],
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:24.648249",
+      "execution_time": 0.004251718521118164,
+      "end_time": "2025-08-14T10:10:24.652026"
+    },
+    "full_scan_20250814_100351_securityheadersanalyzer_870360": {
+      "name": "securityheadersanalyzer",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:24.686051",
+      "execution_time": 0.018247604370117188,
+      "end_time": "2025-08-14T10:10:24.703796"
+    },
+    "full_scan_20250814_100351_securitymisconfiguration_872490": {
+      "name": "securitymisconfiguration",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:25.144213",
+      "execution_time": 0.00870203971862793,
+      "end_time": "2025-08-14T10:10:25.152294"
+    },
+    "full_scan_20250814_100351_sensitive_data_exposure_scanner_875673": {
+      "name": "sensitive_data_exposure_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "b619354d-3029-472b-bacb-74b3d6d7b24c",
+          "title": "Sensitive Data Exposure",
+          "severity": "High",
+          "description": "Potential Email exposure detected in the response.",
+          "short_description": "Potential Email exposure detected in the response.",
+          "remediation": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+          "countermeasures": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A04:2021 - Insecure Design",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"w*s@acunetix.com\",\n  \"context\": \"> | <a href=\\\"mailto:wvs@acunetix.com\\\">Contact Us</a> | <\"\n}",
+            "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"w*s@acunetix.com\",\n  \"context\": \"> | <a href=\\\"mailto:wvs@acunetix.com\\\">Contact Us</a> | <\"\n}"
+          ],
+          "scanner": "sensitive_data_exposure_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "d764e37f-621a-4986-a618-95081b21cda3",
+          "title": "Information Disclosure",
+          "severity": "Medium",
+          "description": "Server is revealing Server version information in response headers.",
+          "short_description": "Server is revealing Server version information in response headers.",
+          "remediation": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+          "countermeasures": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A04:2021 - Insecure Design",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"server\",\n  \"value\": \"nginx/1.19.0\"\n}",
+            "{\n  \"header\": \"server\",\n  \"value\": \"nginx/1.19.0\"\n}",
+            "{\n  \"header\": \"x-powered-by\",\n  \"value\": \"PHP/5.6.40-38+ubuntu20.04.1+deb.sury.org+1\"\n}"
+          ],
+          "scanner": "sensitive_data_exposure_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:25.188140",
+      "execution_time": 0.014827251434326172,
+      "end_time": "2025-08-14T10:10:25.202100"
+    },
+    "full_scan_20250814_100351_sensitivedataexposure_878316": {
+      "name": "sensitivedataexposure",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:25.646829",
+      "execution_time": 0.006949901580810547,
+      "end_time": "2025-08-14T10:10:25.653267"
+    },
+    "full_scan_20250814_100351_server_side_request_forgery_scanner_878913": {
+      "name": "server_side_request_forgery_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:25.693257",
+      "end_time": "2025-08-14T10:13:35.879470"
+    },
+    "full_scan_20250814_100351_serversiderequestforgery_879750": {
+      "name": "serversiderequestforgery",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:10:26.149445",
+      "end_time": "2025-08-14T10:13:35.882537"
+    },
+    "full_scan_20250814_100351_sql_injection_scanner_880256": {
+      "name": "sql_injection_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T10:07:08.665920",
+      "end_time": "2025-08-14T10:10:23.741275"
+    },
+    "full_scan_20250814_100351_sqlinjection_880692": {
+      "name": "sqlinjection",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T10:07:08.668542",
+      "end_time": "2025-08-14T10:10:23.746071"
+    },
+    "full_scan_20250814_100351_ssl_tls_configuration_audit_scanner_881101": {
+      "name": "ssl_tls_configuration_audit_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "4ea7e509-824b-48b2-b052-ca8ee066a058",
+          "title": "SSL/TLS Connection Error",
+          "severity": "Medium",
+          "description": "Could not establish SSL/TLS connection to testphp.vulnweb.com:443: timed out. This might indicate an issue with SSL/TLS setup or an unreachable host.",
+          "short_description": "Could not establish SSL/TLS connection to testphp.vulnweb.com:443: timed out. This might indicate an issue with SSL/TLS setup or an unreacha",
+          "remediation": "Ensure SSL/TLS is properly configured on the server and the port is open.",
+          "countermeasures": "Ensure SSL/TLS is properly configured on the server and the port is open.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"details\": \"timed out\"\n}",
+            "{\n  \"details\": \"timed out\"\n}"
+          ],
+          "scanner": "ssl_tls_configuration_audit_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:12:28.989800",
+      "execution_time": 10.098108530044556,
+      "end_time": "2025-08-14T10:12:39.087584"
+    },
+    "full_scan_20250814_100351_ssltlsconfigurationaudit_881523": {
+      "name": "ssltlsconfigurationaudit",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:12:39.107117",
+      "execution_time": 10.10265564918518,
+      "end_time": "2025-08-14T10:12:49.208159"
+    },
+    "full_scan_20250814_100351_subdomain_dns_enumeration_scanner_881891": {
+      "name": "subdomain_dns_enumeration_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:12:49.245162",
+      "execution_time": 1.0214667320251465,
+      "end_time": "2025-08-14T10:12:50.266124"
+    },
+    "full_scan_20250814_100351_subdomaindnsenumeration_882262": {
+      "name": "subdomaindnsenumeration",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:12:49.248021",
+      "execution_time": 1.0507657527923584,
+      "end_time": "2025-08-14T10:12:50.298327"
+    },
+    "full_scan_20250814_100351_technology_fingerprint_scanner_882738": {
+      "name": "technology_fingerprint_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "8f26e8f4-ada1-414a-8dab-1441ff40b27a",
+          "title": "Technology Information",
+          "severity": "Info",
+          "description": "Detected technology: DreamWeaver (version not identified).",
+          "short_description": "Detected technology: DreamWeaver (version not identified).",
+          "remediation": "N/A",
+          "countermeasures": "N/A",
+          "location": "tech:DreamWeaver",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 0,
+          "category": "Unknown",
+          "impact": "N/A",
+          "cvss": 0,
+          "evidence": [
+            "{}",
+            "{}",
+            "{}",
+            "{}"
+          ],
+          "scanner": "technology_fingerprint_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "6b505f36-d238-4b3f-a34e-773db60090b0",
+          "title": "Technology Fingerprint Error",
+          "severity": "Info",
+          "description": "Error during CVE lookup: name 'httpx' is not defined",
+          "short_description": "Error during CVE lookup: name 'httpx' is not defined",
+          "remediation": "N/A",
+          "countermeasures": "N/A",
+          "location": "Scanner",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 0,
+          "category": "Unknown",
+          "impact": "N/A",
+          "cvss": 0,
+          "evidence": [
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}"
+          ],
+          "scanner": "technology_fingerprint_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "3fd5d9c1-c784-45cc-bcb9-789b6bf11bd2",
+          "title": "Technology Information",
+          "severity": "Info",
+          "description": "Detected technology: Ubuntu (version not identified).",
+          "short_description": "Detected technology: Ubuntu (version not identified).",
+          "remediation": "N/A",
+          "countermeasures": "N/A",
+          "location": "tech:Ubuntu",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 0,
+          "category": "Unknown",
+          "impact": "N/A",
+          "cvss": 0,
+          "evidence": [
+            "{}",
+            "{}",
+            "{}",
+            "{}"
+          ],
+          "scanner": "technology_fingerprint_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "LOW",
+      "start_time": "2025-08-14T10:13:49.272029",
+      "execution_time": 1.560854196548462,
+      "end_time": "2025-08-14T10:13:50.495676"
+    },
+    "full_scan_20250814_100351_technology_vulnerabilities_scanner_883165": {
+      "name": "technology_vulnerabilities_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "LOW",
+      "start_time": "2025-08-14T10:13:49.663018",
+      "execution_time": 1.2111473083496094,
+      "end_time": "2025-08-14T10:13:50.526075"
+    },
+    "full_scan_20250814_100351_technologyfingerprint_883554": {
+      "name": "technologyfingerprint",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "LOW",
+      "start_time": "2025-08-14T10:13:50.215059",
+      "execution_time": 0.8722569942474365,
+      "end_time": "2025-08-14T10:13:50.588111"
+    },
+    "full_scan_20250814_100351_technologyvulnerabilities_883950": {
+      "name": "technologyvulnerabilities",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "LOW",
+      "start_time": "2025-08-14T10:13:50.237949",
+      "execution_time": 0.3957397937774658,
+      "end_time": "2025-08-14T10:13:50.633420"
+    },
+    "full_scan_20250814_100351_using_components_with_known_vulnerabilities_scanner_884396": {
+      "name": "using_components_with_known_vulnerabilities_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:13:48.932738"
+    },
+    "full_scan_20250814_100351_usingcomponentswithknownvulnerabilities_884752": {
+      "name": "usingcomponentswithknownvulnerabilities",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:13:48.934085"
+    },
+    "full_scan_20250814_100351_xss_885127": {
+      "name": "xss",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T10:07:08.669835",
+      "end_time": "2025-08-14T10:10:24.252694"
+    },
+    "full_scan_20250814_100351_xss_scanner_885512": {
+      "name": "xss_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T10:07:08.671679",
+      "end_time": "2025-08-14T10:10:23.750037"
+    },
+    "full_scan_20250814_100351_xxe_885823": {
+      "name": "xxe",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:13:34.362054",
+      "execution_time": 0.011301040649414062,
+      "end_time": "2025-08-14T10:13:34.371658"
+    },
+    "full_scan_20250814_100351_xxe_scanner_886190": {
+      "name": "xxe_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:13:34.413667",
+      "execution_time": 0.01570439338684082,
+      "end_time": "2025-08-14T10:13:34.428963"
+    }
+  },
+  "progress": 95.83333333333334,
+  "total_modules": 72,
+  "completed_modules": 69,
+  "deadline": 1755169431.833209,
+  "performance_metrics": {
+    "http_cache_stats": {},
+    "scanner_timing": {
+      "api_fuzzing_scanner": 0.34316205978393555,
+      "apifuzzing": 0.3628401756286621,
+      "csrf": 130.8990068435669,
+      "csrftokenchecker": 130.9356667995453,
+      "security_headers_analyzer": 131.0017442703247,
+      "clickjacking_screenshotter": 131.0365047454834,
+      "clickjackingscreenshotter": 131.07859921455383,
+      "insecure_deserialization_scanner": 0.013614654541015625,
+      "insecuredeserialization": 0.004857540130615234,
+      "misconfiguration": 0.005450010299682617,
+      "misconfiguration_scanner": 0.007502555847167969,
+      "oob": 0.10333490371704102,
+      "oob_scanner": 0.13367319107055664,
+      "security_misconfiguration_scanner": 0.004251718521118164,
+      "securityheadersanalyzer": 0.018247604370117188,
+      "securitymisconfiguration": 0.00870203971862793,
+      "sensitive_data_exposure_scanner": 0.014827251434326172,
+      "sensitivedataexposure": 0.006949901580810547,
+      "ssl_tls_configuration_audit_scanner": 10.098108530044556,
+      "ssltlsconfigurationaudit": 10.10265564918518,
+      "subdomain_dns_enumeration_scanner": 1.0214667320251465,
+      "subdomaindnsenumeration": 1.0507657527923584,
+      "xxe": 0.011301040649414062,
+      "xxe_scanner": 0.01570439338684082,
+      "technology_fingerprint_scanner": 1.560854196548462,
+      "technology_vulnerabilities_scanner": 1.2111473083496094,
+      "technologyfingerprint": 0.8722569942474365,
+      "technologyvulnerabilities": 0.3957397937774658
+    },
+    "resource_usage": {}
+  },
+  "timing_data": {
+    "start_time": 1755165831.833217,
+    "estimated_completion": 1755166456.6479137,
+    "scanner_estimates": {},
+    "last_progress_update": 1755166430.613968
+  }
+}

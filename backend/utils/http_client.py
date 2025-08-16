@@ -19,11 +19,13 @@ try:
     _DEFAULT_HTTP_MAX_RETRIES = int(getattr(_app_settings, 'HTTP_MAX_RETRIES', 2))
     _DEFAULT_HTTP_BACKOFF_BASE = float(getattr(_app_settings, 'HTTP_BACKOFF_BASE_SECONDS', 0.2))
     _DEFAULT_HTTP_BACKOFF_MAX = float(getattr(_app_settings, 'HTTP_BACKOFF_MAX_SECONDS', 5.0))
-    _DEFAULT_HTTP_PER_HOST_INTERVAL_MS = int(getattr(_app_settings, 'HTTP_PER_HOST_MIN_INTERVAL_MS', 50))
+    _DEFAULT_HTTP_PER_HOST_INTERVAL_MS = int(getattr(_app_settings, 'HTTP_PER_HOST_MIN_INTERVAL_MS', 10))
     _DEFAULT_ALLOWED_HOSTS = list(getattr(_app_settings, 'HTTP_ALLOWED_HOSTS', []) or [])
     _DEFAULT_BLOCKED_HOSTS = list(getattr(_app_settings, 'HTTP_BLOCKED_HOSTS', []) or [])
     _DEFAULT_MAX_RESPONSE_BYTES = int(getattr(_app_settings, 'HTTP_MAX_RESPONSE_BYTES', 0))
     _DEFAULT_ACCEPT_LANGUAGE = str(getattr(_app_settings, 'HTTP_ACCEPT_LANGUAGE', 'en-US,en;q=0.9'))
+    _DEFAULT_BUCKET_MAX_TOKENS = int(getattr(_app_settings, 'HTTP_BUCKET_MAX_TOKENS', 0))
+    _DEFAULT_BUCKET_REFILL_PER_SEC = float(getattr(_app_settings, 'HTTP_BUCKET_REFILL_PER_SEC', 0.0))
 except Exception:
     _DEFAULT_BLOCK_PRIVATE = False
     _DEFAULT_HTTP_MAX_RETRIES = 2
@@ -34,6 +36,8 @@ except Exception:
     _DEFAULT_BLOCKED_HOSTS = []
     _DEFAULT_MAX_RESPONSE_BYTES = 0
     _DEFAULT_ACCEPT_LANGUAGE = 'en-US,en;q=0.9'
+    _DEFAULT_BUCKET_MAX_TOKENS = 0
+    _DEFAULT_BUCKET_REFILL_PER_SEC = 0.0
 
 logger = logging.getLogger(__name__)
 
@@ -90,8 +94,8 @@ class SharedHTTPClient:
     """Shared HTTP client with connection pooling, caching, and request deduplication."""
     
     def __init__(self, 
-                 max_connections: int = 100,
-                 max_keepalive_connections: int = 20,
+                  max_connections: int = 400,
+                  max_keepalive_connections: int = 120,
                  keepalive_expiry: float = 30.0,
                  cache_max_size: int = 1000,
                  cache_default_ttl: int = 300,
@@ -101,11 +105,13 @@ class SharedHTTPClient:
                  backoff_max_seconds: float = _DEFAULT_HTTP_BACKOFF_MAX,
                  retry_status_codes: Optional[List[int]] = None,
                  # Simple per-host throttling to avoid hammering a single origin
-                 per_host_min_interval_ms: int = _DEFAULT_HTTP_PER_HOST_INTERVAL_MS,
+                  per_host_min_interval_ms: int = _DEFAULT_HTTP_PER_HOST_INTERVAL_MS,
                  allowed_hosts: Optional[List[str]] = None,
                  blocked_hosts: Optional[List[str]] = None,
                  max_response_bytes: int = _DEFAULT_MAX_RESPONSE_BYTES,
-                 accept_language: str = _DEFAULT_ACCEPT_LANGUAGE):
+                  accept_language: str = _DEFAULT_ACCEPT_LANGUAGE,
+                  bucket_max_tokens: int = _DEFAULT_BUCKET_MAX_TOKENS,
+                  bucket_refill_per_sec: float = _DEFAULT_BUCKET_REFILL_PER_SEC):
         
         self.max_connections = max_connections
         self.max_keepalive_connections = max_keepalive_connections
@@ -136,6 +142,11 @@ class SharedHTTPClient:
         self.max_response_bytes = max(0, int(max_response_bytes))
         self.accept_language = accept_language
 
+        # Per-host token buckets (optional)
+        self._bucket_max_tokens = max(0, int(bucket_max_tokens))
+        self._bucket_refill_per_sec = max(0.0, float(bucket_refill_per_sec))
+        self._host_buckets: Dict[str, Tuple[float, float]] = {}  # host -> (tokens, last_refill_time)
+
         # Connection pool limits
         self._limits = httpx.Limits(
             max_connections=max_connections,
@@ -150,8 +161,15 @@ class SharedHTTPClient:
                           headers: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
         """Get client configuration with defaults."""
         default_headers = {
-            "User-Agent": "NightingaleScanner/2.0 (+https://project-nightingale.dev)",
+            # Use a modern browser UA to avoid naive bot blocks (many sites 403 on custom agents)
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0.0.0 Safari/537.36 Nightingale/2.0"
+            ),
             "Accept-Language": self.accept_language,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/\*;q=0.8",
+            "Connection": "keep-alive",
         }
         
         merged_headers = {**default_headers, **(headers or {})}
@@ -280,9 +298,10 @@ class SharedHTTPClient:
                 attempt = 0
                 async with httpx.AsyncClient(**config) as client:
                     while attempt <= chosen_max_retries:
-                        # Per-host throttle
+                        # Per-host throttle and optional token bucket pacing
                         try:
                             await self._throttle_host(url)
+                            await self._pacer_host(url)
                         except Exception:
                             # Throttling should never break the request; continue anyway
                             pass
@@ -471,6 +490,39 @@ class SharedHTTPClient:
                 now = time.time()
             # Set next available time
             self._host_next_available[host] = now + self.per_host_min_interval
+
+    async def _pacer_host(self, url: str) -> None:
+        """Token-bucket per-host pacing; optional and disabled when max_tokens <= 0."""
+        if self._bucket_max_tokens <= 0 or self._bucket_refill_per_sec <= 0:
+            return
+        try:
+            host = urlparse(url).netloc
+        except Exception:
+            host = ''
+        if not host:
+            return
+        now = time.time()
+        async with self._host_lock:
+            tokens, last_refill = self._host_buckets.get(host, (float(self._bucket_max_tokens), now))
+            # Refill
+            elapsed = max(0.0, now - last_refill)
+            tokens = min(float(self._bucket_max_tokens), tokens + elapsed * self._bucket_refill_per_sec)
+            if tokens < 1.0:
+                # Need to wait until at least 1 token is available
+                needed = 1.0 - tokens
+                wait_for = needed / self._bucket_refill_per_sec
+                try:
+                    self._metrics["throttle_waits"] += 1
+                except Exception:
+                    pass
+                await asyncio.sleep(wait_for)
+                now = time.time()
+                # Refill after sleep
+                elapsed = max(0.0, now - (last_refill + elapsed))
+                tokens = min(float(self._bucket_max_tokens), tokens + elapsed * self._bucket_refill_per_sec)
+            # Consume one token
+            tokens = max(0.0, tokens - 1.0)
+            self._host_buckets[host] = (tokens, now)
     
     async def get(self, url: str, **kwargs) -> httpx.Response:
         """Convenience method for GET requests."""

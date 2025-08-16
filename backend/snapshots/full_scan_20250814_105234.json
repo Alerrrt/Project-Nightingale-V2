@@ -1,0 +1,1041 @@
+{
+  "id": "full_scan_20250814_105234",
+  "target": "http://testphp.vulnweb.com",
+  "type": "full_scan",
+  "status": "running",
+  "start_time": "2025-08-14T10:52:34.742668",
+  "results": [
+    {
+      "id": "32a99553-b597-4a30-a3c2-a2ab378604a7",
+      "title": "Server Information Disclosure",
+      "severity": "Medium",
+      "description": "Server header reveals technology information: nginx/1.19.0",
+      "short_description": "Server header reveals technology information: nginx/1.19.0",
+      "remediation": "Configure server to not reveal version information.",
+      "countermeasures": "Configure server to not reveal version information.",
+      "location": "http://testphp.vulnweb.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"server_header\": \"nginx/1.19.0\"\n}",
+        "{\n  \"server_header\": \"nginx/1.19.0\"\n}",
+        "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"server_header\": \"nginx/1.19.0\"\n}"
+      ],
+      "scanner": "misconfiguration",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "488a161d-a03b-4d96-8554-9459e8805882",
+      "title": "Missing Security Header: Strict-Transport-Security",
+      "severity": "Medium",
+      "description": "HSTS header missing",
+      "short_description": "HSTS header missing",
+      "remediation": "Implement the Strict-Transport-Security header to enhance security.",
+      "countermeasures": "Implement the Strict-Transport-Security header to enhance security.",
+      "location": "http://testphp.vulnweb.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"missing_header\": \"Strict-Transport-Security\"\n}",
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "ebf268e4-4534-40ac-b5dd-4ef4b12b1efa",
+      "title": "Missing Security Header: X-Content-Type-Options",
+      "severity": "Medium",
+      "description": "X-Content-Type-Options header missing",
+      "short_description": "X-Content-Type-Options header missing",
+      "remediation": "Implement the X-Content-Type-Options header to enhance security.",
+      "countermeasures": "Implement the X-Content-Type-Options header to enhance security.",
+      "location": "http://testphp.vulnweb.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"missing_header\": \"X-Content-Type-Options\"\n}",
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "575c1a03-4ccb-4d4c-8a2f-b8b0c03ec0a7",
+      "title": "Missing Security Header: X-Frame-Options",
+      "severity": "Medium",
+      "description": "X-Frame-Options header missing",
+      "short_description": "X-Frame-Options header missing",
+      "remediation": "Implement the X-Frame-Options header to enhance security.",
+      "countermeasures": "Implement the X-Frame-Options header to enhance security.",
+      "location": "http://testphp.vulnweb.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"missing_header\": \"X-Frame-Options\"\n}",
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "f158ef09-9a6b-451d-8019-6892b3aa70bb",
+      "title": "Missing Security Header: X-XSS-Protection",
+      "severity": "Medium",
+      "description": "X-XSS-Protection header missing",
+      "short_description": "X-XSS-Protection header missing",
+      "remediation": "Implement the X-XSS-Protection header to enhance security.",
+      "countermeasures": "Implement the X-XSS-Protection header to enhance security.",
+      "location": "http://testphp.vulnweb.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"missing_header\": \"X-XSS-Protection\"\n}",
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "dae5acff-8083-441c-a519-f9bc8a989c42",
+      "title": "Missing Security Header: Content-Security-Policy",
+      "severity": "Medium",
+      "description": "Content-Security-Policy header missing",
+      "short_description": "Content-Security-Policy header missing",
+      "remediation": "Implement the Content-Security-Policy header to enhance security.",
+      "countermeasures": "Implement the Content-Security-Policy header to enhance security.",
+      "location": "http://testphp.vulnweb.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"missing_header\": \"Content-Security-Policy\"\n}",
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "525f31b2-314b-462a-83a2-98fd34454b71",
+      "title": "Missing Security Header: Referrer-Policy",
+      "severity": "Medium",
+      "description": "Referrer-Policy header missing",
+      "short_description": "Referrer-Policy header missing",
+      "remediation": "Implement the Referrer-Policy header to enhance security.",
+      "countermeasures": "Implement the Referrer-Policy header to enhance security.",
+      "location": "http://testphp.vulnweb.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"missing_header\": \"Referrer-Policy\"\n}",
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    }
+  ],
+  "errors": [],
+  "sub_scans": {
+    "full_scan_20250814_105234_api_fuzzing_scanner_742841": {
+      "name": "api_fuzzing_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:52:34.765106",
+      "execution_time": 0.23049521446228027,
+      "end_time": "2025-08-14T10:52:34.995385"
+    },
+    "full_scan_20250814_105234_api_security_scanner_743615": {
+      "name": "api_security_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:52:34.765553",
+      "end_time": "2025-08-14T10:55:54.804432"
+    },
+    "full_scan_20250814_105234_apifuzzing_744282": {
+      "name": "apifuzzing",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:52:34.765865",
+      "execution_time": 0.25158023834228516,
+      "end_time": "2025-08-14T10:52:35.017296"
+    },
+    "full_scan_20250814_105234_apisecurity_744843": {
+      "name": "apisecurity",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:52:34.766135",
+      "end_time": "2025-08-14T10:55:54.805406"
+    },
+    "full_scan_20250814_105234_authentication_745396": {
+      "name": "authentication",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:58:19.688177"
+    },
+    "full_scan_20250814_105234_authentication_brute_force_credential_stuffing_scanner_746119": {
+      "name": "authentication_brute_force_credential_stuffing_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:58:19.688497"
+    },
+    "full_scan_20250814_105234_authentication_brute_force_scanner_746831": {
+      "name": "authentication_brute_force_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:58:19.688737"
+    },
+    "full_scan_20250814_105234_authentication_bypass_scanner_747234": {
+      "name": "authentication_bypass_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:58:19.688964"
+    },
+    "full_scan_20250814_105234_authentication_scanner_747485": {
+      "name": "authentication_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:58:19.689245"
+    },
+    "full_scan_20250814_105234_authenticationbruteforce_747694": {
+      "name": "authenticationbruteforce",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:58:19.689499"
+    },
+    "full_scan_20250814_105234_authenticationbruteforcecredentialstuffing_748321": {
+      "name": "authenticationbruteforcecredentialstuffing",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:58:19.689735"
+    },
+    "full_scan_20250814_105234_authenticationbypass_748530": {
+      "name": "authenticationbypass",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:58:19.689951"
+    },
+    "full_scan_20250814_105234_automated_cve_lookup_scanner_748790": {
+      "name": "automated_cve_lookup_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.690162",
+      "execution_time": 0.07483339309692383,
+      "end_time": "2025-08-14T10:58:19.764841"
+    },
+    "full_scan_20250814_105234_automatedcvelookup_749033": {
+      "name": "automatedcvelookup",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.690361",
+      "execution_time": 0.08903217315673828,
+      "end_time": "2025-08-14T10:58:19.779241"
+    },
+    "full_scan_20250814_105234_broken_access_control_scanner_749256": {
+      "name": "broken_access_control_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.690562"
+    },
+    "full_scan_20250814_105234_broken_authentication_scanner_749449": {
+      "name": "broken_authentication_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:58:19.690806"
+    },
+    "full_scan_20250814_105234_brokenaccesscontrol_749764": {
+      "name": "brokenaccesscontrol",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.691032"
+    },
+    "full_scan_20250814_105234_brokenauthentication_750025": {
+      "name": "brokenauthentication",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:58:19.691258"
+    },
+    "full_scan_20250814_105234_clickjacking_screenshotter_750288": {
+      "name": "clickjacking_screenshotter",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:52:34.770778",
+      "end_time": "2025-08-14T10:57:01.433694"
+    },
+    "full_scan_20250814_105234_clickjackingscreenshotter_750533": {
+      "name": "clickjackingscreenshotter",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:52:34.771140",
+      "end_time": "2025-08-14T10:57:01.436699"
+    },
+    "full_scan_20250814_105234_csrf_750843": {
+      "name": "csrf",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:52:34.771529",
+      "end_time": "2025-08-14T10:57:01.439004"
+    },
+    "full_scan_20250814_105234_csrf_scanner_751147": {
+      "name": "csrf_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:52:34.771915",
+      "end_time": "2025-08-14T10:57:01.440348"
+    },
+    "full_scan_20250814_105234_csrf_token_checker_751468": {
+      "name": "csrf_token_checker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:52:34.772246",
+      "end_time": "2025-08-14T10:57:01.452797"
+    },
+    "full_scan_20250814_105234_csrftokenchecker_751805": {
+      "name": "csrftokenchecker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:52:34.772585",
+      "end_time": "2025-08-14T10:57:01.454361"
+    },
+    "full_scan_20250814_105234_directory_file_enumeration_scanner_752181": {
+      "name": "directory_file_enumeration_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.691453"
+    },
+    "full_scan_20250814_105234_directoryfileenumeration_752544": {
+      "name": "directoryfileenumeration",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.691719"
+    },
+    "full_scan_20250814_105234_insecure_deserialization_scanner_752895": {
+      "name": "insecure_deserialization_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:52:34.774166",
+      "execution_time": 0.14145159721374512,
+      "end_time": "2025-08-14T10:52:34.914858"
+    },
+    "full_scan_20250814_105234_insecure_design_scanner_753232": {
+      "name": "insecure_design_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.692020"
+    },
+    "full_scan_20250814_105234_insecuredeserialization_753509": {
+      "name": "insecuredeserialization",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:52:34.775491",
+      "execution_time": 0.16352200508117676,
+      "end_time": "2025-08-14T10:52:34.938723"
+    },
+    "full_scan_20250814_105234_insecuredesign_753712": {
+      "name": "insecuredesign",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.692272"
+    },
+    "full_scan_20250814_105234_insufficient_logging_and_monitoring_scanner_753910": {
+      "name": "insufficient_logging_and_monitoring_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.692622"
+    },
+    "full_scan_20250814_105234_insufficientloggingandmonitoring_754106": {
+      "name": "insufficientloggingandmonitoring",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.693120"
+    },
+    "full_scan_20250814_105234_js_754296": {
+      "name": "js",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.694483"
+    },
+    "full_scan_20250814_105234_js_scanner_754490": {
+      "name": "js_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.695276"
+    },
+    "full_scan_20250814_105234_misconfiguration_754700": {
+      "name": "misconfiguration",
+      "status": "completed",
+      "results": [
+        {
+          "id": "32a99553-b597-4a30-a3c2-a2ab378604a7",
+          "title": "Server Information Disclosure",
+          "severity": "Medium",
+          "description": "Server header reveals technology information: nginx/1.19.0",
+          "short_description": "Server header reveals technology information: nginx/1.19.0",
+          "remediation": "Configure server to not reveal version information.",
+          "countermeasures": "Configure server to not reveal version information.",
+          "location": "http://testphp.vulnweb.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"server_header\": \"nginx/1.19.0\"\n}",
+            "{\n  \"server_header\": \"nginx/1.19.0\"\n}",
+            "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"server_header\": \"nginx/1.19.0\"\n}"
+          ],
+          "scanner": "misconfiguration",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.695634",
+      "execution_time": 0.10970211029052734,
+      "end_time": "2025-08-14T10:58:19.805100"
+    },
+    "full_scan_20250814_105234_misconfiguration_scanner_754898": {
+      "name": "misconfiguration_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.696022",
+      "execution_time": 0.1402747631072998,
+      "end_time": "2025-08-14T10:58:19.836002"
+    },
+    "full_scan_20250814_105234_oob_755093": {
+      "name": "oob",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.696361",
+      "execution_time": 0.19092345237731934,
+      "end_time": "2025-08-14T10:58:19.887040"
+    },
+    "full_scan_20250814_105234_oob_scanner_755290": {
+      "name": "oob_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.696821",
+      "execution_time": 0.21565485000610352,
+      "end_time": "2025-08-14T10:58:19.912104"
+    },
+    "full_scan_20250814_105234_open_redirect_finder_755478": {
+      "name": "open_redirect_finder",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.697157"
+    },
+    "full_scan_20250814_105234_open_redirect_scanner_755676": {
+      "name": "open_redirect_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.697514"
+    },
+    "full_scan_20250814_105234_openredirect_755865": {
+      "name": "openredirect",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.697854"
+    },
+    "full_scan_20250814_105234_openredirectfinder_756061": {
+      "name": "openredirectfinder",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.698109"
+    },
+    "full_scan_20250814_105234_path_traversal_tester_756249": {
+      "name": "path_traversal_tester",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.698380"
+    },
+    "full_scan_20250814_105234_pathtraversaltester_756463": {
+      "name": "pathtraversaltester",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:52:34.780470",
+      "end_time": "2025-08-14T10:57:01.467218"
+    },
+    "full_scan_20250814_105234_rate_limiting_bruteforce_scanner_756738": {
+      "name": "rate_limiting_bruteforce_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.698613"
+    },
+    "full_scan_20250814_105234_ratelimitingbruteforce_756940": {
+      "name": "ratelimitingbruteforce",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.698834"
+    },
+    "full_scan_20250814_105234_robots_txt_sitemap_crawl_scanner_757131": {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:52:34.781440",
+      "end_time": "2025-08-14T10:57:01.468697"
+    },
+    "full_scan_20250814_105234_robotstxtsitemapcrawl_757335": {
+      "name": "robotstxtsitemapcrawl",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:52:34.781703",
+      "end_time": "2025-08-14T10:57:01.470546"
+    },
+    "full_scan_20250814_105234_security_headers_analyzer_757535": {
+      "name": "security_headers_analyzer",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:52:34.782013",
+      "end_time": "2025-08-14T10:57:01.471690"
+    },
+    "full_scan_20250814_105234_security_misconfiguration_scanner_757732": {
+      "name": "security_misconfiguration_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "488a161d-a03b-4d96-8554-9459e8805882",
+          "title": "Missing Security Header: Strict-Transport-Security",
+          "severity": "Medium",
+          "description": "HSTS header missing",
+          "short_description": "HSTS header missing",
+          "remediation": "Implement the Strict-Transport-Security header to enhance security.",
+          "countermeasures": "Implement the Strict-Transport-Security header to enhance security.",
+          "location": "http://testphp.vulnweb.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"missing_header\": \"Strict-Transport-Security\"\n}",
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "ebf268e4-4534-40ac-b5dd-4ef4b12b1efa",
+          "title": "Missing Security Header: X-Content-Type-Options",
+          "severity": "Medium",
+          "description": "X-Content-Type-Options header missing",
+          "short_description": "X-Content-Type-Options header missing",
+          "remediation": "Implement the X-Content-Type-Options header to enhance security.",
+          "countermeasures": "Implement the X-Content-Type-Options header to enhance security.",
+          "location": "http://testphp.vulnweb.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"missing_header\": \"X-Content-Type-Options\"\n}",
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "575c1a03-4ccb-4d4c-8a2f-b8b0c03ec0a7",
+          "title": "Missing Security Header: X-Frame-Options",
+          "severity": "Medium",
+          "description": "X-Frame-Options header missing",
+          "short_description": "X-Frame-Options header missing",
+          "remediation": "Implement the X-Frame-Options header to enhance security.",
+          "countermeasures": "Implement the X-Frame-Options header to enhance security.",
+          "location": "http://testphp.vulnweb.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"missing_header\": \"X-Frame-Options\"\n}",
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "f158ef09-9a6b-451d-8019-6892b3aa70bb",
+          "title": "Missing Security Header: X-XSS-Protection",
+          "severity": "Medium",
+          "description": "X-XSS-Protection header missing",
+          "short_description": "X-XSS-Protection header missing",
+          "remediation": "Implement the X-XSS-Protection header to enhance security.",
+          "countermeasures": "Implement the X-XSS-Protection header to enhance security.",
+          "location": "http://testphp.vulnweb.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"missing_header\": \"X-XSS-Protection\"\n}",
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "dae5acff-8083-441c-a519-f9bc8a989c42",
+          "title": "Missing Security Header: Content-Security-Policy",
+          "severity": "Medium",
+          "description": "Content-Security-Policy header missing",
+          "short_description": "Content-Security-Policy header missing",
+          "remediation": "Implement the Content-Security-Policy header to enhance security.",
+          "countermeasures": "Implement the Content-Security-Policy header to enhance security.",
+          "location": "http://testphp.vulnweb.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"missing_header\": \"Content-Security-Policy\"\n}",
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "525f31b2-314b-462a-83a2-98fd34454b71",
+          "title": "Missing Security Header: Referrer-Policy",
+          "severity": "Medium",
+          "description": "Referrer-Policy header missing",
+          "short_description": "Referrer-Policy header missing",
+          "remediation": "Implement the Referrer-Policy header to enhance security.",
+          "countermeasures": "Implement the Referrer-Policy header to enhance security.",
+          "location": "http://testphp.vulnweb.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"url\": \"http://testphp.vulnweb.com\",\n  \"missing_header\": \"Referrer-Policy\"\n}",
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:58:19.699064",
+      "execution_time": 0.16774511337280273,
+      "end_time": "2025-08-14T10:58:19.866624"
+    },
+    "full_scan_20250814_105234_securityheadersanalyzer_757923": {
+      "name": "securityheadersanalyzer",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_securitymisconfiguration_758087": {
+      "name": "securitymisconfiguration",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_sensitive_data_exposure_scanner_758262": {
+      "name": "sensitive_data_exposure_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_sensitivedataexposure_758400": {
+      "name": "sensitivedataexposure",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_server_side_request_forgery_scanner_758653": {
+      "name": "server_side_request_forgery_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_serversiderequestforgery_758965": {
+      "name": "serversiderequestforgery",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_sql_injection_scanner_759322": {
+      "name": "sql_injection_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T10:52:34.993831",
+      "end_time": "2025-08-14T10:57:01.655373"
+    },
+    "full_scan_20250814_105234_sqlinjection_759843": {
+      "name": "sqlinjection",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T10:52:34.994743",
+      "end_time": "2025-08-14T10:57:01.656931"
+    },
+    "full_scan_20250814_105234_ssl_tls_configuration_audit_scanner_760324": {
+      "name": "ssl_tls_configuration_audit_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_ssltlsconfigurationaudit_760819": {
+      "name": "ssltlsconfigurationaudit",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_subdomain_dns_enumeration_scanner_761133": {
+      "name": "subdomain_dns_enumeration_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_subdomaindnsenumeration_761470": {
+      "name": "subdomaindnsenumeration",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_technology_fingerprint_scanner_761943": {
+      "name": "technology_fingerprint_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_105234_technology_vulnerabilities_scanner_762308": {
+      "name": "technology_vulnerabilities_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_105234_technologyfingerprint_762565": {
+      "name": "technologyfingerprint",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_105234_technologyvulnerabilities_762820": {
+      "name": "technologyvulnerabilities",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_105234_using_components_with_known_vulnerabilities_scanner_763008": {
+      "name": "using_components_with_known_vulnerabilities_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_usingcomponentswithknownvulnerabilities_763234": {
+      "name": "usingcomponentswithknownvulnerabilities",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_xss_763450": {
+      "name": "xss",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T10:52:35.092359",
+      "end_time": "2025-08-14T10:57:01.754676"
+    },
+    "full_scan_20250814_105234_xss_scanner_763667": {
+      "name": "xss_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T10:52:35.093047",
+      "end_time": "2025-08-14T10:57:01.755855"
+    },
+    "full_scan_20250814_105234_xxe_763851": {
+      "name": "xxe",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_105234_xxe_scanner_764037": {
+      "name": "xxe_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    }
+  },
+  "progress": 36.11111111111111,
+  "total_modules": 72,
+  "completed_modules": 26,
+  "deadline": 1755172354.742694,
+  "performance_metrics": {
+    "http_cache_stats": {},
+    "scanner_timing": {
+      "insecure_deserialization_scanner": 0.14145159721374512,
+      "insecuredeserialization": 0.16352200508117676,
+      "api_fuzzing_scanner": 0.23049521446228027,
+      "apifuzzing": 0.25158023834228516,
+      "automated_cve_lookup_scanner": 0.07483339309692383,
+      "automatedcvelookup": 0.08903217315673828,
+      "misconfiguration": 0.10970211029052734,
+      "misconfiguration_scanner": 0.1402747631072998,
+      "security_misconfiguration_scanner": 0.16774511337280273,
+      "oob": 0.19092345237731934,
+      "oob_scanner": 0.21565485000610352
+    },
+    "resource_usage": {}
+  },
+  "timing_data": {
+    "start_time": 1755168754.742736,
+    "estimated_completion": 1755169710.5958471,
+    "scanner_estimates": {},
+    "last_progress_update": 1755169099.911915
+  }
+}

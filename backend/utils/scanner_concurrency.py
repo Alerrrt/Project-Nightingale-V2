@@ -39,7 +39,8 @@ class ScannerConcurrencyManager:
                  max_concurrent_scanners: int = 10,
                  max_memory_percent: float = 80.0,
                  priority_queues: bool = True,
-                 enable_circuit_breaker: bool = True):
+                 enable_circuit_breaker: bool = True,
+                 per_host_max_concurrency: int = 6):
         
         self.max_concurrent_scanners = max_concurrent_scanners
         self.max_memory_percent = max_memory_percent
@@ -76,6 +77,9 @@ class ScannerConcurrencyManager:
         self._per_scanner_open_until: Dict[str, float] = {}
         self._per_scanner_threshold = 3
         self._per_scanner_cooldown = 120.0  # seconds
+        # Per-host concurrency caps
+        self._per_host_max = max(1, int(per_host_max_concurrency))
+        self._per_host_active: Dict[str, int] = {}
     
     async def start(self):
         """Start the concurrency manager."""
@@ -175,9 +179,8 @@ class ScannerConcurrencyManager:
                             if len(self._active_tasks) < self.max_concurrent_scanners:
                                 await self._start_task(task)
                                 continue
-                
-                # Process regular queue greedily until capacity filled
-                while not self._task_queue.empty() and len(self._active_tasks) < self.max_concurrent_scanners:
+                # Process regular queue greedily until capacity is filled
+                while (not self._task_queue.empty()) and (len(self._active_tasks) < self.max_concurrent_scanners):
                     try:
                         # If priority queues are enabled, attempt to pick a higher-priority task opportunistically
                         task = None
@@ -192,8 +195,8 @@ class ScannerConcurrencyManager:
                 # Check for completed tasks
                 await self._check_completed_tasks()
                 
-                # Reduced sleep time for faster response
-                await asyncio.sleep(0.5)  # Reduced from 1.0 to 0.5 seconds
+                # Reduced sleep time for faster response (avoid visible pauses)
+                await asyncio.sleep(0.02)
                 
             except Exception as e:
                 logger.error(f"Error in task queue processor: {e}")
@@ -237,10 +240,11 @@ class ScannerConcurrencyManager:
             
             logger.debug(f"Starting scanner {task.scanner_name} (ID: {task.scanner_id})")
             
-            # Execute the scanner with timeout protection
+            # Execute the scanner with timeout protection; ensure per-task cap well below global 180s
             start_time = time.time()
             try:
-                result = await asyncio.wait_for(task.coro(), timeout=180)  # 3 minute timeout per scanner
+                # Cap each scanner to 90s max so the whole run can finish within 180s
+                result = await asyncio.wait_for(task.coro(), timeout=90)
                 execution_time = time.time() - start_time
                 
                 # Mark as completed
@@ -254,22 +258,21 @@ class ScannerConcurrencyManager:
                 logger.info(f"Scanner {task.scanner_name} completed in {execution_time:.2f}s")
                 
             except asyncio.TimeoutError:
-                # Handle timeout specifically
+                # Handle timeout specifically - don't let it block other scanners
                 task.completed_at = time.time()
-                task.error = Exception(f"Scanner {task.scanner_name} timed out after 180 seconds")
-                logger.warning(f"Scanner {task.scanner_name} timed out")
+                task.error = Exception(f"Scanner {task.scanner_name} timed out after 90 seconds")
+                logger.warning(f"Scanner {task.scanner_name} timed out at 90s cap - continuing with other scanners")
                 
-                # Update circuit breaker
-                self._circuit_breaker_failures += 1
-                if self._circuit_breaker_failures >= self._circuit_breaker_threshold:
-                    self._last_circuit_breaker_trip = time.time()
-                    logger.warning(f"Circuit breaker opened after {self._circuit_breaker_failures} failures")
-
-                # Per-scanner failure tracking
+                # Only update circuit breaker for repeated failures, not single timeouts
                 self._per_scanner_failures[task.scanner_name] = self._per_scanner_failures.get(task.scanner_name, 0) + 1
                 if self._per_scanner_failures[task.scanner_name] >= self._per_scanner_threshold:
                     self._per_scanner_open_until[task.scanner_name] = time.time() + self._per_scanner_cooldown
                     logger.warning(f"Per-scanner circuit opened for {task.scanner_name} for {self._per_scanner_cooldown}s")
+                    # Only then update global circuit breaker
+                    self._circuit_breaker_failures += 1
+                    if self._circuit_breaker_failures >= self._circuit_breaker_threshold:
+                        self._last_circuit_breaker_trip = time.time()
+                        logger.warning(f"Circuit breaker opened after {self._circuit_breaker_failures} failures")
             
         except Exception as e:
             # Mark as failed
@@ -300,12 +303,38 @@ class ScannerConcurrencyManager:
                 self._failed_tasks.append(task)
             else:
                 self._completed_tasks.append(task)
+            # Decrement per-host active
+            try:
+                target_url = (task.options or {}).get('target') or ''
+                from urllib.parse import urlparse
+                host = urlparse(target_url).netloc if target_url else ''
+                if host and host in self._per_host_active:
+                    self._per_host_active[host] = max(0, self._per_host_active.get(host, 1) - 1)
+            except Exception:
+                pass
     
     async def _start_task(self, task: ScannerTask):
         """Start a scanner task."""
         try:
+            # Enforce per-host concurrency cap based on target host if provided in options
+            target_url = (task.options or {}).get('target') or ''
+            host = ''
+            try:
+                from urllib.parse import urlparse
+                host = urlparse(target_url).netloc
+            except Exception:
+                host = ''
+            if host:
+                active_for_host = self._per_host_active.get(host, 0)
+                if active_for_host >= self._per_host_max:
+                    # Requeue to avoid exceeding per-host concurrency
+                    await self._task_queue.put(task)
+                    return
+
             task.started_at = time.time()
             self._active_tasks[task.scanner_id] = task
+            if host:
+                self._per_host_active[host] = self._per_host_active.get(host, 0) + 1
             
             # Execute the task
             asyncio.create_task(self._execute_scanner(task))
@@ -370,22 +399,22 @@ class ScannerConcurrencyManager:
                 # Check memory usage
                 memory_percent = self._memory_monitor.memory_percent()
                 
-                # Adjust concurrency based on memory pressure with more conservative thresholds
-                if memory_percent > self.max_memory_percent * 0.85:
-                    # Reduce concurrency under high memory pressure
-                    new_limit = max(2, self.max_concurrent_scanners - 1)
+                # Adjust concurrency based on memory pressure with less aggressive thresholds
+                if memory_percent > self.max_memory_percent * 0.95:
+                    # Only reduce concurrency under very high memory pressure
+                    new_limit = max(5, self.max_concurrent_scanners - 2)
                     if new_limit != self.max_concurrent_scanners:
                         self.max_concurrent_scanners = new_limit
-                        logger.warning(f"Reduced max concurrent scanners to {self.max_concurrent_scanners} due to memory pressure ({memory_percent:.1f}%)")
-                elif memory_percent < self.max_memory_percent * 0.6:
+                        logger.warning(f"Reduced max concurrent scanners to {self.max_concurrent_scanners} due to high memory pressure ({memory_percent:.1f}%)")
+                elif memory_percent < self.max_memory_percent * 0.7:
                     # Increase concurrency when memory is available
-                    new_limit = min(15, self.max_concurrent_scanners + 1)
+                    new_limit = min(50, self.max_concurrent_scanners + 2)
                     if new_limit != self.max_concurrent_scanners:
                         self.max_concurrent_scanners = new_limit
                         logger.debug(f"Increased max concurrent scanners to {self.max_concurrent_scanners} (memory: {memory_percent:.1f}%)")
                 
                 # More frequent monitoring for better responsiveness
-                await asyncio.sleep(2)  # Check every 2 seconds
+                await asyncio.sleep(1)  # Check every second
                 
             except Exception as e:
                 logger.error(f"Error in resource monitor: {e}")
@@ -451,5 +480,20 @@ def get_scanner_concurrency_manager() -> ScannerConcurrencyManager:
     """Get or create the global scanner concurrency manager."""
     global _concurrency_manager
     if _concurrency_manager is None:
-        _concurrency_manager = ScannerConcurrencyManager()
+        try:
+            from backend.config import settings as _settings
+            # Honor configured max concurrent scans; allow up to 50 per user request
+            configured_max = int(getattr(_settings, 'MAX_CONCURRENT_SCANS', 10) or 10)
+            max_scanners = max(10, min(50, configured_max))
+            per_host_max = int(getattr(_settings, 'PER_HOST_MAX_CONCURRENCY', 6) or 6)
+        except Exception:
+            max_scanners = 10
+            per_host_max = 6
+        _concurrency_manager = ScannerConcurrencyManager(
+            max_concurrent_scanners=max_scanners,
+            max_memory_percent=80.0,
+            priority_queues=True,
+            enable_circuit_breaker=True,
+            per_host_max_concurrency=per_host_max,
+        )
     return _concurrency_manager

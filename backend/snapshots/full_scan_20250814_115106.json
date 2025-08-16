@@ -1,0 +1,1972 @@
+{
+  "id": "full_scan_20250814_115106",
+  "target": "https://x.com/",
+  "type": "full_scan",
+  "status": "running",
+  "start_time": "2025-08-14T11:51:06.641840",
+  "results": [
+    {
+      "id": "26ec89f4-d194-4631-b216-5a02b5271c20",
+      "title": "Missing CSRF Token",
+      "severity": "High",
+      "description": "Form at 'https://x.com/' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site Request Forgery (CSRF) attacks.",
+      "short_description": "Form at 'https://x.com/' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site Request Forgery (CSRF) attacks.",
+      "remediation": "Implement anti-CSRF tokens for all state-changing operations via forms. Ensure tokens are unique per session/request and validated on the server-side.",
+      "countermeasures": "Implement anti-CSRF tokens for all state-changing operations via forms. Ensure tokens are unique per session/request and validated on the server-side.",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A04:2021 - Insecure Design",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"form_action\": \"https://x.com/\",\n  \"details\": \"No hidden input field resembling a CSRF token found.\"\n}",
+        "{\n  \"form_action\": \"https://x.com/\",\n  \"details\": \"No hidden input field resembling a CSRF token found.\"\n}"
+      ],
+      "scanner": "csrf_token_checker",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "9fab8117-171c-4066-b7bb-096add8b5832",
+      "title": "Misconfigured Strict-Transport-Security Header",
+      "severity": "High",
+      "description": "The Strict-Transport-Security header is present but may not be optimally configured. Enforces HTTPS connections",
+      "short_description": "The Strict-Transport-Security header is present but may not be optimally configured. Enforces HTTPS connections",
+      "remediation": "Update the Strict-Transport-Security header to: max-age=31536000; includeSubDomains; preload",
+      "countermeasures": "Update the Strict-Transport-Security header to: max-age=31536000; includeSubDomains; preload",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": \"max-age=631138519; includeSubdomains\"\n}",
+        "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": \"max-age=631138519; includeSubdomains\"\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "a00c509a-da6b-4ada-b066-4d9c52e34abe",
+      "title": "Misconfigured X-XSS-Protection Header",
+      "severity": "Low",
+      "description": "The X-XSS-Protection header is present but may not be optimally configured. Legacy header; prefer CSP instead. Some browsers ignore this.",
+      "short_description": "The X-XSS-Protection header is present but may not be optimally configured. Legacy header; prefer CSP instead. Some browsers ignore this.",
+      "remediation": "Update the X-XSS-Protection header to: 1; mode=block",
+      "countermeasures": "Update the X-XSS-Protection header to: 1; mode=block",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": \"0\"\n}",
+        "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": \"0\"\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "55a33fe7-86be-4da2-9dfc-a4230e90fc46",
+      "title": "Misconfigured Content-Security-Policy Header",
+      "severity": "High",
+      "description": "The Content-Security-Policy header is present but may not be optimally configured. Controls resource loading",
+      "short_description": "The Content-Security-Policy header is present but may not be optimally configured. Controls resource loading",
+      "remediation": "Update the Content-Security-Policy header to: default-src 'self'",
+      "countermeasures": "Update the Content-Security-Policy header to: default-src 'self'",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": \"connect-src 'self' blob: https://fonts.googleapis.com/css https://mapsresources-pa.googleapis.com https://maps.googleapis.com https://www.gstatic.com/maps/ https://*.pscp.tv https://*.twimg.com https://*.video.pscp.tv https://aa.twitter.com https://aa.x.com https://accounts.google.com/gsi/ https://ads-api.twitter.com https://ads-api.x.com https://api-stream.twitter.com https://api-stream.x.com https://api.twitter.com https://api.x.ai https://api.x.com https://api.x.com https://caps.twitter.com https://caps.x.com https://grok.x.com https://jf.twitter.com https://jf.x.com https://jf-t.x.com https://pay.twitter.com https://pay.x.com https://sentry.io https://ton-staging.atla.twitter.com https://ton-staging.atla.x.com https://ton-staging.pdxa.twitter.com https://ton-staging.pdxa.x.com https://ton.twitter.com https://ton.x.com https://twitter.com https://upload.twitter.com https://upload.x.com https://www.google-analytics.com https://x.com https://*.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net https://adservice.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.google.com https://google.com https://via.intercom.io https://api.intercom.io https://api.au.intercom.io https://api.eu.intercom.io https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io https://api-ping.intercom.io https://nexus-websocket-a.intercom.io wss://nexus-websocket-a.intercom.io https://nexus-websocket-b.intercom.io wss://nexus-websocket-b.intercom.io https://nexus-europe-websocket.intercom.io wss://nexus-europe-websocket.intercom.io https://nexus-australia-websocket.intercom.io wss://nexus-australia-websocket.intercom.io https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.eu.intercomcdn.com https://uploads.intercomusercontent.com https://production.plaid.com/ https://sandbox.plaid.com/ https://ingestion.dv.socure.io https://network.dv.socure.io/ https://analytics.dv.socure.io/ https://payments-dev.x.com/customer/wasm/forward-with-v1.wasm https://payments-staging.x.com/customer/wasm/forward-with-v1.wasm https://payments-prod.x.com/customer/wasm/forward-with-v1.wasm https://money-dev.x.com/customer/wasm/forward-with-v1.wasm https://money-staging.x.com/customer/wasm/forward-with-v1.wasm https://money.x.com/customer/wasm/forward-with-v1.wasm https://api.stripe.com https://m.castle.io https://checkoutshopper-live.adyen.com wss://*.pscp.tv https://vmap.snappytv.com https://vmapstage.snappytv.com https://vmaprel.snappytv.com https://vmap.grabyo.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com wss://chat-ws.x.com wss://chat-ws.dev.cftls.t.co https://d1muhwhmpsz4u8.cloudfront.net/ https://d2bchqfeno8n2m.cloudfront.net/ https://d2shtph9y6bxk.cloudfront.net/ https://xchat-hsm-staging.x.com/ https://realm-a.x.com https://realm-b.x.com https://realm-west1.x.com https://realm-east1.x.com https://hsm-staging.x.com https://ads-twitter.com https://analytics.twitter.com https://analytics.x.com         ; default-src 'self'; form-action 'self' https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://localhost.twitter.com:3443 https://localhost.x.com:3443 https://intercom.help https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io; font-src 'self' https://*.twimg.com https://js.intercomcdn.com https://fonts.intercomcdn.com; frame-src 'self' https://accounts.google.com/ https://accounts.google.com/gsi/ https://cards-frame.twitter.com https://cdn.plaid.com/ https://client-api.arkoselabs.com/ https://content.googleapis.com/ https://iframe.arkoselabs.com/ https://mobile.twitter.com https://mobile.x.com https://pay.twitter.com https://pay.x.com https://google.com https://www.google.com https://intercom-sheets.com https://www.intercom-reporting.com https://www.youtube.com https://player.vimeo.com https://fast.wistia.net https://console.googletagservices.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.safeframe.googlesyndication.com https://www.googleadservices.com https://googleadservices.com https://adservice.google.com https://*.googlesyndication.com https://td.doubleclick.net https://payments-dev.x.com/ https://payments-staging.x.com/ https://payments-prod.x.com/ https://sdn.payments-dev.x.com/ https://sdn.payments-staging.x.com/ https://sdn.payments-prod.x.com/ https://money-dev.x.com/ https://money-staging.x.com/ https://money.x.com/ https://sdn.money-dev.x.com/ https://sdn.money-staging.x.com/ https://sdn.money.x.com/ https://p2pcreditcardiframesandbox.crbcos.com https://p2pcreditcardiframe.crbcos.com https://verify-sandbox.plaid.com/ https://*.js.stripe.com https://js.stripe.com https://hooks.stripe.com https://cdn.getpinwheel.com/ https://artifacts.grokusercontent.com https://twitter.com https://x.com  https://recaptcha.net/recaptcha/; img-src 'self' blob: data: https://www.google.com/maps/place/ https://imgs.search.brave.com https://*.cdn.twitter.com https://*.cdn.x.com https://ton.twitter.com https://ton.x.com https://*.twimg.com https://analytics.twitter.com https://analytics.x.com https://cm.g.doubleclick.net https://www.google-analytics.com https://maps.googleapis.com https://www.periscope.tv https://www.pscp.tv https://ads-twitter.com https://ads-api.twitter.com https://ads-api.x.com https://api.x.com https://developer.x.com blob: data: https://js.intercomcdn.com https://static.intercomassets.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://uploads.intercomusercontent.com https://gifs.intercomcdn.com https://video-messages.intercomcdn.com https://messenger-apps.intercom.io https://messenger-apps.eu.intercom.io https://messenger-apps.au.intercom.io https://*.intercom-attachments-1.com https://*.intercom-attachments.eu https://*.au.intercom-attachments.com https://*.intercom-attachments-2.com https://*.intercom-attachments-3.com https://*.intercom-attachments-4.com https://*.intercom-attachments-5.com https://*.intercom-attachments-6.com https://*.intercom-attachments-7.com https://*.intercom-attachments-8.com https://*.intercom-attachments-9.com https://static.intercomassets.eu https://static.au.intercomassets.com https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com https://*.pscp.tv https://*.periscope.tv https://prod-periscope-profile.s3-us-west-2.amazonaws.com https://platform-lookaside.fbsbx.com https://scontent.xx.fbcdn.net https://scontent-sea1-1.xx.fbcdn.net https://*.googleusercontent.com https://t.co/1/i/adsct https://*.googleusercontent.com https://*.gstatic.com https://*.googlesyndication.com https://*.adtrafficquality.google https://www.google.com/ads/measurement/ https://*.google.com/ads/measurement/ https://googleads.g.doubleclick.net https://google.com https://www.google.com https://plaid-merchant-logos.plaid.com https://plaid-counterparty-logos.plaid.com; manifest-src 'self'; media-src 'self' data: blob: https://twitter.com https://x.com https://*.twimg.com https://*.vine.co https://*.pscp.tv https://*.video.pscp.tv https://js.intercomcdn.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net; object-src 'none'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://*.twimg.com https://recaptcha.net/recaptcha/ http://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://accounts.google.com/gsi/client https://apis.google.com/js/api.js https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js https://client-api.arkoselabs.com/ https://static.ads-twitter.com https://twitter.com https://www.google-analytics.com https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://x.com https://sdn.payments-dev.x.com/assets/loader.min.js https://sdn.payments-staging.x.com/assets/loader.min.js https://sdn.payments-prod.x.com/assets/loader.min.js https://sdn.money-dev.x.com/assets/loader.min.js https://sdn.money-staging.x.com/assets/loader.min.js https://sdn.money.x.com/assets/loader.min.js https://sdk.dv.socure.io/latest/device-risk-sdk.js https://cdn.plaid.com/link/v2/stable/link-initialize.js https://payments-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-prod.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://money.x.com/customer/wasm/xxp-forward-with-sdk.js https://js.stripe.com https://*.js.stripe.com https://cdn.getpinwheel.com/pinwheel-v3.1.0.js https://securepubads.g.doubleclick.net https://www.googletagservices.com https://*.googletagservices.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.googleadservices.com https://ads.google.com https://tpc.googlesyndication.com https://*.tpc.googlesyndication.com https://www.google.com https://googleads.g.doubleclick.net https://app.intercom.io https://widget.intercom.io https://js.intercomcdn.com   'wasm-unsafe-eval'  'nonce-ZTcyNWRhYTEtZTBlNC00YjUzLTkwMmItMTVkMzFkZmRhOTAz'; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style https://*.twimg.com; worker-src 'self' blob:; report-uri https://x.com/i/csp_report?a=O5RXE%3D%3D%3D&ro=false\"\n}",
+        "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": \"connect-src 'self' blob: https://fonts.googleapis.com/css https://mapsresources-pa.googleapis.com https://maps.googleapis.com https://www.gstatic.com/maps/ https://*.pscp.tv https://*.twimg.com https://*.video.pscp.tv https://aa.twitter.com https://aa.x.com https://accounts.google.com/gsi/ https://ads-api.twitter.com https://ads-api.x.com https://api-stream.twitter.com https://api-stream.x.com https://api.twitter.com https://api.x.ai https://api.x.com https://api.x.com https://caps.twitter.com https://caps.x.com https://grok.x.com https://jf.twitter.com https://jf.x.com https://jf-t.x.com https://pay.twitter.com https://pay.x.com https://sentry.io https://ton-staging.atla.twitter.com https://ton-staging.atla.x.com https://ton-staging.pdxa.twitter.com https://ton-staging.pdxa.x.com https://ton.twitter.com https://ton.x.com https://twitter.com https://upload.twitter.com https://upload.x.com https://www.google-analytics.com https://x.com https://*.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net https://adservice.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.google.com https://google.com https://via.intercom.io https://api.intercom.io https://api.au.intercom.io https://api.eu.intercom.io https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io https://api-ping.intercom.io https://nexus-websocket-a.intercom.io wss://nexus-websocket-a.intercom.io https://nexus-websocket-b.intercom.io wss://nexus-websocket-b.intercom.io https://nexus-europe-websocket.intercom.io wss://nexus-europe-websocket.intercom.io https://nexus-australia-websocket.intercom.io wss://nexus-australia-websocket.intercom.io https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.eu.intercomcdn.com https://uploads.intercomusercontent.com https://production.plaid.com/ https://sandbox.plaid.com/ https://ingestion.dv.socure.io https://network.dv.socure.io/ https://analytics.dv.socure.io/ https://payments-dev.x.com/customer/wasm/forward-with-v1.wasm https://payments-staging.x.com/customer/wasm/forward-with-v1.wasm https://payments-prod.x.com/customer/wasm/forward-with-v1.wasm https://money-dev.x.com/customer/wasm/forward-with-v1.wasm https://money-staging.x.com/customer/wasm/forward-with-v1.wasm https://money.x.com/customer/wasm/forward-with-v1.wasm https://api.stripe.com https://m.castle.io https://checkoutshopper-live.adyen.com wss://*.pscp.tv https://vmap.snappytv.com https://vmapstage.snappytv.com https://vmaprel.snappytv.com https://vmap.grabyo.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com wss://chat-ws.x.com wss://chat-ws.dev.cftls.t.co https://d1muhwhmpsz4u8.cloudfront.net/ https://d2bchqfeno8n2m.cloudfront.net/ https://d2shtph9y6bxk.cloudfront.net/ https://xchat-hsm-staging.x.com/ https://realm-a.x.com https://realm-b.x.com https://realm-west1.x.com https://realm-east1.x.com https://hsm-staging.x.com https://ads-twitter.com https://analytics.twitter.com https://analytics.x.com         ; default-src 'self'; form-action 'self' https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://localhost.twitter.com:3443 https://localhost.x.com:3443 https://intercom.help https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io; font-src 'self' https://*.twimg.com https://js.intercomcdn.com https://fonts.intercomcdn.com; frame-src 'self' https://accounts.google.com/ https://accounts.google.com/gsi/ https://cards-frame.twitter.com https://cdn.plaid.com/ https://client-api.arkoselabs.com/ https://content.googleapis.com/ https://iframe.arkoselabs.com/ https://mobile.twitter.com https://mobile.x.com https://pay.twitter.com https://pay.x.com https://google.com https://www.google.com https://intercom-sheets.com https://www.intercom-reporting.com https://www.youtube.com https://player.vimeo.com https://fast.wistia.net https://console.googletagservices.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.safeframe.googlesyndication.com https://www.googleadservices.com https://googleadservices.com https://adservice.google.com https://*.googlesyndication.com https://td.doubleclick.net https://payments-dev.x.com/ https://payments-staging.x.com/ https://payments-prod.x.com/ https://sdn.payments-dev.x.com/ https://sdn.payments-staging.x.com/ https://sdn.payments-prod.x.com/ https://money-dev.x.com/ https://money-staging.x.com/ https://money.x.com/ https://sdn.money-dev.x.com/ https://sdn.money-staging.x.com/ https://sdn.money.x.com/ https://p2pcreditcardiframesandbox.crbcos.com https://p2pcreditcardiframe.crbcos.com https://verify-sandbox.plaid.com/ https://*.js.stripe.com https://js.stripe.com https://hooks.stripe.com https://cdn.getpinwheel.com/ https://artifacts.grokusercontent.com https://twitter.com https://x.com  https://recaptcha.net/recaptcha/; img-src 'self' blob: data: https://www.google.com/maps/place/ https://imgs.search.brave.com https://*.cdn.twitter.com https://*.cdn.x.com https://ton.twitter.com https://ton.x.com https://*.twimg.com https://analytics.twitter.com https://analytics.x.com https://cm.g.doubleclick.net https://www.google-analytics.com https://maps.googleapis.com https://www.periscope.tv https://www.pscp.tv https://ads-twitter.com https://ads-api.twitter.com https://ads-api.x.com https://api.x.com https://developer.x.com blob: data: https://js.intercomcdn.com https://static.intercomassets.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://uploads.intercomusercontent.com https://gifs.intercomcdn.com https://video-messages.intercomcdn.com https://messenger-apps.intercom.io https://messenger-apps.eu.intercom.io https://messenger-apps.au.intercom.io https://*.intercom-attachments-1.com https://*.intercom-attachments.eu https://*.au.intercom-attachments.com https://*.intercom-attachments-2.com https://*.intercom-attachments-3.com https://*.intercom-attachments-4.com https://*.intercom-attachments-5.com https://*.intercom-attachments-6.com https://*.intercom-attachments-7.com https://*.intercom-attachments-8.com https://*.intercom-attachments-9.com https://static.intercomassets.eu https://static.au.intercomassets.com https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com https://*.pscp.tv https://*.periscope.tv https://prod-periscope-profile.s3-us-west-2.amazonaws.com https://platform-lookaside.fbsbx.com https://scontent.xx.fbcdn.net https://scontent-sea1-1.xx.fbcdn.net https://*.googleusercontent.com https://t.co/1/i/adsct https://*.googleusercontent.com https://*.gstatic.com https://*.googlesyndication.com https://*.adtrafficquality.google https://www.google.com/ads/measurement/ https://*.google.com/ads/measurement/ https://googleads.g.doubleclick.net https://google.com https://www.google.com https://plaid-merchant-logos.plaid.com https://plaid-counterparty-logos.plaid.com; manifest-src 'self'; media-src 'self' data: blob: https://twitter.com https://x.com https://*.twimg.com https://*.vine.co https://*.pscp.tv https://*.video.pscp.tv https://js.intercomcdn.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net; object-src 'none'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://*.twimg.com https://recaptcha.net/recaptcha/ http://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://accounts.google.com/gsi/client https://apis.google.com/js/api.js https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js https://client-api.arkoselabs.com/ https://static.ads-twitter.com https://twitter.com https://www.google-analytics.com https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://x.com https://sdn.payments-dev.x.com/assets/loader.min.js https://sdn.payments-staging.x.com/assets/loader.min.js https://sdn.payments-prod.x.com/assets/loader.min.js https://sdn.money-dev.x.com/assets/loader.min.js https://sdn.money-staging.x.com/assets/loader.min.js https://sdn.money.x.com/assets/loader.min.js https://sdk.dv.socure.io/latest/device-risk-sdk.js https://cdn.plaid.com/link/v2/stable/link-initialize.js https://payments-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-prod.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://money.x.com/customer/wasm/xxp-forward-with-sdk.js https://js.stripe.com https://*.js.stripe.com https://cdn.getpinwheel.com/pinwheel-v3.1.0.js https://securepubads.g.doubleclick.net https://www.googletagservices.com https://*.googletagservices.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.googleadservices.com https://ads.google.com https://tpc.googlesyndication.com https://*.tpc.googlesyndication.com https://www.google.com https://googleads.g.doubleclick.net https://app.intercom.io https://widget.intercom.io https://js.intercomcdn.com   'wasm-unsafe-eval'  'nonce-ZTcyNWRhYTEtZTBlNC00YjUzLTkwMmItMTVkMzFkZmRhOTAz'; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style https://*.twimg.com; worker-src 'self' blob:; report-uri https://x.com/i/csp_report?a=O5RXE%3D%3D%3D&ro=false\"\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "3e1ff7ab-c577-4234-974f-ab2ef0e6fffa",
+      "title": "Missing Referrer-Policy Header",
+      "severity": "Low",
+      "description": "The Referrer-Policy header is missing. Controls referrer information",
+      "short_description": "The Referrer-Policy header is missing. Controls referrer information",
+      "remediation": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+      "countermeasures": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "32d2e159-6541-4171-8683-028fd995f4ad",
+      "title": "Missing Permissions-Policy Header",
+      "severity": "Medium",
+      "description": "The Permissions-Policy header is missing. Controls browser features",
+      "short_description": "The Permissions-Policy header is missing. Controls browser features",
+      "remediation": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+      "countermeasures": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "60fe65d0-2fa8-461d-9b13-ed2e037aea6e",
+      "title": "Misconfigured Cross-Origin-Opener-Policy Header",
+      "severity": "Medium",
+      "description": "The Cross-Origin-Opener-Policy header is present but may not be optimally configured. Helps isolate browsing context (COOP)",
+      "short_description": "The Cross-Origin-Opener-Policy header is present but may not be optimally configured. Helps isolate browsing context (COOP)",
+      "remediation": "Update the Cross-Origin-Opener-Policy header to: same-origin",
+      "countermeasures": "Update the Cross-Origin-Opener-Policy header to: same-origin",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": \"unsafe-none\"\n}",
+        "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": \"unsafe-none\"\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "df3512f5-ce53-41cb-bc3d-3b2374b0985a",
+      "title": "Misconfigured Cross-Origin-Embedder-Policy Header",
+      "severity": "Medium",
+      "description": "The Cross-Origin-Embedder-Policy header is present but may not be optimally configured. Requires cross-origin resources to grant permission (COEP)",
+      "short_description": "The Cross-Origin-Embedder-Policy header is present but may not be optimally configured. Requires cross-origin resources to grant permission ",
+      "remediation": "Update the Cross-Origin-Embedder-Policy header to: require-corp",
+      "countermeasures": "Update the Cross-Origin-Embedder-Policy header to: require-corp",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": \"unsafe-none\"\n}",
+        "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": \"unsafe-none\"\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "23b4a782-7b7b-40e9-9df4-c82b90ef9e08",
+      "title": "Missing Cross-Origin-Resource-Policy Header",
+      "severity": "Low",
+      "description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+      "short_description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+      "remediation": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+      "countermeasures": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "0dbcc0de-d60a-4b47-a6f0-380ada46c54e",
+      "title": "Missing X-Permitted-Cross-Domain-Policies Header",
+      "severity": "Low",
+      "description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+      "short_description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+      "remediation": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+      "countermeasures": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}",
+        "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}"
+      ],
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "421dba08-00d0-49e7-b607-7b07e7c59722",
+      "title": "Potential Clickjacking Vulnerability - CSP",
+      "severity": "Medium",
+      "description": "The page might be vulnerable to Clickjacking. Content-Security-Policy header is either missing or does not include frame-ancestors directive.",
+      "short_description": "The page might be vulnerable to Clickjacking. Content-Security-Policy header is either missing or does not include frame-ancestors directive",
+      "remediation": "Implement Content-Security-Policy with frame-ancestors directive. For maximum security, use 'frame-ancestors 'none'' to prevent all framing, or 'frame-ancestors 'self'' to allow only same-origin framing.",
+      "countermeasures": "Implement Content-Security-Policy with frame-ancestors directive. For maximum security, use 'frame-ancestors 'none'' to prevent all framing, or 'frame-ancestors 'self'' to allow only same-origin framing.",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"url\": \"https://x.com/\",\n  \"x_frame_options_header\": \"DENY\",\n  \"csp_header\": \"connect-src 'self' blob: https://fonts.googleapis.com/css https://mapsresources-pa.googleapis.com https://maps.googleapis.com https://www.gstatic.com/maps/ https://*.pscp.tv https://*.twimg.com https://*.video.pscp.tv https://aa.twitter.com https://aa.x.com https://accounts.google.com/gsi/ https://ads-api.twitter.com https://ads-api.x.com https://api-stream.twitter.com https://api-stream.x.com https://api.twitter.com https://api.x.ai https://api.x.com https://api.x.com https://caps.twitter.com https://caps.x.com https://grok.x.com https://jf.twitter.com https://jf.x.com https://jf-t.x.com https://pay.twitter.com https://pay.x.com https://sentry.io https://ton-staging.atla.twitter.com https://ton-staging.atla.x.com https://ton-staging.pdxa.twitter.com https://ton-staging.pdxa.x.com https://ton.twitter.com https://ton.x.com https://twitter.com https://upload.twitter.com https://upload.x.com https://www.google-analytics.com https://x.com https://*.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net https://adservice.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.google.com https://google.com https://via.intercom.io https://api.intercom.io https://api.au.intercom.io https://api.eu.intercom.io https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io https://api-ping.intercom.io https://nexus-websocket-a.intercom.io wss://nexus-websocket-a.intercom.io https://nexus-websocket-b.intercom.io wss://nexus-websocket-b.intercom.io https://nexus-europe-websocket.intercom.io wss://nexus-europe-websocket.intercom.io https://nexus-australia-websocket.intercom.io wss://nexus-australia-websocket.intercom.io https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.eu.intercomcdn.com https://uploads.intercomusercontent.com https://production.plaid.com/ https://sandbox.plaid.com/ https://ingestion.dv.socure.io https://network.dv.socure.io/ https://analytics.dv.socure.io/ https://payments-dev.x.com/customer/wasm/forward-with-v1.wasm https://payments-staging.x.com/customer/wasm/forward-with-v1.wasm https://payments-prod.x.com/customer/wasm/forward-with-v1.wasm https://money-dev.x.com/customer/wasm/forward-with-v1.wasm https://money-staging.x.com/customer/wasm/forward-with-v1.wasm https://money.x.com/customer/wasm/forward-with-v1.wasm https://api.stripe.com https://m.castle.io https://checkoutshopper-live.adyen.com wss://*.pscp.tv https://vmap.snappytv.com https://vmapstage.snappytv.com https://vmaprel.snappytv.com https://vmap.grabyo.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com wss://chat-ws.x.com wss://chat-ws.dev.cftls.t.co https://d1muhwhmpsz4u8.cloudfront.net/ https://d2bchqfeno8n2m.cloudfront.net/ https://d2shtph9y6bxk.cloudfront.net/ https://xchat-hsm-staging.x.com/ https://realm-a.x.com https://realm-b.x.com https://realm-west1.x.com https://realm-east1.x.com https://hsm-staging.x.com https://ads-twitter.com https://analytics.twitter.com https://analytics.x.com         ; default-src 'self'; form-action 'self' https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://localhost.twitter.com:3443 https://localhost.x.com:3443 https://intercom.help https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io; font-src 'self' https://*.twimg.com https://js.intercomcdn.com https://fonts.intercomcdn.com; frame-src 'self' https://accounts.google.com/ https://accounts.google.com/gsi/ https://cards-frame.twitter.com https://cdn.plaid.com/ https://client-api.arkoselabs.com/ https://content.googleapis.com/ https://iframe.arkoselabs.com/ https://mobile.twitter.com https://mobile.x.com https://pay.twitter.com https://pay.x.com https://google.com https://www.google.com https://intercom-sheets.com https://www.intercom-reporting.com https://www.youtube.com https://player.vimeo.com https://fast.wistia.net https://console.googletagservices.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.safeframe.googlesyndication.com https://www.googleadservices.com https://googleadservices.com https://adservice.google.com https://*.googlesyndication.com https://td.doubleclick.net https://payments-dev.x.com/ https://payments-staging.x.com/ https://payments-prod.x.com/ https://sdn.payments-dev.x.com/ https://sdn.payments-staging.x.com/ https://sdn.payments-prod.x.com/ https://money-dev.x.com/ https://money-staging.x.com/ https://money.x.com/ https://sdn.money-dev.x.com/ https://sdn.money-staging.x.com/ https://sdn.money.x.com/ https://p2pcreditcardiframesandbox.crbcos.com https://p2pcreditcardiframe.crbcos.com https://verify-sandbox.plaid.com/ https://*.js.stripe.com https://js.stripe.com https://hooks.stripe.com https://cdn.getpinwheel.com/ https://artifacts.grokusercontent.com https://twitter.com https://x.com  https://recaptcha.net/recaptcha/; img-src 'self' blob: data: https://www.google.com/maps/place/ https://imgs.search.brave.com https://*.cdn.twitter.com https://*.cdn.x.com https://ton.twitter.com https://ton.x.com https://*.twimg.com https://analytics.twitter.com https://analytics.x.com https://cm.g.doubleclick.net https://www.google-analytics.com https://maps.googleapis.com https://www.periscope.tv https://www.pscp.tv https://ads-twitter.com https://ads-api.twitter.com https://ads-api.x.com https://api.x.com https://developer.x.com blob: data: https://js.intercomcdn.com https://static.intercomassets.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://uploads.intercomusercontent.com https://gifs.intercomcdn.com https://video-messages.intercomcdn.com https://messenger-apps.intercom.io https://messenger-apps.eu.intercom.io https://messenger-apps.au.intercom.io https://*.intercom-attachments-1.com https://*.intercom-attachments.eu https://*.au.intercom-attachments.com https://*.intercom-attachments-2.com https://*.intercom-attachments-3.com https://*.intercom-attachments-4.com https://*.intercom-attachments-5.com https://*.intercom-attachments-6.com https://*.intercom-attachments-7.com https://*.intercom-attachments-8.com https://*.intercom-attachments-9.com https://static.intercomassets.eu https://static.au.intercomassets.com https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com https://*.pscp.tv https://*.periscope.tv https://prod-periscope-profile.s3-us-west-2.amazonaws.com https://platform-lookaside.fbsbx.com https://scontent.xx.fbcdn.net https://scontent-sea1-1.xx.fbcdn.net https://*.googleusercontent.com https://t.co/1/i/adsct https://*.googleusercontent.com https://*.gstatic.com https://*.googlesyndication.com https://*.adtrafficquality.google https://www.google.com/ads/measurement/ https://*.google.com/ads/measurement/ https://googleads.g.doubleclick.net https://google.com https://www.google.com https://plaid-merchant-logos.plaid.com https://plaid-counterparty-logos.plaid.com; manifest-src 'self'; media-src 'self' data: blob: https://twitter.com https://x.com https://*.twimg.com https://*.vine.co https://*.pscp.tv https://*.video.pscp.tv https://js.intercomcdn.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net; object-src 'none'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://*.twimg.com https://recaptcha.net/recaptcha/ http://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://accounts.google.com/gsi/client https://apis.google.com/js/api.js https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js https://client-api.arkoselabs.com/ https://static.ads-twitter.com https://twitter.com https://www.google-analytics.com https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://x.com https://sdn.payments-dev.x.com/assets/loader.min.js https://sdn.payments-staging.x.com/assets/loader.min.js https://sdn.payments-prod.x.com/assets/loader.min.js https://sdn.money-dev.x.com/assets/loader.min.js https://sdn.money-staging.x.com/assets/loader.min.js https://sdn.money.x.com/assets/loader.min.js https://sdk.dv.socure.io/latest/device-risk-sdk.js https://cdn.plaid.com/link/v2/stable/link-initialize.js https://payments-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-prod.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://money.x.com/customer/wasm/xxp-forward-with-sdk.js https://js.stripe.com https://*.js.stripe.com https://cdn.getpinwheel.com/pinwheel-v3.1.0.js https://securepubads.g.doubleclick.net https://www.googletagservices.com https://*.googletagservices.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.googleadservices.com https://ads.google.com https://tpc.googlesyndication.com https://*.tpc.googlesyndication.com https://www.google.com https://googleads.g.doubleclick.net https://app.intercom.io https://widget.intercom.io https://js.intercomcdn.com   'wasm-unsafe-eval'  'nonce-ZTcyNWRhYTEtZTBlNC00YjUzLTkwMmItMTVkMzFkZmRhOTAz'; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style https://*.twimg.com; worker-src 'self' blob:; report-uri https://x.com/i/csp_report?a=O5RXE%3D%3D%3D&ro=false\",\n  \"csp_report_only_header\": \"Missing\",\n  \"details\": \"The page could potentially be framed by an attacker due to missing or weak Content-Security-Policy frame-ancestors directive.\"\n}",
+        "{\n  \"url\": \"https://x.com/\",\n  \"x_frame_options_header\": \"DENY\",\n  \"csp_header\": \"connect-src 'self' blob: https://fonts.googleapis.com/css https://mapsresources-pa.googleapis.com https://maps.googleapis.com https://www.gstatic.com/maps/ https://*.pscp.tv https://*.twimg.com https://*.video.pscp.tv https://aa.twitter.com https://aa.x.com https://accounts.google.com/gsi/ https://ads-api.twitter.com https://ads-api.x.com https://api-stream.twitter.com https://api-stream.x.com https://api.twitter.com https://api.x.ai https://api.x.com https://api.x.com https://caps.twitter.com https://caps.x.com https://grok.x.com https://jf.twitter.com https://jf.x.com https://jf-t.x.com https://pay.twitter.com https://pay.x.com https://sentry.io https://ton-staging.atla.twitter.com https://ton-staging.atla.x.com https://ton-staging.pdxa.twitter.com https://ton-staging.pdxa.x.com https://ton.twitter.com https://ton.x.com https://twitter.com https://upload.twitter.com https://upload.x.com https://www.google-analytics.com https://x.com https://*.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net https://adservice.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.google.com https://google.com https://via.intercom.io https://api.intercom.io https://api.au.intercom.io https://api.eu.intercom.io https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io https://api-ping.intercom.io https://nexus-websocket-a.intercom.io wss://nexus-websocket-a.intercom.io https://nexus-websocket-b.intercom.io wss://nexus-websocket-b.intercom.io https://nexus-europe-websocket.intercom.io wss://nexus-europe-websocket.intercom.io https://nexus-australia-websocket.intercom.io wss://nexus-australia-websocket.intercom.io https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.eu.intercomcdn.com https://uploads.intercomusercontent.com https://production.plaid.com/ https://sandbox.plaid.com/ https://ingestion.dv.socure.io https://network.dv.socure.io/ https://analytics.dv.socure.io/ https://payments-dev.x.com/customer/wasm/forward-with-v1.wasm https://payments-staging.x.com/customer/wasm/forward-with-v1.wasm https://payments-prod.x.com/customer/wasm/forward-with-v1.wasm https://money-dev.x.com/customer/wasm/forward-with-v1.wasm https://money-staging.x.com/customer/wasm/forward-with-v1.wasm https://money.x.com/customer/wasm/forward-with-v1.wasm https://api.stripe.com https://m.castle.io https://checkoutshopper-live.adyen.com wss://*.pscp.tv https://vmap.snappytv.com https://vmapstage.snappytv.com https://vmaprel.snappytv.com https://vmap.grabyo.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com wss://chat-ws.x.com wss://chat-ws.dev.cftls.t.co https://d1muhwhmpsz4u8.cloudfront.net/ https://d2bchqfeno8n2m.cloudfront.net/ https://d2shtph9y6bxk.cloudfront.net/ https://xchat-hsm-staging.x.com/ https://realm-a.x.com https://realm-b.x.com https://realm-west1.x.com https://realm-east1.x.com https://hsm-staging.x.com https://ads-twitter.com https://analytics.twitter.com https://analytics.x.com         ; default-src 'self'; form-action 'self' https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://localhost.twitter.com:3443 https://localhost.x.com:3443 https://intercom.help https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io; font-src 'self' https://*.twimg.com https://js.intercomcdn.com https://fonts.intercomcdn.com; frame-src 'self' https://accounts.google.com/ https://accounts.google.com/gsi/ https://cards-frame.twitter.com https://cdn.plaid.com/ https://client-api.arkoselabs.com/ https://content.googleapis.com/ https://iframe.arkoselabs.com/ https://mobile.twitter.com https://mobile.x.com https://pay.twitter.com https://pay.x.com https://google.com https://www.google.com https://intercom-sheets.com https://www.intercom-reporting.com https://www.youtube.com https://player.vimeo.com https://fast.wistia.net https://console.googletagservices.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.safeframe.googlesyndication.com https://www.googleadservices.com https://googleadservices.com https://adservice.google.com https://*.googlesyndication.com https://td.doubleclick.net https://payments-dev.x.com/ https://payments-staging.x.com/ https://payments-prod.x.com/ https://sdn.payments-dev.x.com/ https://sdn.payments-staging.x.com/ https://sdn.payments-prod.x.com/ https://money-dev.x.com/ https://money-staging.x.com/ https://money.x.com/ https://sdn.money-dev.x.com/ https://sdn.money-staging.x.com/ https://sdn.money.x.com/ https://p2pcreditcardiframesandbox.crbcos.com https://p2pcreditcardiframe.crbcos.com https://verify-sandbox.plaid.com/ https://*.js.stripe.com https://js.stripe.com https://hooks.stripe.com https://cdn.getpinwheel.com/ https://artifacts.grokusercontent.com https://twitter.com https://x.com  https://recaptcha.net/recaptcha/; img-src 'self' blob: data: https://www.google.com/maps/place/ https://imgs.search.brave.com https://*.cdn.twitter.com https://*.cdn.x.com https://ton.twitter.com https://ton.x.com https://*.twimg.com https://analytics.twitter.com https://analytics.x.com https://cm.g.doubleclick.net https://www.google-analytics.com https://maps.googleapis.com https://www.periscope.tv https://www.pscp.tv https://ads-twitter.com https://ads-api.twitter.com https://ads-api.x.com https://api.x.com https://developer.x.com blob: data: https://js.intercomcdn.com https://static.intercomassets.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://uploads.intercomusercontent.com https://gifs.intercomcdn.com https://video-messages.intercomcdn.com https://messenger-apps.intercom.io https://messenger-apps.eu.intercom.io https://messenger-apps.au.intercom.io https://*.intercom-attachments-1.com https://*.intercom-attachments.eu https://*.au.intercom-attachments.com https://*.intercom-attachments-2.com https://*.intercom-attachments-3.com https://*.intercom-attachments-4.com https://*.intercom-attachments-5.com https://*.intercom-attachments-6.com https://*.intercom-attachments-7.com https://*.intercom-attachments-8.com https://*.intercom-attachments-9.com https://static.intercomassets.eu https://static.au.intercomassets.com https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com https://*.pscp.tv https://*.periscope.tv https://prod-periscope-profile.s3-us-west-2.amazonaws.com https://platform-lookaside.fbsbx.com https://scontent.xx.fbcdn.net https://scontent-sea1-1.xx.fbcdn.net https://*.googleusercontent.com https://t.co/1/i/adsct https://*.googleusercontent.com https://*.gstatic.com https://*.googlesyndication.com https://*.adtrafficquality.google https://www.google.com/ads/measurement/ https://*.google.com/ads/measurement/ https://googleads.g.doubleclick.net https://google.com https://www.google.com https://plaid-merchant-logos.plaid.com https://plaid-counterparty-logos.plaid.com; manifest-src 'self'; media-src 'self' data: blob: https://twitter.com https://x.com https://*.twimg.com https://*.vine.co https://*.pscp.tv https://*.video.pscp.tv https://js.intercomcdn.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net; object-src 'none'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://*.twimg.com https://recaptcha.net/recaptcha/ http://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://accounts.google.com/gsi/client https://apis.google.com/js/api.js https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js https://client-api.arkoselabs.com/ https://static.ads-twitter.com https://twitter.com https://www.google-analytics.com https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://x.com https://sdn.payments-dev.x.com/assets/loader.min.js https://sdn.payments-staging.x.com/assets/loader.min.js https://sdn.payments-prod.x.com/assets/loader.min.js https://sdn.money-dev.x.com/assets/loader.min.js https://sdn.money-staging.x.com/assets/loader.min.js https://sdn.money.x.com/assets/loader.min.js https://sdk.dv.socure.io/latest/device-risk-sdk.js https://cdn.plaid.com/link/v2/stable/link-initialize.js https://payments-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-prod.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://money.x.com/customer/wasm/xxp-forward-with-sdk.js https://js.stripe.com https://*.js.stripe.com https://cdn.getpinwheel.com/pinwheel-v3.1.0.js https://securepubads.g.doubleclick.net https://www.googletagservices.com https://*.googletagservices.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.googleadservices.com https://ads.google.com https://tpc.googlesyndication.com https://*.tpc.googlesyndication.com https://www.google.com https://googleads.g.doubleclick.net https://app.intercom.io https://widget.intercom.io https://js.intercomcdn.com   'wasm-unsafe-eval'  'nonce-ZTcyNWRhYTEtZTBlNC00YjUzLTkwMmItMTVkMzFkZmRhOTAz'; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style https://*.twimg.com; worker-src 'self' blob:; report-uri https://x.com/i/csp_report?a=O5RXE%3D%3D%3D&ro=false\",\n  \"csp_report_only_header\": \"Missing\",\n  \"details\": \"The page could potentially be framed by an attacker due to missing or weak Content-Security-Policy frame-ancestors directive.\"\n}"
+      ],
+      "scanner": "clickjacking_screenshotter",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "CWE-1021",
+          "url": "https://cwe.mitre.org/data/definitions/1021.html"
+        },
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {
+        "cwe": "CWE-1021",
+        "owasp": "A05"
+      }
+    },
+    {
+      "id": "7fc94edf-cb69-4c95-a0f4-6a3f5d2cda74",
+      "title": "Server Information Disclosure",
+      "severity": "Medium",
+      "description": "Server header reveals technology information: cloudflare tsa_p",
+      "short_description": "Server header reveals technology information: cloudflare tsa_p",
+      "remediation": "Configure server to not reveal version information.",
+      "countermeasures": "Configure server to not reveal version information.",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"server_header\": \"cloudflare tsa_p\"\n}",
+        "{\n  \"server_header\": \"cloudflare tsa_p\"\n}",
+        "{\n  \"url\": \"https://x.com/\",\n  \"server_header\": \"cloudflare tsa_p\"\n}",
+        "{\n  \"url\": \"https://x.com/\",\n  \"server_header\": \"cloudflare tsa_p\"\n}"
+      ],
+      "scanner": "misconfiguration",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "a9d6d5c9-0ded-4f6d-8d8c-27294b1a08f6",
+      "title": "Missing Security Header: Referrer-Policy",
+      "severity": "Medium",
+      "description": "Referrer-Policy header missing",
+      "short_description": "Referrer-Policy header missing",
+      "remediation": "Implement the Referrer-Policy header to enhance security.",
+      "countermeasures": "Implement the Referrer-Policy header to enhance security.",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"url\": \"https://x.com/\",\n  \"missing_header\": \"Referrer-Policy\"\n}",
+        "{\n  \"url\": \"https://x.com/\",\n  \"missing_header\": \"Referrer-Policy\"\n}"
+      ],
+      "scanner": "security_misconfiguration_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "48dabe65-cd0c-4111-9118-a2f48c172867",
+      "title": "Sensitive Data Exposure",
+      "severity": "High",
+      "description": "Potential Credit Card exposure detected in the response.",
+      "short_description": "Potential Credit Card exposure detected in the response.",
+      "remediation": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+      "countermeasures": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A04:2021 - Insecure Design",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1739*****0000\",\n  \"context\": \"s_at_msec\\\":{\\\"value\\\":1739246400000},\\\"subscriptions_mar\"\n}",
+        "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1739*****0000\",\n  \"context\": \"s_at_msec\\\":{\\\"value\\\":1739246400000},\\\"subscriptions_mar\"\n}",
+        "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1739*****0000\",\n  \"context\": \"s_at_msec\\\":{\\\"value\\\":1739246400000},\\\"subscriptions_mar\"\n}",
+        "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1755*****7290\",\n  \"context\": \"\\\"msw\\\"],\\\"serverDate\\\":1755172517290,\\\"cookies\\\":{\\\"version\"\n}",
+        "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1661*****6366\",\n  \"context\": \"ookies\\\":{\\\"version\\\":\\\"1661819456366\\\",\\\"fetchedTime\\\":1661\"\n}",
+        "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1661*****8705\",\n  \"context\": \"6366\\\",\\\"fetchedTime\\\":1661971138705,\\\"categories\\\":{\\\"2\\\":[\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-3271\",\n  \"context\": \"pp\\\" content=\\\"app-id=333903271\\\"/><meta name=\\\"apple\"\n}"
+      ],
+      "scanner": "sensitive_data_exposure_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "43105217-7e85-4103-bf4c-b0d4fcf1ef58",
+      "title": "Information Disclosure",
+      "severity": "Medium",
+      "description": "Server is revealing Server version information in response headers.",
+      "short_description": "Server is revealing Server version information in response headers.",
+      "remediation": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+      "countermeasures": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+      "location": "https://x.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A04:2021 - Insecure Design",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"server\",\n  \"value\": \"cloudflare tsa_p\"\n}",
+        "{\n  \"header\": \"server\",\n  \"value\": \"cloudflare tsa_p\"\n}",
+        "{\n  \"header\": \"x-powered-by\",\n  \"value\": \"Express\"\n}"
+      ],
+      "scanner": "sensitive_data_exposure_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    }
+  ],
+  "errors": [],
+  "sub_scans": {
+    "full_scan_20250814_115106_api_fuzzing_scanner_641885": {
+      "name": "api_fuzzing_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:51:06.853253",
+      "execution_time": 0.1608138084411621,
+      "end_time": "2025-08-14T11:51:07.013560"
+    },
+    "full_scan_20250814_115106_api_security_scanner_642640": {
+      "name": "api_security_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:51:06.854286",
+      "end_time": "2025-08-14T11:54:26.180143"
+    },
+    "full_scan_20250814_115106_apifuzzing_643404": {
+      "name": "apifuzzing",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.818588",
+      "execution_time": 0.7003889083862305,
+      "end_time": "2025-08-14T11:55:35.517572"
+    },
+    "full_scan_20250814_115106_apisecurity_644069": {
+      "name": "apisecurity",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.820422"
+    },
+    "full_scan_20250814_115106_authentication_644537": {
+      "name": "authentication",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:51:06.996128",
+      "end_time": "2025-08-14T11:55:35.029242"
+    },
+    "full_scan_20250814_115106_authentication_brute_force_credential_stuffing_scanner_645003": {
+      "name": "authentication_brute_force_credential_stuffing_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:51:06.997263",
+      "end_time": "2025-08-14T11:55:35.479443"
+    },
+    "full_scan_20250814_115106_authentication_brute_force_scanner_655078": {
+      "name": "authentication_brute_force_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:51:07.109084",
+      "end_time": "2025-08-14T11:55:35.482113"
+    },
+    "full_scan_20250814_115106_authentication_bypass_scanner_655630": {
+      "name": "authentication_bypass_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:54:26.123644"
+    },
+    "full_scan_20250814_115106_authentication_scanner_656167": {
+      "name": "authentication_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:54:26.232918",
+      "end_time": "2025-08-14T11:55:35.484543"
+    },
+    "full_scan_20250814_115106_authenticationbruteforce_656643": {
+      "name": "authenticationbruteforce",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:55:32.829244"
+    },
+    "full_scan_20250814_115106_authenticationbruteforcecredentialstuffing_657245": {
+      "name": "authenticationbruteforcecredentialstuffing",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:55:32.830737"
+    },
+    "full_scan_20250814_115106_authenticationbypass_657754": {
+      "name": "authenticationbypass",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:55:32.831852"
+    },
+    "full_scan_20250814_115106_automated_cve_lookup_scanner_658480": {
+      "name": "automated_cve_lookup_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.821910",
+      "execution_time": 0.30200672149658203,
+      "end_time": "2025-08-14T11:55:35.123362"
+    },
+    "full_scan_20250814_115106_automatedcvelookup_659104": {
+      "name": "automatedcvelookup",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.823202",
+      "execution_time": 0.3229243755340576,
+      "end_time": "2025-08-14T11:55:35.145660"
+    },
+    "full_scan_20250814_115106_broken_access_control_scanner_659659": {
+      "name": "broken_access_control_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.824671"
+    },
+    "full_scan_20250814_115106_broken_authentication_scanner_660268": {
+      "name": "broken_authentication_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:55:32.833000"
+    },
+    "full_scan_20250814_115106_brokenaccesscontrol_669190": {
+      "name": "brokenaccesscontrol",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.826157"
+    },
+    "full_scan_20250814_115106_brokenauthentication_669826": {
+      "name": "brokenauthentication",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:55:32.834135"
+    },
+    "full_scan_20250814_115106_clickjacking_screenshotter_670495": {
+      "name": "clickjacking_screenshotter",
+      "status": "completed",
+      "results": [
+        {
+          "id": "421dba08-00d0-49e7-b607-7b07e7c59722",
+          "title": "Potential Clickjacking Vulnerability - CSP",
+          "severity": "Medium",
+          "description": "The page might be vulnerable to Clickjacking. Content-Security-Policy header is either missing or does not include frame-ancestors directive.",
+          "short_description": "The page might be vulnerable to Clickjacking. Content-Security-Policy header is either missing or does not include frame-ancestors directive",
+          "remediation": "Implement Content-Security-Policy with frame-ancestors directive. For maximum security, use 'frame-ancestors 'none'' to prevent all framing, or 'frame-ancestors 'self'' to allow only same-origin framing.",
+          "countermeasures": "Implement Content-Security-Policy with frame-ancestors directive. For maximum security, use 'frame-ancestors 'none'' to prevent all framing, or 'frame-ancestors 'self'' to allow only same-origin framing.",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"url\": \"https://x.com/\",\n  \"x_frame_options_header\": \"DENY\",\n  \"csp_header\": \"connect-src 'self' blob: https://fonts.googleapis.com/css https://mapsresources-pa.googleapis.com https://maps.googleapis.com https://www.gstatic.com/maps/ https://*.pscp.tv https://*.twimg.com https://*.video.pscp.tv https://aa.twitter.com https://aa.x.com https://accounts.google.com/gsi/ https://ads-api.twitter.com https://ads-api.x.com https://api-stream.twitter.com https://api-stream.x.com https://api.twitter.com https://api.x.ai https://api.x.com https://api.x.com https://caps.twitter.com https://caps.x.com https://grok.x.com https://jf.twitter.com https://jf.x.com https://jf-t.x.com https://pay.twitter.com https://pay.x.com https://sentry.io https://ton-staging.atla.twitter.com https://ton-staging.atla.x.com https://ton-staging.pdxa.twitter.com https://ton-staging.pdxa.x.com https://ton.twitter.com https://ton.x.com https://twitter.com https://upload.twitter.com https://upload.x.com https://www.google-analytics.com https://x.com https://*.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net https://adservice.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.google.com https://google.com https://via.intercom.io https://api.intercom.io https://api.au.intercom.io https://api.eu.intercom.io https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io https://api-ping.intercom.io https://nexus-websocket-a.intercom.io wss://nexus-websocket-a.intercom.io https://nexus-websocket-b.intercom.io wss://nexus-websocket-b.intercom.io https://nexus-europe-websocket.intercom.io wss://nexus-europe-websocket.intercom.io https://nexus-australia-websocket.intercom.io wss://nexus-australia-websocket.intercom.io https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.eu.intercomcdn.com https://uploads.intercomusercontent.com https://production.plaid.com/ https://sandbox.plaid.com/ https://ingestion.dv.socure.io https://network.dv.socure.io/ https://analytics.dv.socure.io/ https://payments-dev.x.com/customer/wasm/forward-with-v1.wasm https://payments-staging.x.com/customer/wasm/forward-with-v1.wasm https://payments-prod.x.com/customer/wasm/forward-with-v1.wasm https://money-dev.x.com/customer/wasm/forward-with-v1.wasm https://money-staging.x.com/customer/wasm/forward-with-v1.wasm https://money.x.com/customer/wasm/forward-with-v1.wasm https://api.stripe.com https://m.castle.io https://checkoutshopper-live.adyen.com wss://*.pscp.tv https://vmap.snappytv.com https://vmapstage.snappytv.com https://vmaprel.snappytv.com https://vmap.grabyo.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com wss://chat-ws.x.com wss://chat-ws.dev.cftls.t.co https://d1muhwhmpsz4u8.cloudfront.net/ https://d2bchqfeno8n2m.cloudfront.net/ https://d2shtph9y6bxk.cloudfront.net/ https://xchat-hsm-staging.x.com/ https://realm-a.x.com https://realm-b.x.com https://realm-west1.x.com https://realm-east1.x.com https://hsm-staging.x.com https://ads-twitter.com https://analytics.twitter.com https://analytics.x.com         ; default-src 'self'; form-action 'self' https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://localhost.twitter.com:3443 https://localhost.x.com:3443 https://intercom.help https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io; font-src 'self' https://*.twimg.com https://js.intercomcdn.com https://fonts.intercomcdn.com; frame-src 'self' https://accounts.google.com/ https://accounts.google.com/gsi/ https://cards-frame.twitter.com https://cdn.plaid.com/ https://client-api.arkoselabs.com/ https://content.googleapis.com/ https://iframe.arkoselabs.com/ https://mobile.twitter.com https://mobile.x.com https://pay.twitter.com https://pay.x.com https://google.com https://www.google.com https://intercom-sheets.com https://www.intercom-reporting.com https://www.youtube.com https://player.vimeo.com https://fast.wistia.net https://console.googletagservices.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.safeframe.googlesyndication.com https://www.googleadservices.com https://googleadservices.com https://adservice.google.com https://*.googlesyndication.com https://td.doubleclick.net https://payments-dev.x.com/ https://payments-staging.x.com/ https://payments-prod.x.com/ https://sdn.payments-dev.x.com/ https://sdn.payments-staging.x.com/ https://sdn.payments-prod.x.com/ https://money-dev.x.com/ https://money-staging.x.com/ https://money.x.com/ https://sdn.money-dev.x.com/ https://sdn.money-staging.x.com/ https://sdn.money.x.com/ https://p2pcreditcardiframesandbox.crbcos.com https://p2pcreditcardiframe.crbcos.com https://verify-sandbox.plaid.com/ https://*.js.stripe.com https://js.stripe.com https://hooks.stripe.com https://cdn.getpinwheel.com/ https://artifacts.grokusercontent.com https://twitter.com https://x.com  https://recaptcha.net/recaptcha/; img-src 'self' blob: data: https://www.google.com/maps/place/ https://imgs.search.brave.com https://*.cdn.twitter.com https://*.cdn.x.com https://ton.twitter.com https://ton.x.com https://*.twimg.com https://analytics.twitter.com https://analytics.x.com https://cm.g.doubleclick.net https://www.google-analytics.com https://maps.googleapis.com https://www.periscope.tv https://www.pscp.tv https://ads-twitter.com https://ads-api.twitter.com https://ads-api.x.com https://api.x.com https://developer.x.com blob: data: https://js.intercomcdn.com https://static.intercomassets.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://uploads.intercomusercontent.com https://gifs.intercomcdn.com https://video-messages.intercomcdn.com https://messenger-apps.intercom.io https://messenger-apps.eu.intercom.io https://messenger-apps.au.intercom.io https://*.intercom-attachments-1.com https://*.intercom-attachments.eu https://*.au.intercom-attachments.com https://*.intercom-attachments-2.com https://*.intercom-attachments-3.com https://*.intercom-attachments-4.com https://*.intercom-attachments-5.com https://*.intercom-attachments-6.com https://*.intercom-attachments-7.com https://*.intercom-attachments-8.com https://*.intercom-attachments-9.com https://static.intercomassets.eu https://static.au.intercomassets.com https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com https://*.pscp.tv https://*.periscope.tv https://prod-periscope-profile.s3-us-west-2.amazonaws.com https://platform-lookaside.fbsbx.com https://scontent.xx.fbcdn.net https://scontent-sea1-1.xx.fbcdn.net https://*.googleusercontent.com https://t.co/1/i/adsct https://*.googleusercontent.com https://*.gstatic.com https://*.googlesyndication.com https://*.adtrafficquality.google https://www.google.com/ads/measurement/ https://*.google.com/ads/measurement/ https://googleads.g.doubleclick.net https://google.com https://www.google.com https://plaid-merchant-logos.plaid.com https://plaid-counterparty-logos.plaid.com; manifest-src 'self'; media-src 'self' data: blob: https://twitter.com https://x.com https://*.twimg.com https://*.vine.co https://*.pscp.tv https://*.video.pscp.tv https://js.intercomcdn.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net; object-src 'none'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://*.twimg.com https://recaptcha.net/recaptcha/ http://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://accounts.google.com/gsi/client https://apis.google.com/js/api.js https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js https://client-api.arkoselabs.com/ https://static.ads-twitter.com https://twitter.com https://www.google-analytics.com https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://x.com https://sdn.payments-dev.x.com/assets/loader.min.js https://sdn.payments-staging.x.com/assets/loader.min.js https://sdn.payments-prod.x.com/assets/loader.min.js https://sdn.money-dev.x.com/assets/loader.min.js https://sdn.money-staging.x.com/assets/loader.min.js https://sdn.money.x.com/assets/loader.min.js https://sdk.dv.socure.io/latest/device-risk-sdk.js https://cdn.plaid.com/link/v2/stable/link-initialize.js https://payments-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-prod.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://money.x.com/customer/wasm/xxp-forward-with-sdk.js https://js.stripe.com https://*.js.stripe.com https://cdn.getpinwheel.com/pinwheel-v3.1.0.js https://securepubads.g.doubleclick.net https://www.googletagservices.com https://*.googletagservices.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.googleadservices.com https://ads.google.com https://tpc.googlesyndication.com https://*.tpc.googlesyndication.com https://www.google.com https://googleads.g.doubleclick.net https://app.intercom.io https://widget.intercom.io https://js.intercomcdn.com   'wasm-unsafe-eval'  'nonce-ZTcyNWRhYTEtZTBlNC00YjUzLTkwMmItMTVkMzFkZmRhOTAz'; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style https://*.twimg.com; worker-src 'self' blob:; report-uri https://x.com/i/csp_report?a=O5RXE%3D%3D%3D&ro=false\",\n  \"csp_report_only_header\": \"Missing\",\n  \"details\": \"The page could potentially be framed by an attacker due to missing or weak Content-Security-Policy frame-ancestors directive.\"\n}",
+            "{\n  \"url\": \"https://x.com/\",\n  \"x_frame_options_header\": \"DENY\",\n  \"csp_header\": \"connect-src 'self' blob: https://fonts.googleapis.com/css https://mapsresources-pa.googleapis.com https://maps.googleapis.com https://www.gstatic.com/maps/ https://*.pscp.tv https://*.twimg.com https://*.video.pscp.tv https://aa.twitter.com https://aa.x.com https://accounts.google.com/gsi/ https://ads-api.twitter.com https://ads-api.x.com https://api-stream.twitter.com https://api-stream.x.com https://api.twitter.com https://api.x.ai https://api.x.com https://api.x.com https://caps.twitter.com https://caps.x.com https://grok.x.com https://jf.twitter.com https://jf.x.com https://jf-t.x.com https://pay.twitter.com https://pay.x.com https://sentry.io https://ton-staging.atla.twitter.com https://ton-staging.atla.x.com https://ton-staging.pdxa.twitter.com https://ton-staging.pdxa.x.com https://ton.twitter.com https://ton.x.com https://twitter.com https://upload.twitter.com https://upload.x.com https://www.google-analytics.com https://x.com https://*.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net https://adservice.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.google.com https://google.com https://via.intercom.io https://api.intercom.io https://api.au.intercom.io https://api.eu.intercom.io https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io https://api-ping.intercom.io https://nexus-websocket-a.intercom.io wss://nexus-websocket-a.intercom.io https://nexus-websocket-b.intercom.io wss://nexus-websocket-b.intercom.io https://nexus-europe-websocket.intercom.io wss://nexus-europe-websocket.intercom.io https://nexus-australia-websocket.intercom.io wss://nexus-australia-websocket.intercom.io https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.eu.intercomcdn.com https://uploads.intercomusercontent.com https://production.plaid.com/ https://sandbox.plaid.com/ https://ingestion.dv.socure.io https://network.dv.socure.io/ https://analytics.dv.socure.io/ https://payments-dev.x.com/customer/wasm/forward-with-v1.wasm https://payments-staging.x.com/customer/wasm/forward-with-v1.wasm https://payments-prod.x.com/customer/wasm/forward-with-v1.wasm https://money-dev.x.com/customer/wasm/forward-with-v1.wasm https://money-staging.x.com/customer/wasm/forward-with-v1.wasm https://money.x.com/customer/wasm/forward-with-v1.wasm https://api.stripe.com https://m.castle.io https://checkoutshopper-live.adyen.com wss://*.pscp.tv https://vmap.snappytv.com https://vmapstage.snappytv.com https://vmaprel.snappytv.com https://vmap.grabyo.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com wss://chat-ws.x.com wss://chat-ws.dev.cftls.t.co https://d1muhwhmpsz4u8.cloudfront.net/ https://d2bchqfeno8n2m.cloudfront.net/ https://d2shtph9y6bxk.cloudfront.net/ https://xchat-hsm-staging.x.com/ https://realm-a.x.com https://realm-b.x.com https://realm-west1.x.com https://realm-east1.x.com https://hsm-staging.x.com https://ads-twitter.com https://analytics.twitter.com https://analytics.x.com         ; default-src 'self'; form-action 'self' https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://localhost.twitter.com:3443 https://localhost.x.com:3443 https://intercom.help https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io; font-src 'self' https://*.twimg.com https://js.intercomcdn.com https://fonts.intercomcdn.com; frame-src 'self' https://accounts.google.com/ https://accounts.google.com/gsi/ https://cards-frame.twitter.com https://cdn.plaid.com/ https://client-api.arkoselabs.com/ https://content.googleapis.com/ https://iframe.arkoselabs.com/ https://mobile.twitter.com https://mobile.x.com https://pay.twitter.com https://pay.x.com https://google.com https://www.google.com https://intercom-sheets.com https://www.intercom-reporting.com https://www.youtube.com https://player.vimeo.com https://fast.wistia.net https://console.googletagservices.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.safeframe.googlesyndication.com https://www.googleadservices.com https://googleadservices.com https://adservice.google.com https://*.googlesyndication.com https://td.doubleclick.net https://payments-dev.x.com/ https://payments-staging.x.com/ https://payments-prod.x.com/ https://sdn.payments-dev.x.com/ https://sdn.payments-staging.x.com/ https://sdn.payments-prod.x.com/ https://money-dev.x.com/ https://money-staging.x.com/ https://money.x.com/ https://sdn.money-dev.x.com/ https://sdn.money-staging.x.com/ https://sdn.money.x.com/ https://p2pcreditcardiframesandbox.crbcos.com https://p2pcreditcardiframe.crbcos.com https://verify-sandbox.plaid.com/ https://*.js.stripe.com https://js.stripe.com https://hooks.stripe.com https://cdn.getpinwheel.com/ https://artifacts.grokusercontent.com https://twitter.com https://x.com  https://recaptcha.net/recaptcha/; img-src 'self' blob: data: https://www.google.com/maps/place/ https://imgs.search.brave.com https://*.cdn.twitter.com https://*.cdn.x.com https://ton.twitter.com https://ton.x.com https://*.twimg.com https://analytics.twitter.com https://analytics.x.com https://cm.g.doubleclick.net https://www.google-analytics.com https://maps.googleapis.com https://www.periscope.tv https://www.pscp.tv https://ads-twitter.com https://ads-api.twitter.com https://ads-api.x.com https://api.x.com https://developer.x.com blob: data: https://js.intercomcdn.com https://static.intercomassets.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://uploads.intercomusercontent.com https://gifs.intercomcdn.com https://video-messages.intercomcdn.com https://messenger-apps.intercom.io https://messenger-apps.eu.intercom.io https://messenger-apps.au.intercom.io https://*.intercom-attachments-1.com https://*.intercom-attachments.eu https://*.au.intercom-attachments.com https://*.intercom-attachments-2.com https://*.intercom-attachments-3.com https://*.intercom-attachments-4.com https://*.intercom-attachments-5.com https://*.intercom-attachments-6.com https://*.intercom-attachments-7.com https://*.intercom-attachments-8.com https://*.intercom-attachments-9.com https://static.intercomassets.eu https://static.au.intercomassets.com https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com https://*.pscp.tv https://*.periscope.tv https://prod-periscope-profile.s3-us-west-2.amazonaws.com https://platform-lookaside.fbsbx.com https://scontent.xx.fbcdn.net https://scontent-sea1-1.xx.fbcdn.net https://*.googleusercontent.com https://t.co/1/i/adsct https://*.googleusercontent.com https://*.gstatic.com https://*.googlesyndication.com https://*.adtrafficquality.google https://www.google.com/ads/measurement/ https://*.google.com/ads/measurement/ https://googleads.g.doubleclick.net https://google.com https://www.google.com https://plaid-merchant-logos.plaid.com https://plaid-counterparty-logos.plaid.com; manifest-src 'self'; media-src 'self' data: blob: https://twitter.com https://x.com https://*.twimg.com https://*.vine.co https://*.pscp.tv https://*.video.pscp.tv https://js.intercomcdn.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net; object-src 'none'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://*.twimg.com https://recaptcha.net/recaptcha/ http://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://accounts.google.com/gsi/client https://apis.google.com/js/api.js https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js https://client-api.arkoselabs.com/ https://static.ads-twitter.com https://twitter.com https://www.google-analytics.com https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://x.com https://sdn.payments-dev.x.com/assets/loader.min.js https://sdn.payments-staging.x.com/assets/loader.min.js https://sdn.payments-prod.x.com/assets/loader.min.js https://sdn.money-dev.x.com/assets/loader.min.js https://sdn.money-staging.x.com/assets/loader.min.js https://sdn.money.x.com/assets/loader.min.js https://sdk.dv.socure.io/latest/device-risk-sdk.js https://cdn.plaid.com/link/v2/stable/link-initialize.js https://payments-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-prod.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://money.x.com/customer/wasm/xxp-forward-with-sdk.js https://js.stripe.com https://*.js.stripe.com https://cdn.getpinwheel.com/pinwheel-v3.1.0.js https://securepubads.g.doubleclick.net https://www.googletagservices.com https://*.googletagservices.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.googleadservices.com https://ads.google.com https://tpc.googlesyndication.com https://*.tpc.googlesyndication.com https://www.google.com https://googleads.g.doubleclick.net https://app.intercom.io https://widget.intercom.io https://js.intercomcdn.com   'wasm-unsafe-eval'  'nonce-ZTcyNWRhYTEtZTBlNC00YjUzLTkwMmItMTVkMzFkZmRhOTAz'; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style https://*.twimg.com; worker-src 'self' blob:; report-uri https://x.com/i/csp_report?a=O5RXE%3D%3D%3D&ro=false\",\n  \"csp_report_only_header\": \"Missing\",\n  \"details\": \"The page could potentially be framed by an attacker due to missing or weak Content-Security-Policy frame-ancestors directive.\"\n}"
+          ],
+          "scanner": "clickjacking_screenshotter",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "CWE-1021",
+              "url": "https://cwe.mitre.org/data/definitions/1021.html"
+            },
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {
+            "cwe": "CWE-1021",
+            "owasp": "A05"
+          }
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.827549",
+      "execution_time": 0.3712491989135742,
+      "end_time": "2025-08-14T11:55:35.198353"
+    },
+    "full_scan_20250814_115106_clickjackingscreenshotter_671071": {
+      "name": "clickjackingscreenshotter",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.828874",
+      "execution_time": 0.4252910614013672,
+      "end_time": "2025-08-14T11:55:35.253753"
+    },
+    "full_scan_20250814_115106_csrf_671694": {
+      "name": "csrf",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:55:32.835249",
+      "execution_time": 0.40583300590515137,
+      "end_time": "2025-08-14T11:55:33.240746"
+    },
+    "full_scan_20250814_115106_csrf_scanner_672346": {
+      "name": "csrf_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:55:32.836892",
+      "execution_time": 0.42439961433410645,
+      "end_time": "2025-08-14T11:55:33.260358"
+    },
+    "full_scan_20250814_115106_csrf_token_checker_672969": {
+      "name": "csrf_token_checker",
+      "status": "completed",
+      "results": [
+        {
+          "id": "26ec89f4-d194-4631-b216-5a02b5271c20",
+          "title": "Missing CSRF Token",
+          "severity": "High",
+          "description": "Form at 'https://x.com/' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site Request Forgery (CSRF) attacks.",
+          "short_description": "Form at 'https://x.com/' does not appear to have a CSRF token. This may make it vulnerable to Cross-Site Request Forgery (CSRF) attacks.",
+          "remediation": "Implement anti-CSRF tokens for all state-changing operations via forms. Ensure tokens are unique per session/request and validated on the server-side.",
+          "countermeasures": "Implement anti-CSRF tokens for all state-changing operations via forms. Ensure tokens are unique per session/request and validated on the server-side.",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A04:2021 - Insecure Design",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"form_action\": \"https://x.com/\",\n  \"details\": \"No hidden input field resembling a CSRF token found.\"\n}",
+            "{\n  \"form_action\": \"https://x.com/\",\n  \"details\": \"No hidden input field resembling a CSRF token found.\"\n}"
+          ],
+          "scanner": "csrf_token_checker",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:55:32.838191",
+      "execution_time": 0.4692850112915039,
+      "end_time": "2025-08-14T11:55:33.306921"
+    },
+    "full_scan_20250814_115106_csrftokenchecker_673608": {
+      "name": "csrftokenchecker",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:55:32.839499",
+      "execution_time": 0.4968225955963135,
+      "end_time": "2025-08-14T11:55:33.335856"
+    },
+    "full_scan_20250814_115106_directory_file_enumeration_scanner_674245": {
+      "name": "directory_file_enumeration_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.830670"
+    },
+    "full_scan_20250814_115106_directoryfileenumeration_683899": {
+      "name": "directoryfileenumeration",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.832704"
+    },
+    "full_scan_20250814_115106_insecure_deserialization_scanner_684341": {
+      "name": "insecure_deserialization_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.835404",
+      "execution_time": 0.4734621047973633,
+      "end_time": "2025-08-14T11:55:35.307917"
+    },
+    "full_scan_20250814_115106_insecure_design_scanner_684844": {
+      "name": "insecure_design_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.838045"
+    },
+    "full_scan_20250814_115106_insecuredeserialization_685374": {
+      "name": "insecuredeserialization",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.839710",
+      "execution_time": 0.5087940692901611,
+      "end_time": "2025-08-14T11:55:35.347823"
+    },
+    "full_scan_20250814_115106_insecuredesign_685801": {
+      "name": "insecuredesign",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.841330"
+    },
+    "full_scan_20250814_115106_insufficient_logging_and_monitoring_scanner_686238": {
+      "name": "insufficient_logging_and_monitoring_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.843053"
+    },
+    "full_scan_20250814_115106_insufficientloggingandmonitoring_686670": {
+      "name": "insufficientloggingandmonitoring",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.844539"
+    },
+    "full_scan_20250814_115106_js_687181": {
+      "name": "js",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.846574"
+    },
+    "full_scan_20250814_115106_js_scanner_687648": {
+      "name": "js_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.850077"
+    },
+    "full_scan_20250814_115106_misconfiguration_688246": {
+      "name": "misconfiguration",
+      "status": "completed",
+      "results": [
+        {
+          "id": "7fc94edf-cb69-4c95-a0f4-6a3f5d2cda74",
+          "title": "Server Information Disclosure",
+          "severity": "Medium",
+          "description": "Server header reveals technology information: cloudflare tsa_p",
+          "short_description": "Server header reveals technology information: cloudflare tsa_p",
+          "remediation": "Configure server to not reveal version information.",
+          "countermeasures": "Configure server to not reveal version information.",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"server_header\": \"cloudflare tsa_p\"\n}",
+            "{\n  \"server_header\": \"cloudflare tsa_p\"\n}",
+            "{\n  \"url\": \"https://x.com/\",\n  \"server_header\": \"cloudflare tsa_p\"\n}",
+            "{\n  \"url\": \"https://x.com/\",\n  \"server_header\": \"cloudflare tsa_p\"\n}"
+          ],
+          "scanner": "misconfiguration",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.852142",
+      "execution_time": 0.5448503494262695,
+      "end_time": "2025-08-14T11:55:35.395967"
+    },
+    "full_scan_20250814_115106_misconfiguration_scanner_698625": {
+      "name": "misconfiguration_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.854640",
+      "execution_time": 0.5835385322570801,
+      "end_time": "2025-08-14T11:55:35.436918"
+    },
+    "full_scan_20250814_115106_oob_699149": {
+      "name": "oob",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:34.856463",
+      "execution_time": 0.8272337913513184,
+      "end_time": "2025-08-14T11:55:35.683095"
+    },
+    "full_scan_20250814_115106_oob_scanner_699652": {
+      "name": "oob_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.492712",
+      "execution_time": 0.4533398151397705,
+      "end_time": "2025-08-14T11:55:35.945172"
+    },
+    "full_scan_20250814_115106_open_redirect_finder_700117": {
+      "name": "open_redirect_finder",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.494934"
+    },
+    "full_scan_20250814_115106_open_redirect_scanner_700521": {
+      "name": "open_redirect_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.497012"
+    },
+    "full_scan_20250814_115106_openredirect_700993": {
+      "name": "openredirect",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.498302"
+    },
+    "full_scan_20250814_115106_openredirectfinder_701532": {
+      "name": "openredirectfinder",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.499598"
+    },
+    "full_scan_20250814_115106_path_traversal_tester_702531": {
+      "name": "path_traversal_tester",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.501015"
+    },
+    "full_scan_20250814_115106_pathtraversaltester_703082": {
+      "name": "pathtraversaltester",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.502272"
+    },
+    "full_scan_20250814_115106_rate_limiting_bruteforce_scanner_703864": {
+      "name": "rate_limiting_bruteforce_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.503658"
+    },
+    "full_scan_20250814_115106_ratelimitingbruteforce_704339": {
+      "name": "ratelimitingbruteforce",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.504757"
+    },
+    "full_scan_20250814_115106_robots_txt_sitemap_crawl_scanner_704767": {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.506454"
+    },
+    "full_scan_20250814_115106_robotstxtsitemapcrawl_705260": {
+      "name": "robotstxtsitemapcrawl",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.508230"
+    },
+    "full_scan_20250814_115106_security_headers_analyzer_705793": {
+      "name": "security_headers_analyzer",
+      "status": "completed",
+      "results": [
+        {
+          "id": "9fab8117-171c-4066-b7bb-096add8b5832",
+          "title": "Misconfigured Strict-Transport-Security Header",
+          "severity": "High",
+          "description": "The Strict-Transport-Security header is present but may not be optimally configured. Enforces HTTPS connections",
+          "short_description": "The Strict-Transport-Security header is present but may not be optimally configured. Enforces HTTPS connections",
+          "remediation": "Update the Strict-Transport-Security header to: max-age=31536000; includeSubDomains; preload",
+          "countermeasures": "Update the Strict-Transport-Security header to: max-age=31536000; includeSubDomains; preload",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": \"max-age=631138519; includeSubdomains\"\n}",
+            "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": \"max-age=631138519; includeSubdomains\"\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "a00c509a-da6b-4ada-b066-4d9c52e34abe",
+          "title": "Misconfigured X-XSS-Protection Header",
+          "severity": "Low",
+          "description": "The X-XSS-Protection header is present but may not be optimally configured. Legacy header; prefer CSP instead. Some browsers ignore this.",
+          "short_description": "The X-XSS-Protection header is present but may not be optimally configured. Legacy header; prefer CSP instead. Some browsers ignore this.",
+          "remediation": "Update the X-XSS-Protection header to: 1; mode=block",
+          "countermeasures": "Update the X-XSS-Protection header to: 1; mode=block",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": \"0\"\n}",
+            "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": \"0\"\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "55a33fe7-86be-4da2-9dfc-a4230e90fc46",
+          "title": "Misconfigured Content-Security-Policy Header",
+          "severity": "High",
+          "description": "The Content-Security-Policy header is present but may not be optimally configured. Controls resource loading",
+          "short_description": "The Content-Security-Policy header is present but may not be optimally configured. Controls resource loading",
+          "remediation": "Update the Content-Security-Policy header to: default-src 'self'",
+          "countermeasures": "Update the Content-Security-Policy header to: default-src 'self'",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": \"connect-src 'self' blob: https://fonts.googleapis.com/css https://mapsresources-pa.googleapis.com https://maps.googleapis.com https://www.gstatic.com/maps/ https://*.pscp.tv https://*.twimg.com https://*.video.pscp.tv https://aa.twitter.com https://aa.x.com https://accounts.google.com/gsi/ https://ads-api.twitter.com https://ads-api.x.com https://api-stream.twitter.com https://api-stream.x.com https://api.twitter.com https://api.x.ai https://api.x.com https://api.x.com https://caps.twitter.com https://caps.x.com https://grok.x.com https://jf.twitter.com https://jf.x.com https://jf-t.x.com https://pay.twitter.com https://pay.x.com https://sentry.io https://ton-staging.atla.twitter.com https://ton-staging.atla.x.com https://ton-staging.pdxa.twitter.com https://ton-staging.pdxa.x.com https://ton.twitter.com https://ton.x.com https://twitter.com https://upload.twitter.com https://upload.x.com https://www.google-analytics.com https://x.com https://*.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net https://adservice.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.google.com https://google.com https://via.intercom.io https://api.intercom.io https://api.au.intercom.io https://api.eu.intercom.io https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io https://api-ping.intercom.io https://nexus-websocket-a.intercom.io wss://nexus-websocket-a.intercom.io https://nexus-websocket-b.intercom.io wss://nexus-websocket-b.intercom.io https://nexus-europe-websocket.intercom.io wss://nexus-europe-websocket.intercom.io https://nexus-australia-websocket.intercom.io wss://nexus-australia-websocket.intercom.io https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.eu.intercomcdn.com https://uploads.intercomusercontent.com https://production.plaid.com/ https://sandbox.plaid.com/ https://ingestion.dv.socure.io https://network.dv.socure.io/ https://analytics.dv.socure.io/ https://payments-dev.x.com/customer/wasm/forward-with-v1.wasm https://payments-staging.x.com/customer/wasm/forward-with-v1.wasm https://payments-prod.x.com/customer/wasm/forward-with-v1.wasm https://money-dev.x.com/customer/wasm/forward-with-v1.wasm https://money-staging.x.com/customer/wasm/forward-with-v1.wasm https://money.x.com/customer/wasm/forward-with-v1.wasm https://api.stripe.com https://m.castle.io https://checkoutshopper-live.adyen.com wss://*.pscp.tv https://vmap.snappytv.com https://vmapstage.snappytv.com https://vmaprel.snappytv.com https://vmap.grabyo.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com wss://chat-ws.x.com wss://chat-ws.dev.cftls.t.co https://d1muhwhmpsz4u8.cloudfront.net/ https://d2bchqfeno8n2m.cloudfront.net/ https://d2shtph9y6bxk.cloudfront.net/ https://xchat-hsm-staging.x.com/ https://realm-a.x.com https://realm-b.x.com https://realm-west1.x.com https://realm-east1.x.com https://hsm-staging.x.com https://ads-twitter.com https://analytics.twitter.com https://analytics.x.com         ; default-src 'self'; form-action 'self' https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://localhost.twitter.com:3443 https://localhost.x.com:3443 https://intercom.help https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io; font-src 'self' https://*.twimg.com https://js.intercomcdn.com https://fonts.intercomcdn.com; frame-src 'self' https://accounts.google.com/ https://accounts.google.com/gsi/ https://cards-frame.twitter.com https://cdn.plaid.com/ https://client-api.arkoselabs.com/ https://content.googleapis.com/ https://iframe.arkoselabs.com/ https://mobile.twitter.com https://mobile.x.com https://pay.twitter.com https://pay.x.com https://google.com https://www.google.com https://intercom-sheets.com https://www.intercom-reporting.com https://www.youtube.com https://player.vimeo.com https://fast.wistia.net https://console.googletagservices.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.safeframe.googlesyndication.com https://www.googleadservices.com https://googleadservices.com https://adservice.google.com https://*.googlesyndication.com https://td.doubleclick.net https://payments-dev.x.com/ https://payments-staging.x.com/ https://payments-prod.x.com/ https://sdn.payments-dev.x.com/ https://sdn.payments-staging.x.com/ https://sdn.payments-prod.x.com/ https://money-dev.x.com/ https://money-staging.x.com/ https://money.x.com/ https://sdn.money-dev.x.com/ https://sdn.money-staging.x.com/ https://sdn.money.x.com/ https://p2pcreditcardiframesandbox.crbcos.com https://p2pcreditcardiframe.crbcos.com https://verify-sandbox.plaid.com/ https://*.js.stripe.com https://js.stripe.com https://hooks.stripe.com https://cdn.getpinwheel.com/ https://artifacts.grokusercontent.com https://twitter.com https://x.com  https://recaptcha.net/recaptcha/; img-src 'self' blob: data: https://www.google.com/maps/place/ https://imgs.search.brave.com https://*.cdn.twitter.com https://*.cdn.x.com https://ton.twitter.com https://ton.x.com https://*.twimg.com https://analytics.twitter.com https://analytics.x.com https://cm.g.doubleclick.net https://www.google-analytics.com https://maps.googleapis.com https://www.periscope.tv https://www.pscp.tv https://ads-twitter.com https://ads-api.twitter.com https://ads-api.x.com https://api.x.com https://developer.x.com blob: data: https://js.intercomcdn.com https://static.intercomassets.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://uploads.intercomusercontent.com https://gifs.intercomcdn.com https://video-messages.intercomcdn.com https://messenger-apps.intercom.io https://messenger-apps.eu.intercom.io https://messenger-apps.au.intercom.io https://*.intercom-attachments-1.com https://*.intercom-attachments.eu https://*.au.intercom-attachments.com https://*.intercom-attachments-2.com https://*.intercom-attachments-3.com https://*.intercom-attachments-4.com https://*.intercom-attachments-5.com https://*.intercom-attachments-6.com https://*.intercom-attachments-7.com https://*.intercom-attachments-8.com https://*.intercom-attachments-9.com https://static.intercomassets.eu https://static.au.intercomassets.com https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com https://*.pscp.tv https://*.periscope.tv https://prod-periscope-profile.s3-us-west-2.amazonaws.com https://platform-lookaside.fbsbx.com https://scontent.xx.fbcdn.net https://scontent-sea1-1.xx.fbcdn.net https://*.googleusercontent.com https://t.co/1/i/adsct https://*.googleusercontent.com https://*.gstatic.com https://*.googlesyndication.com https://*.adtrafficquality.google https://www.google.com/ads/measurement/ https://*.google.com/ads/measurement/ https://googleads.g.doubleclick.net https://google.com https://www.google.com https://plaid-merchant-logos.plaid.com https://plaid-counterparty-logos.plaid.com; manifest-src 'self'; media-src 'self' data: blob: https://twitter.com https://x.com https://*.twimg.com https://*.vine.co https://*.pscp.tv https://*.video.pscp.tv https://js.intercomcdn.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net; object-src 'none'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://*.twimg.com https://recaptcha.net/recaptcha/ http://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://accounts.google.com/gsi/client https://apis.google.com/js/api.js https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js https://client-api.arkoselabs.com/ https://static.ads-twitter.com https://twitter.com https://www.google-analytics.com https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://x.com https://sdn.payments-dev.x.com/assets/loader.min.js https://sdn.payments-staging.x.com/assets/loader.min.js https://sdn.payments-prod.x.com/assets/loader.min.js https://sdn.money-dev.x.com/assets/loader.min.js https://sdn.money-staging.x.com/assets/loader.min.js https://sdn.money.x.com/assets/loader.min.js https://sdk.dv.socure.io/latest/device-risk-sdk.js https://cdn.plaid.com/link/v2/stable/link-initialize.js https://payments-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-prod.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://money.x.com/customer/wasm/xxp-forward-with-sdk.js https://js.stripe.com https://*.js.stripe.com https://cdn.getpinwheel.com/pinwheel-v3.1.0.js https://securepubads.g.doubleclick.net https://www.googletagservices.com https://*.googletagservices.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.googleadservices.com https://ads.google.com https://tpc.googlesyndication.com https://*.tpc.googlesyndication.com https://www.google.com https://googleads.g.doubleclick.net https://app.intercom.io https://widget.intercom.io https://js.intercomcdn.com   'wasm-unsafe-eval'  'nonce-ZTcyNWRhYTEtZTBlNC00YjUzLTkwMmItMTVkMzFkZmRhOTAz'; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style https://*.twimg.com; worker-src 'self' blob:; report-uri https://x.com/i/csp_report?a=O5RXE%3D%3D%3D&ro=false\"\n}",
+            "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": \"connect-src 'self' blob: https://fonts.googleapis.com/css https://mapsresources-pa.googleapis.com https://maps.googleapis.com https://www.gstatic.com/maps/ https://*.pscp.tv https://*.twimg.com https://*.video.pscp.tv https://aa.twitter.com https://aa.x.com https://accounts.google.com/gsi/ https://ads-api.twitter.com https://ads-api.x.com https://api-stream.twitter.com https://api-stream.x.com https://api.twitter.com https://api.x.ai https://api.x.com https://api.x.com https://caps.twitter.com https://caps.x.com https://grok.x.com https://jf.twitter.com https://jf.x.com https://jf-t.x.com https://pay.twitter.com https://pay.x.com https://sentry.io https://ton-staging.atla.twitter.com https://ton-staging.atla.x.com https://ton-staging.pdxa.twitter.com https://ton-staging.pdxa.x.com https://ton.twitter.com https://ton.x.com https://twitter.com https://upload.twitter.com https://upload.x.com https://www.google-analytics.com https://x.com https://*.adtrafficquality.google https://*.googlesyndication.com https://*.doubleclick.net https://adservice.google.com https://www.googleadservices.com https://pagead2.googlesyndication.com https://www.google.com https://google.com https://via.intercom.io https://api.intercom.io https://api.au.intercom.io https://api.eu.intercom.io https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io https://api-ping.intercom.io https://nexus-websocket-a.intercom.io wss://nexus-websocket-a.intercom.io https://nexus-websocket-b.intercom.io wss://nexus-websocket-b.intercom.io https://nexus-europe-websocket.intercom.io wss://nexus-europe-websocket.intercom.io https://nexus-australia-websocket.intercom.io wss://nexus-australia-websocket.intercom.io https://uploads.intercomcdn.com https://uploads.intercomcdn.eu https://uploads.au.intercomcdn.com https://uploads.eu.intercomcdn.com https://uploads.intercomusercontent.com https://production.plaid.com/ https://sandbox.plaid.com/ https://ingestion.dv.socure.io https://network.dv.socure.io/ https://analytics.dv.socure.io/ https://payments-dev.x.com/customer/wasm/forward-with-v1.wasm https://payments-staging.x.com/customer/wasm/forward-with-v1.wasm https://payments-prod.x.com/customer/wasm/forward-with-v1.wasm https://money-dev.x.com/customer/wasm/forward-with-v1.wasm https://money-staging.x.com/customer/wasm/forward-with-v1.wasm https://money.x.com/customer/wasm/forward-with-v1.wasm https://api.stripe.com https://m.castle.io https://checkoutshopper-live.adyen.com wss://*.pscp.tv https://vmap.snappytv.com https://vmapstage.snappytv.com https://vmaprel.snappytv.com https://vmap.grabyo.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com wss://chat-ws.x.com wss://chat-ws.dev.cftls.t.co https://d1muhwhmpsz4u8.cloudfront.net/ https://d2bchqfeno8n2m.cloudfront.net/ https://d2shtph9y6bxk.cloudfront.net/ https://xchat-hsm-staging.x.com/ https://realm-a.x.com https://realm-b.x.com https://realm-west1.x.com https://realm-east1.x.com https://hsm-staging.x.com https://ads-twitter.com https://analytics.twitter.com https://analytics.x.com         ; default-src 'self'; form-action 'self' https://twitter.com https://*.twitter.com https://x.com https://*.x.com https://localhost.twitter.com:3443 https://localhost.x.com:3443 https://intercom.help https://api-iam.intercom.io https://api-iam.eu.intercom.io https://api-iam.au.intercom.io; font-src 'self' https://*.twimg.com https://js.intercomcdn.com https://fonts.intercomcdn.com; frame-src 'self' https://accounts.google.com/ https://accounts.google.com/gsi/ https://cards-frame.twitter.com https://cdn.plaid.com/ https://client-api.arkoselabs.com/ https://content.googleapis.com/ https://iframe.arkoselabs.com/ https://mobile.twitter.com https://mobile.x.com https://pay.twitter.com https://pay.x.com https://google.com https://www.google.com https://intercom-sheets.com https://www.intercom-reporting.com https://www.youtube.com https://player.vimeo.com https://fast.wistia.net https://console.googletagservices.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.safeframe.googlesyndication.com https://www.googleadservices.com https://googleadservices.com https://adservice.google.com https://*.googlesyndication.com https://td.doubleclick.net https://payments-dev.x.com/ https://payments-staging.x.com/ https://payments-prod.x.com/ https://sdn.payments-dev.x.com/ https://sdn.payments-staging.x.com/ https://sdn.payments-prod.x.com/ https://money-dev.x.com/ https://money-staging.x.com/ https://money.x.com/ https://sdn.money-dev.x.com/ https://sdn.money-staging.x.com/ https://sdn.money.x.com/ https://p2pcreditcardiframesandbox.crbcos.com https://p2pcreditcardiframe.crbcos.com https://verify-sandbox.plaid.com/ https://*.js.stripe.com https://js.stripe.com https://hooks.stripe.com https://cdn.getpinwheel.com/ https://artifacts.grokusercontent.com https://twitter.com https://x.com  https://recaptcha.net/recaptcha/; img-src 'self' blob: data: https://www.google.com/maps/place/ https://imgs.search.brave.com https://*.cdn.twitter.com https://*.cdn.x.com https://ton.twitter.com https://ton.x.com https://*.twimg.com https://analytics.twitter.com https://analytics.x.com https://cm.g.doubleclick.net https://www.google-analytics.com https://maps.googleapis.com https://www.periscope.tv https://www.pscp.tv https://ads-twitter.com https://ads-api.twitter.com https://ads-api.x.com https://api.x.com https://developer.x.com blob: data: https://js.intercomcdn.com https://static.intercomassets.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://uploads.intercomusercontent.com https://gifs.intercomcdn.com https://video-messages.intercomcdn.com https://messenger-apps.intercom.io https://messenger-apps.eu.intercom.io https://messenger-apps.au.intercom.io https://*.intercom-attachments-1.com https://*.intercom-attachments.eu https://*.au.intercom-attachments.com https://*.intercom-attachments-2.com https://*.intercom-attachments-3.com https://*.intercom-attachments-4.com https://*.intercom-attachments-5.com https://*.intercom-attachments-6.com https://*.intercom-attachments-7.com https://*.intercom-attachments-8.com https://*.intercom-attachments-9.com https://static.intercomassets.eu https://static.au.intercomassets.com https://media.riffsy.com https://*.giphy.com https://media.tenor.com https://c.tenor.com https://*.pscp.tv https://*.periscope.tv https://prod-periscope-profile.s3-us-west-2.amazonaws.com https://platform-lookaside.fbsbx.com https://scontent.xx.fbcdn.net https://scontent-sea1-1.xx.fbcdn.net https://*.googleusercontent.com https://t.co/1/i/adsct https://*.googleusercontent.com https://*.gstatic.com https://*.googlesyndication.com https://*.adtrafficquality.google https://www.google.com/ads/measurement/ https://*.google.com/ads/measurement/ https://googleads.g.doubleclick.net https://google.com https://www.google.com https://plaid-merchant-logos.plaid.com https://plaid-counterparty-logos.plaid.com; manifest-src 'self'; media-src 'self' data: blob: https://twitter.com https://x.com https://*.twimg.com https://*.vine.co https://*.pscp.tv https://*.video.pscp.tv https://js.intercomcdn.com https://downloads.intercomcdn.com https://downloads.intercomcdn.eu https://downloads.au.intercomcdn.com https://dhdsnappytv-vh.akamaihd.net https://pdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://mdhdsnappytv-vh.akamaihd.net https://mpdhdsnappytv-vh.akamaihd.net https://mmdhdsnappytv-vh.akamaihd.net https://dwo3ckksxlb0v.cloudfront.net; object-src 'none'; script-src 'self' 'unsafe-inline' https://maps.googleapis.com https://*.twimg.com https://recaptcha.net/recaptcha/ http://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://accounts.google.com/gsi/client https://apis.google.com/js/api.js https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js https://client-api.arkoselabs.com/ https://static.ads-twitter.com https://twitter.com https://www.google-analytics.com https://www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js https://x.com https://sdn.payments-dev.x.com/assets/loader.min.js https://sdn.payments-staging.x.com/assets/loader.min.js https://sdn.payments-prod.x.com/assets/loader.min.js https://sdn.money-dev.x.com/assets/loader.min.js https://sdn.money-staging.x.com/assets/loader.min.js https://sdn.money.x.com/assets/loader.min.js https://sdk.dv.socure.io/latest/device-risk-sdk.js https://cdn.plaid.com/link/v2/stable/link-initialize.js https://payments-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://payments-prod.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-dev.x.com/customer/wasm/xxp-forward-with-sdk.js https://money-staging.x.com/customer/wasm/xxp-forward-with-sdk.js https://money.x.com/customer/wasm/xxp-forward-with-sdk.js https://js.stripe.com https://*.js.stripe.com https://cdn.getpinwheel.com/pinwheel-v3.1.0.js https://securepubads.g.doubleclick.net https://www.googletagservices.com https://*.googletagservices.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.googleadservices.com https://ads.google.com https://tpc.googlesyndication.com https://*.tpc.googlesyndication.com https://www.google.com https://googleads.g.doubleclick.net https://app.intercom.io https://widget.intercom.io https://js.intercomcdn.com   'wasm-unsafe-eval'  'nonce-ZTcyNWRhYTEtZTBlNC00YjUzLTkwMmItMTVkMzFkZmRhOTAz'; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style https://*.twimg.com; worker-src 'self' blob:; report-uri https://x.com/i/csp_report?a=O5RXE%3D%3D%3D&ro=false\"\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "3e1ff7ab-c577-4234-974f-ab2ef0e6fffa",
+          "title": "Missing Referrer-Policy Header",
+          "severity": "Low",
+          "description": "The Referrer-Policy header is missing. Controls referrer information",
+          "short_description": "The Referrer-Policy header is missing. Controls referrer information",
+          "remediation": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+          "countermeasures": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "32d2e159-6541-4171-8683-028fd995f4ad",
+          "title": "Missing Permissions-Policy Header",
+          "severity": "Medium",
+          "description": "The Permissions-Policy header is missing. Controls browser features",
+          "short_description": "The Permissions-Policy header is missing. Controls browser features",
+          "remediation": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+          "countermeasures": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "60fe65d0-2fa8-461d-9b13-ed2e037aea6e",
+          "title": "Misconfigured Cross-Origin-Opener-Policy Header",
+          "severity": "Medium",
+          "description": "The Cross-Origin-Opener-Policy header is present but may not be optimally configured. Helps isolate browsing context (COOP)",
+          "short_description": "The Cross-Origin-Opener-Policy header is present but may not be optimally configured. Helps isolate browsing context (COOP)",
+          "remediation": "Update the Cross-Origin-Opener-Policy header to: same-origin",
+          "countermeasures": "Update the Cross-Origin-Opener-Policy header to: same-origin",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": \"unsafe-none\"\n}",
+            "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": \"unsafe-none\"\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "df3512f5-ce53-41cb-bc3d-3b2374b0985a",
+          "title": "Misconfigured Cross-Origin-Embedder-Policy Header",
+          "severity": "Medium",
+          "description": "The Cross-Origin-Embedder-Policy header is present but may not be optimally configured. Requires cross-origin resources to grant permission (COEP)",
+          "short_description": "The Cross-Origin-Embedder-Policy header is present but may not be optimally configured. Requires cross-origin resources to grant permission ",
+          "remediation": "Update the Cross-Origin-Embedder-Policy header to: require-corp",
+          "countermeasures": "Update the Cross-Origin-Embedder-Policy header to: require-corp",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": \"unsafe-none\"\n}",
+            "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": \"unsafe-none\"\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "23b4a782-7b7b-40e9-9df4-c82b90ef9e08",
+          "title": "Missing Cross-Origin-Resource-Policy Header",
+          "severity": "Low",
+          "description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+          "short_description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+          "remediation": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+          "countermeasures": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "0dbcc0de-d60a-4b47-a6f0-380ada46c54e",
+          "title": "Missing X-Permitted-Cross-Domain-Policies Header",
+          "severity": "Low",
+          "description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+          "short_description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+          "remediation": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+          "countermeasures": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}",
+            "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}"
+          ],
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:55:32.840696",
+      "execution_time": 0.5428087711334229,
+      "end_time": "2025-08-14T11:55:33.383162"
+    },
+    "full_scan_20250814_115106_security_misconfiguration_scanner_706387": {
+      "name": "security_misconfiguration_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "a9d6d5c9-0ded-4f6d-8d8c-27294b1a08f6",
+          "title": "Missing Security Header: Referrer-Policy",
+          "severity": "Medium",
+          "description": "Referrer-Policy header missing",
+          "short_description": "Referrer-Policy header missing",
+          "remediation": "Implement the Referrer-Policy header to enhance security.",
+          "countermeasures": "Implement the Referrer-Policy header to enhance security.",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"url\": \"https://x.com/\",\n  \"missing_header\": \"Referrer-Policy\"\n}",
+            "{\n  \"url\": \"https://x.com/\",\n  \"missing_header\": \"Referrer-Policy\"\n}"
+          ],
+          "scanner": "security_misconfiguration_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.509672",
+      "execution_time": 0.2138986587524414,
+      "end_time": "2025-08-14T11:55:35.722979"
+    },
+    "full_scan_20250814_115106_securityheadersanalyzer_706965": {
+      "name": "securityheadersanalyzer",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.511219",
+      "execution_time": 0.2462608814239502,
+      "end_time": "2025-08-14T11:55:35.756766"
+    },
+    "full_scan_20250814_115106_securitymisconfiguration_707590": {
+      "name": "securitymisconfiguration",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.512972",
+      "execution_time": 0.2926452159881592,
+      "end_time": "2025-08-14T11:55:35.804687"
+    },
+    "full_scan_20250814_115106_sensitive_data_exposure_scanner_708241": {
+      "name": "sensitive_data_exposure_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "48dabe65-cd0c-4111-9118-a2f48c172867",
+          "title": "Sensitive Data Exposure",
+          "severity": "High",
+          "description": "Potential Credit Card exposure detected in the response.",
+          "short_description": "Potential Credit Card exposure detected in the response.",
+          "remediation": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+          "countermeasures": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A04:2021 - Insecure Design",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1739*****0000\",\n  \"context\": \"s_at_msec\\\":{\\\"value\\\":1739246400000},\\\"subscriptions_mar\"\n}",
+            "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1739*****0000\",\n  \"context\": \"s_at_msec\\\":{\\\"value\\\":1739246400000},\\\"subscriptions_mar\"\n}",
+            "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1739*****0000\",\n  \"context\": \"s_at_msec\\\":{\\\"value\\\":1739246400000},\\\"subscriptions_mar\"\n}",
+            "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1755*****7290\",\n  \"context\": \"\\\"msw\\\"],\\\"serverDate\\\":1755172517290,\\\"cookies\\\":{\\\"version\"\n}",
+            "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1661*****6366\",\n  \"context\": \"ookies\\\":{\\\"version\\\":\\\"1661819456366\\\",\\\"fetchedTime\\\":1661\"\n}",
+            "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1661*****8705\",\n  \"context\": \"6366\\\",\\\"fetchedTime\\\":1661971138705,\\\"categories\\\":{\\\"2\\\":[\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-3271\",\n  \"context\": \"pp\\\" content=\\\"app-id=333903271\\\"/><meta name=\\\"apple\"\n}"
+          ],
+          "scanner": "sensitive_data_exposure_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "43105217-7e85-4103-bf4c-b0d4fcf1ef58",
+          "title": "Information Disclosure",
+          "severity": "Medium",
+          "description": "Server is revealing Server version information in response headers.",
+          "short_description": "Server is revealing Server version information in response headers.",
+          "remediation": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+          "countermeasures": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+          "location": "https://x.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A04:2021 - Insecure Design",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"server\",\n  \"value\": \"cloudflare tsa_p\"\n}",
+            "{\n  \"header\": \"server\",\n  \"value\": \"cloudflare tsa_p\"\n}",
+            "{\n  \"header\": \"x-powered-by\",\n  \"value\": \"Express\"\n}"
+          ],
+          "scanner": "sensitive_data_exposure_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.514340",
+      "execution_time": 0.3327062129974365,
+      "end_time": "2025-08-14T11:55:35.846399"
+    },
+    "full_scan_20250814_115106_sensitivedataexposure_708739": {
+      "name": "sensitivedataexposure",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.515715",
+      "execution_time": 0.3779489994049072,
+      "end_time": "2025-08-14T11:55:35.893177"
+    },
+    "full_scan_20250814_115106_server_side_request_forgery_scanner_709354": {
+      "name": "server_side_request_forgery_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.936649"
+    },
+    "full_scan_20250814_115106_serversiderequestforgery_719072": {
+      "name": "serversiderequestforgery",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.937937"
+    },
+    "full_scan_20250814_115106_sql_injection_scanner_719822": {
+      "name": "sql_injection_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:55:32.846489"
+    },
+    "full_scan_20250814_115106_sqlinjection_720399": {
+      "name": "sqlinjection",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:55:32.847509"
+    },
+    "full_scan_20250814_115106_ssl_tls_configuration_audit_scanner_725528": {
+      "name": "ssl_tls_configuration_audit_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.939098",
+      "execution_time": 0.1909468173980713,
+      "end_time": "2025-08-14T11:55:36.129635"
+    },
+    "full_scan_20250814_115106_ssltlsconfigurationaudit_726441": {
+      "name": "ssltlsconfigurationaudit",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.940396",
+      "execution_time": 0.21712207794189453,
+      "end_time": "2025-08-14T11:55:36.157191"
+    },
+    "full_scan_20250814_115106_subdomain_dns_enumeration_scanner_727135": {
+      "name": "subdomain_dns_enumeration_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.941775"
+    },
+    "full_scan_20250814_115106_subdomaindnsenumeration_727683": {
+      "name": "subdomaindnsenumeration",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.942910"
+    },
+    "full_scan_20250814_115106_technology_fingerprint_scanner_728393": {
+      "name": "technology_fingerprint_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_115106_technology_vulnerabilities_scanner_732879": {
+      "name": "technology_vulnerabilities_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_115106_technologyfingerprint_733505": {
+      "name": "technologyfingerprint",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_115106_technologyvulnerabilities_734004": {
+      "name": "technologyvulnerabilities",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_115106_using_components_with_known_vulnerabilities_scanner_734434": {
+      "name": "using_components_with_known_vulnerabilities_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:35.944550"
+    },
+    "full_scan_20250814_115106_usingcomponentswithknownvulnerabilities_734942": {
+      "name": "usingcomponentswithknownvulnerabilities",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:36.368866"
+    },
+    "full_scan_20250814_115106_xss_735558": {
+      "name": "xss",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:55:32.848654"
+    },
+    "full_scan_20250814_115106_xss_scanner_736197": {
+      "name": "xss_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:55:32.849722"
+    },
+    "full_scan_20250814_115106_xxe_736798": {
+      "name": "xxe",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:36.370433",
+      "execution_time": 0.02729344367980957,
+      "end_time": "2025-08-14T11:55:36.397039"
+    },
+    "full_scan_20250814_115106_xxe_scanner_737427": {
+      "name": "xxe_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:55:36.372046",
+      "execution_time": 0.05472540855407715,
+      "end_time": "2025-08-14T11:55:36.426159"
+    }
+  },
+  "progress": 41.66666666666667,
+  "total_modules": 72,
+  "completed_modules": 30,
+  "deadline": 1755175866.641851,
+  "performance_metrics": {
+    "http_cache_stats": {},
+    "scanner_timing": {
+      "api_fuzzing_scanner": 0.1608138084411621,
+      "csrf": 0.40583300590515137,
+      "csrf_scanner": 0.42439961433410645,
+      "csrf_token_checker": 0.4692850112915039,
+      "csrftokenchecker": 0.4968225955963135,
+      "security_headers_analyzer": 0.5428087711334229,
+      "automated_cve_lookup_scanner": 0.30200672149658203,
+      "automatedcvelookup": 0.3229243755340576,
+      "clickjacking_screenshotter": 0.3712491989135742,
+      "clickjackingscreenshotter": 0.4252910614013672,
+      "insecure_deserialization_scanner": 0.4734621047973633,
+      "insecuredeserialization": 0.5087940692901611,
+      "misconfiguration": 0.5448503494262695,
+      "misconfiguration_scanner": 0.5835385322570801,
+      "apifuzzing": 0.7003889083862305,
+      "oob": 0.8272337913513184,
+      "security_misconfiguration_scanner": 0.2138986587524414,
+      "securityheadersanalyzer": 0.2462608814239502,
+      "securitymisconfiguration": 0.2926452159881592,
+      "sensitive_data_exposure_scanner": 0.3327062129974365,
+      "sensitivedataexposure": 0.3779489994049072,
+      "oob_scanner": 0.4533398151397705,
+      "ssl_tls_configuration_audit_scanner": 0.1909468173980713,
+      "ssltlsconfigurationaudit": 0.21712207794189453,
+      "xxe": 0.02729344367980957,
+      "xxe_scanner": 0.05472540855407715
+    },
+    "resource_usage": {}
+  },
+  "timing_data": {
+    "start_time": 1755172266.641858,
+    "estimated_completion": 1755172914.1204293,
+    "scanner_estimates": {},
+    "last_progress_update": 1755172536.424596
+  },
+  "modules": [
+    {
+      "name": "api_fuzzing_scanner",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "api_security_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "apifuzzing",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "apisecurity",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "authentication",
+      "status": "running",
+      "error": null
+    },
+    {
+      "name": "authentication_brute_force_credential_stuffing_scanner",
+      "status": "running",
+      "error": null
+    },
+    {
+      "name": "authentication_brute_force_scanner",
+      "status": "running",
+      "error": null
+    },
+    {
+      "name": "authentication_bypass_scanner",
+      "status": "running",
+      "error": null
+    },
+    {
+      "name": "authentication_scanner",
+      "status": "running",
+      "error": null
+    },
+    {
+      "name": "authenticationbruteforce",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "authenticationbruteforcecredentialstuffing",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "authenticationbypass",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "automated_cve_lookup_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "automatedcvelookup",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "broken_access_control_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "broken_authentication_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "brokenaccesscontrol",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "brokenauthentication",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "clickjacking_screenshotter",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "clickjackingscreenshotter",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "csrf",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "csrf_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "csrf_token_checker",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "csrftokenchecker",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "directory_file_enumeration_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "directoryfileenumeration",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "insecure_deserialization_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "insecure_design_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "insecuredeserialization",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "insecuredesign",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "insufficient_logging_and_monitoring_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "insufficientloggingandmonitoring",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "js",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "js_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "misconfiguration",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "misconfiguration_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "oob",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "oob_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "open_redirect_finder",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "open_redirect_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "openredirect",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "openredirectfinder",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "path_traversal_tester",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "pathtraversaltester",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "rate_limiting_bruteforce_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "ratelimitingbruteforce",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "robotstxtsitemapcrawl",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "security_headers_analyzer",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "security_misconfiguration_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "securityheadersanalyzer",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "securitymisconfiguration",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "sensitive_data_exposure_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "sensitivedataexposure",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "server_side_request_forgery_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "serversiderequestforgery",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "sql_injection_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "sqlinjection",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "ssl_tls_configuration_audit_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "ssltlsconfigurationaudit",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "subdomain_dns_enumeration_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "subdomaindnsenumeration",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "technology_fingerprint_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "technology_vulnerabilities_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "technologyfingerprint",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "technologyvulnerabilities",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "using_components_with_known_vulnerabilities_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "usingcomponentswithknownvulnerabilities",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "xss",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "xss_scanner",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "xxe",
+      "status": "queued",
+      "error": null
+    },
+    {
+      "name": "xxe_scanner",
+      "status": "queued",
+      "error": null
+    }
+  ],
+  "overview": {
+    "technologyInfo": [],
+    "headersSummary": {
+      "issues": 0
+    },
+    "tlsSummary": {
+      "issues": 0
+    }
+  }
+}

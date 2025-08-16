@@ -1,0 +1,788 @@
+{
+  "id": "full_scan_20250814_110513",
+  "target": "http://testphp.vulnweb.com/",
+  "type": "full_scan",
+  "status": "running",
+  "start_time": "2025-08-14T11:05:13.183183",
+  "results": [
+    {
+      "id": "8bd00843-c76f-413a-8830-cc2ae31d979b",
+      "title": "SSL/TLS Connection Error",
+      "severity": "Medium",
+      "description": "Could not establish SSL/TLS connection to testphp.vulnweb.com:443: timed out. This might indicate an issue with SSL/TLS setup or an unreachable host.",
+      "short_description": "Could not establish SSL/TLS connection to testphp.vulnweb.com:443: timed out. This might indicate an issue with SSL/TLS setup or an unreacha",
+      "remediation": "Ensure SSL/TLS is properly configured on the server and the port is open.",
+      "countermeasures": "Ensure SSL/TLS is properly configured on the server and the port is open.",
+      "location": "http://testphp.vulnweb.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"details\": \"timed out\"\n}",
+        "{\n  \"details\": \"timed out\"\n}"
+      ],
+      "scanner": "ssl_tls_configuration_audit_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    }
+  ],
+  "errors": [],
+  "sub_scans": {
+    "full_scan_20250814_110513_api_fuzzing_scanner_183218": {
+      "name": "api_fuzzing_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.063491",
+      "execution_time": 20.648261785507202,
+      "end_time": "2025-08-14T11:17:29.711516"
+    },
+    "full_scan_20250814_110513_api_security_scanner_183700": {
+      "name": "api_security_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.063748",
+      "end_time": "2025-08-14T11:17:29.856628"
+    },
+    "full_scan_20250814_110513_apifuzzing_184008": {
+      "name": "apifuzzing",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.063965",
+      "execution_time": 20.662307262420654,
+      "end_time": "2025-08-14T11:17:29.726158"
+    },
+    "full_scan_20250814_110513_apisecurity_184391": {
+      "name": "apisecurity",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.064180",
+      "end_time": "2025-08-14T11:17:29.860719"
+    },
+    "full_scan_20250814_110513_authentication_184626": {
+      "name": "authentication",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.130265",
+      "end_time": "2025-08-14T11:10:28.805322"
+    },
+    "full_scan_20250814_110513_authentication_brute_force_credential_stuffing_scanner_184893": {
+      "name": "authentication_brute_force_credential_stuffing_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.130486",
+      "end_time": "2025-08-14T11:10:28.806032"
+    },
+    "full_scan_20250814_110513_authentication_brute_force_scanner_185135": {
+      "name": "authentication_brute_force_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.130697",
+      "end_time": "2025-08-14T11:10:28.807059"
+    },
+    "full_scan_20250814_110513_authentication_bypass_scanner_185390": {
+      "name": "authentication_bypass_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.130951",
+      "end_time": "2025-08-14T11:10:28.807871"
+    },
+    "full_scan_20250814_110513_authentication_scanner_185617": {
+      "name": "authentication_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.131460",
+      "end_time": "2025-08-14T11:10:28.808637"
+    },
+    "full_scan_20250814_110513_authenticationbruteforce_185791": {
+      "name": "authenticationbruteforce",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.131901",
+      "end_time": "2025-08-14T11:10:28.809534"
+    },
+    "full_scan_20250814_110513_authenticationbruteforcecredentialstuffing_185979": {
+      "name": "authenticationbruteforcecredentialstuffing",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.235294",
+      "end_time": "2025-08-14T11:10:28.898579"
+    },
+    "full_scan_20250814_110513_authenticationbypass_186146": {
+      "name": "authenticationbypass",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.235611",
+      "end_time": "2025-08-14T11:10:28.899467"
+    },
+    "full_scan_20250814_110513_automated_cve_lookup_scanner_186340": {
+      "name": "automated_cve_lookup_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.064448",
+      "end_time": "2025-08-14T11:17:29.862144"
+    },
+    "full_scan_20250814_110513_automatedcvelookup_186541": {
+      "name": "automatedcvelookup",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.064712",
+      "end_time": "2025-08-14T11:17:29.863316"
+    },
+    "full_scan_20250814_110513_broken_access_control_scanner_186747": {
+      "name": "broken_access_control_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.064957",
+      "end_time": "2025-08-14T11:17:29.864672"
+    },
+    "full_scan_20250814_110513_broken_authentication_scanner_186985": {
+      "name": "broken_authentication_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.235871",
+      "end_time": "2025-08-14T11:10:28.900406"
+    },
+    "full_scan_20250814_110513_brokenaccesscontrol_187181": {
+      "name": "brokenaccesscontrol",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.065224",
+      "end_time": "2025-08-14T11:17:29.865769"
+    },
+    "full_scan_20250814_110513_brokenauthentication_187403": {
+      "name": "brokenauthentication",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.236572",
+      "end_time": "2025-08-14T11:10:28.902726"
+    },
+    "full_scan_20250814_110513_clickjacking_screenshotter_187591": {
+      "name": "clickjacking_screenshotter",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.065520",
+      "end_time": "2025-08-14T11:17:29.866937"
+    },
+    "full_scan_20250814_110513_clickjackingscreenshotter_187774": {
+      "name": "clickjackingscreenshotter",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.065813",
+      "end_time": "2025-08-14T11:17:29.868069"
+    },
+    "full_scan_20250814_110513_csrf_187966": {
+      "name": "csrf",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.237121",
+      "end_time": "2025-08-14T11:10:28.911844"
+    },
+    "full_scan_20250814_110513_csrf_scanner_188160": {
+      "name": "csrf_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.237524",
+      "end_time": "2025-08-14T11:10:28.912675"
+    },
+    "full_scan_20250814_110513_csrf_token_checker_188377": {
+      "name": "csrf_token_checker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.237806",
+      "end_time": "2025-08-14T11:10:28.913701"
+    },
+    "full_scan_20250814_110513_csrftokenchecker_188829": {
+      "name": "csrftokenchecker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.238363",
+      "end_time": "2025-08-14T11:10:28.914539"
+    },
+    "full_scan_20250814_110513_directory_file_enumeration_scanner_189038": {
+      "name": "directory_file_enumeration_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.066072",
+      "end_time": "2025-08-14T11:17:29.869637"
+    },
+    "full_scan_20250814_110513_directoryfileenumeration_189278": {
+      "name": "directoryfileenumeration",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.066353",
+      "end_time": "2025-08-14T11:17:29.878890"
+    },
+    "full_scan_20250814_110513_insecure_deserialization_scanner_189506": {
+      "name": "insecure_deserialization_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.066673",
+      "execution_time": 20.555578470230103,
+      "end_time": "2025-08-14T11:17:29.622086"
+    },
+    "full_scan_20250814_110513_insecure_design_scanner_189709": {
+      "name": "insecure_design_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.066980",
+      "end_time": "2025-08-14T11:17:29.889838"
+    },
+    "full_scan_20250814_110513_insecuredeserialization_189913": {
+      "name": "insecuredeserialization",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:09.067270",
+      "execution_time": 20.56553554534912,
+      "end_time": "2025-08-14T11:17:29.632624"
+    },
+    "full_scan_20250814_110513_insecuredesign_190114": {
+      "name": "insecuredesign",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.668241",
+      "end_time": "2025-08-14T11:17:53.794283"
+    },
+    "full_scan_20250814_110513_insufficient_logging_and_monitoring_scanner_190298": {
+      "name": "insufficient_logging_and_monitoring_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.668794",
+      "end_time": "2025-08-14T11:17:53.798668"
+    },
+    "full_scan_20250814_110513_insufficientloggingandmonitoring_190486": {
+      "name": "insufficientloggingandmonitoring",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.669263",
+      "end_time": "2025-08-14T11:17:53.808707"
+    },
+    "full_scan_20250814_110513_js_190710": {
+      "name": "js",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.669731"
+    },
+    "full_scan_20250814_110513_js_scanner_190890": {
+      "name": "js_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.670148"
+    },
+    "full_scan_20250814_110513_misconfiguration_191092": {
+      "name": "misconfiguration",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.670600"
+    },
+    "full_scan_20250814_110513_misconfiguration_scanner_191284": {
+      "name": "misconfiguration_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.671295"
+    },
+    "full_scan_20250814_110513_oob_191479": {
+      "name": "oob",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.768400"
+    },
+    "full_scan_20250814_110513_oob_scanner_191679": {
+      "name": "oob_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.769010"
+    },
+    "full_scan_20250814_110513_open_redirect_finder_191868": {
+      "name": "open_redirect_finder",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.769476"
+    },
+    "full_scan_20250814_110513_open_redirect_scanner_192033": {
+      "name": "open_redirect_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.770335"
+    },
+    "full_scan_20250814_110513_openredirect_192292": {
+      "name": "openredirect",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.770928"
+    },
+    "full_scan_20250814_110513_openredirectfinder_192513": {
+      "name": "openredirectfinder",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.771732"
+    },
+    "full_scan_20250814_110513_path_traversal_tester_192783": {
+      "name": "path_traversal_tester",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.772578"
+    },
+    "full_scan_20250814_110513_pathtraversaltester_192994": {
+      "name": "pathtraversaltester",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.773318"
+    },
+    "full_scan_20250814_110513_rate_limiting_bruteforce_scanner_193201": {
+      "name": "rate_limiting_bruteforce_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.773894"
+    },
+    "full_scan_20250814_110513_ratelimitingbruteforce_193432": {
+      "name": "ratelimitingbruteforce",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.774692"
+    },
+    "full_scan_20250814_110513_robots_txt_sitemap_crawl_scanner_193705": {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.775180"
+    },
+    "full_scan_20250814_110513_robotstxtsitemapcrawl_193933": {
+      "name": "robotstxtsitemapcrawl",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.776144"
+    },
+    "full_scan_20250814_110513_security_headers_analyzer_194149": {
+      "name": "security_headers_analyzer",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:06:02.238634",
+      "end_time": "2025-08-14T11:10:28.915385"
+    },
+    "full_scan_20250814_110513_security_misconfiguration_scanner_194341": {
+      "name": "security_misconfiguration_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.776628"
+    },
+    "full_scan_20250814_110513_securityheadersanalyzer_194558": {
+      "name": "securityheadersanalyzer",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.777264"
+    },
+    "full_scan_20250814_110513_securitymisconfiguration_194780": {
+      "name": "securitymisconfiguration",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.777875"
+    },
+    "full_scan_20250814_110513_sensitive_data_exposure_scanner_195003": {
+      "name": "sensitive_data_exposure_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.778470"
+    },
+    "full_scan_20250814_110513_sensitivedataexposure_195234": {
+      "name": "sensitivedataexposure",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.779014"
+    },
+    "full_scan_20250814_110513_server_side_request_forgery_scanner_195479": {
+      "name": "server_side_request_forgery_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.779595"
+    },
+    "full_scan_20250814_110513_serversiderequestforgery_195721": {
+      "name": "serversiderequestforgery",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.880081"
+    },
+    "full_scan_20250814_110513_sql_injection_scanner_195967": {
+      "name": "sql_injection_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:10:28.882657",
+      "end_time": "2025-08-14T11:12:42.535239"
+    },
+    "full_scan_20250814_110513_sqlinjection_196166": {
+      "name": "sqlinjection",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:10:28.882916",
+      "end_time": "2025-08-14T11:12:42.536427"
+    },
+    "full_scan_20250814_110513_ssl_tls_configuration_audit_scanner_196760": {
+      "name": "ssl_tls_configuration_audit_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "8bd00843-c76f-413a-8830-cc2ae31d979b",
+          "title": "SSL/TLS Connection Error",
+          "severity": "Medium",
+          "description": "Could not establish SSL/TLS connection to testphp.vulnweb.com:443: timed out. This might indicate an issue with SSL/TLS setup or an unreachable host.",
+          "short_description": "Could not establish SSL/TLS connection to testphp.vulnweb.com:443: timed out. This might indicate an issue with SSL/TLS setup or an unreacha",
+          "remediation": "Ensure SSL/TLS is properly configured on the server and the port is open.",
+          "countermeasures": "Ensure SSL/TLS is properly configured on the server and the port is open.",
+          "location": "http://testphp.vulnweb.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"details\": \"timed out\"\n}",
+            "{\n  \"details\": \"timed out\"\n}"
+          ],
+          "scanner": "ssl_tls_configuration_audit_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.880629",
+      "execution_time": 23.47701930999756,
+      "end_time": "2025-08-14T11:17:53.357368"
+    },
+    "full_scan_20250814_110513_ssltlsconfigurationaudit_198237": {
+      "name": "ssltlsconfigurationaudit",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.881349",
+      "execution_time": 23.486071586608887,
+      "end_time": "2025-08-14T11:17:53.366988"
+    },
+    "full_scan_20250814_110513_subdomain_dns_enumeration_scanner_198648": {
+      "name": "subdomain_dns_enumeration_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.881964",
+      "execution_time": 23.927775621414185,
+      "end_time": "2025-08-14T11:17:53.809406"
+    },
+    "full_scan_20250814_110513_subdomaindnsenumeration_198938": {
+      "name": "subdomaindnsenumeration",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.882457",
+      "execution_time": 23.944316148757935,
+      "end_time": "2025-08-14T11:17:53.826535"
+    },
+    "full_scan_20250814_110513_technology_fingerprint_scanner_199323": {
+      "name": "technology_fingerprint_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_110513_technology_vulnerabilities_scanner_199599": {
+      "name": "technology_vulnerabilities_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_110513_technologyfingerprint_199762": {
+      "name": "technologyfingerprint",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_110513_technologyvulnerabilities_199964": {
+      "name": "technologyvulnerabilities",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_110513_using_components_with_known_vulnerabilities_scanner_200159": {
+      "name": "using_components_with_known_vulnerabilities_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.882915"
+    },
+    "full_scan_20250814_110513_usingcomponentswithknownvulnerabilities_200354": {
+      "name": "usingcomponentswithknownvulnerabilities",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.883342"
+    },
+    "full_scan_20250814_110513_xss_200545": {
+      "name": "xss",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:10:28.883185",
+      "end_time": "2025-08-14T11:12:42.537461"
+    },
+    "full_scan_20250814_110513_xss_scanner_200731": {
+      "name": "xss_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:10:28.883399",
+      "end_time": "2025-08-14T11:12:42.540694"
+    },
+    "full_scan_20250814_110513_xxe_200918": {
+      "name": "xxe",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.883740",
+      "execution_time": 23.851266384124756,
+      "end_time": "2025-08-14T11:17:53.734844"
+    },
+    "full_scan_20250814_110513_xxe_scanner_201133": {
+      "name": "xxe_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:17:29.884142",
+      "execution_time": 23.878366470336914,
+      "end_time": "2025-08-14T11:17:53.762267"
+    }
+  },
+  "progress": 58.333333333333336,
+  "total_modules": 72,
+  "completed_modules": 42,
+  "deadline": 1755173113.183191,
+  "performance_metrics": {
+    "http_cache_stats": {},
+    "scanner_timing": {
+      "insecure_deserialization_scanner": 20.555578470230103,
+      "insecuredeserialization": 20.56553554534912,
+      "api_fuzzing_scanner": 20.648261785507202,
+      "apifuzzing": 20.662307262420654,
+      "ssl_tls_configuration_audit_scanner": 23.47701930999756,
+      "ssltlsconfigurationaudit": 23.486071586608887,
+      "xxe": 23.851266384124756,
+      "xxe_scanner": 23.878366470336914,
+      "subdomain_dns_enumeration_scanner": 23.927775621414185,
+      "subdomaindnsenumeration": 23.944316148757935
+    },
+    "resource_usage": {}
+  },
+  "timing_data": {
+    "start_time": 1755169513.183195,
+    "estimated_completion": 1755170817.1419103,
+    "scanner_estimates": {},
+    "last_progress_update": 1755170273.825779
+  }
+}

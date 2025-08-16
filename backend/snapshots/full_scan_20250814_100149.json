@@ -1,0 +1,552 @@
+{
+  "id": "full_scan_20250814_100149",
+  "target": "http://testphp.vulnweb.com/",
+  "type": "full_scan",
+  "status": "running",
+  "start_time": "2025-08-14T10:01:49.784515",
+  "results": [],
+  "errors": [],
+  "sub_scans": {
+    "full_scan_20250814_100149_api_fuzzing_scanner_784535": {
+      "name": "api_fuzzing_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:01:49.831455",
+      "execution_time": 0.19158697128295898,
+      "end_time": "2025-08-14T10:01:50.021399"
+    },
+    "full_scan_20250814_100149_api_security_scanner_785185": {
+      "name": "api_security_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:01:49.840844"
+    },
+    "full_scan_20250814_100149_apifuzzing_785954": {
+      "name": "apifuzzing",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:01:49.842362",
+      "execution_time": 0.20349693298339844,
+      "end_time": "2025-08-14T10:01:50.045545"
+    },
+    "full_scan_20250814_100149_apisecurity_786452": {
+      "name": "apisecurity",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:01:49.843845"
+    },
+    "full_scan_20250814_100149_authentication_786996": {
+      "name": "authentication",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:01:49.844911"
+    },
+    "full_scan_20250814_100149_authentication_brute_force_credential_stuffing_scanner_787525": {
+      "name": "authentication_brute_force_credential_stuffing_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:01:49.845844"
+    },
+    "full_scan_20250814_100149_authentication_brute_force_scanner_788126": {
+      "name": "authentication_brute_force_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:01:49.846768"
+    },
+    "full_scan_20250814_100149_authentication_bypass_scanner_788588": {
+      "name": "authentication_bypass_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:01:49.847859"
+    },
+    "full_scan_20250814_100149_authentication_scanner_789068": {
+      "name": "authentication_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:01:49.848914"
+    },
+    "full_scan_20250814_100149_authenticationbruteforce_789520": {
+      "name": "authenticationbruteforce",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:01:49.855985"
+    },
+    "full_scan_20250814_100149_authenticationbruteforcecredentialstuffing_790079": {
+      "name": "authenticationbruteforcecredentialstuffing",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:01:49.858425"
+    },
+    "full_scan_20250814_100149_authenticationbypass_790636": {
+      "name": "authenticationbypass",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T10:01:49.859767"
+    },
+    "full_scan_20250814_100149_automated_cve_lookup_scanner_791948": {
+      "name": "automated_cve_lookup_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:01:49.860930"
+    },
+    "full_scan_20250814_100149_automatedcvelookup_792592": {
+      "name": "automatedcvelookup",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:01:49.866545"
+    },
+    "full_scan_20250814_100149_broken_access_control_scanner_793235": {
+      "name": "broken_access_control_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T10:01:49.870446"
+    },
+    "full_scan_20250814_100149_broken_authentication_scanner_793822": {
+      "name": "broken_authentication_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL"
+    },
+    "full_scan_20250814_100149_brokenaccesscontrol_794587": {
+      "name": "brokenaccesscontrol",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_brokenauthentication_795377": {
+      "name": "brokenauthentication",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL"
+    },
+    "full_scan_20250814_100149_clickjacking_screenshotter_795705": {
+      "name": "clickjacking_screenshotter",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_clickjackingscreenshotter_796115": {
+      "name": "clickjackingscreenshotter",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_csrf_796501": {
+      "name": "csrf",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL"
+    },
+    "full_scan_20250814_100149_csrf_scanner_796811": {
+      "name": "csrf_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL"
+    },
+    "full_scan_20250814_100149_csrf_token_checker_797231": {
+      "name": "csrf_token_checker",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL"
+    },
+    "full_scan_20250814_100149_csrftokenchecker_797586": {
+      "name": "csrftokenchecker",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL"
+    },
+    "full_scan_20250814_100149_directory_file_enumeration_scanner_797989": {
+      "name": "directory_file_enumeration_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_directoryfileenumeration_799561": {
+      "name": "directoryfileenumeration",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_insecure_deserialization_scanner_799966": {
+      "name": "insecure_deserialization_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_insecure_design_scanner_800699": {
+      "name": "insecure_design_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_insecuredeserialization_801556": {
+      "name": "insecuredeserialization",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_insecuredesign_802666": {
+      "name": "insecuredesign",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_insufficient_logging_and_monitoring_scanner_803094": {
+      "name": "insufficient_logging_and_monitoring_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_insufficientloggingandmonitoring_803769": {
+      "name": "insufficientloggingandmonitoring",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_js_804534": {
+      "name": "js",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_js_scanner_804895": {
+      "name": "js_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_misconfiguration_805655": {
+      "name": "misconfiguration",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_misconfiguration_scanner_806270": {
+      "name": "misconfiguration_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_oob_806663": {
+      "name": "oob",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_oob_scanner_807088": {
+      "name": "oob_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_open_redirect_finder_807494": {
+      "name": "open_redirect_finder",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_open_redirect_scanner_807931": {
+      "name": "open_redirect_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_openredirect_808243": {
+      "name": "openredirect",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_openredirectfinder_808579": {
+      "name": "openredirectfinder",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_path_traversal_tester_808953": {
+      "name": "path_traversal_tester",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_pathtraversaltester_809369": {
+      "name": "pathtraversaltester",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_rate_limiting_bruteforce_scanner_809825": {
+      "name": "rate_limiting_bruteforce_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_ratelimitingbruteforce_810176": {
+      "name": "ratelimitingbruteforce",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_robots_txt_sitemap_crawl_scanner_810532": {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_robotstxtsitemapcrawl_810953": {
+      "name": "robotstxtsitemapcrawl",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_security_headers_analyzer_811317": {
+      "name": "security_headers_analyzer",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL"
+    },
+    "full_scan_20250814_100149_security_misconfiguration_scanner_811723": {
+      "name": "security_misconfiguration_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_securityheadersanalyzer_812066": {
+      "name": "securityheadersanalyzer",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_securitymisconfiguration_812474": {
+      "name": "securitymisconfiguration",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_sensitive_data_exposure_scanner_812919": {
+      "name": "sensitive_data_exposure_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_sensitivedataexposure_814716": {
+      "name": "sensitivedataexposure",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_server_side_request_forgery_scanner_816883": {
+      "name": "server_side_request_forgery_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_serversiderequestforgery_818112": {
+      "name": "serversiderequestforgery",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_sql_injection_scanner_818728": {
+      "name": "sql_injection_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH"
+    },
+    "full_scan_20250814_100149_sqlinjection_821624": {
+      "name": "sqlinjection",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH"
+    },
+    "full_scan_20250814_100149_ssl_tls_configuration_audit_scanner_822077": {
+      "name": "ssl_tls_configuration_audit_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_ssltlsconfigurationaudit_822495": {
+      "name": "ssltlsconfigurationaudit",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_subdomain_dns_enumeration_scanner_822932": {
+      "name": "subdomain_dns_enumeration_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_subdomaindnsenumeration_823326": {
+      "name": "subdomaindnsenumeration",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_technology_fingerprint_scanner_823791": {
+      "name": "technology_fingerprint_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_100149_technology_vulnerabilities_scanner_824209": {
+      "name": "technology_vulnerabilities_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_100149_technologyfingerprint_824627": {
+      "name": "technologyfingerprint",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_100149_technologyvulnerabilities_825051": {
+      "name": "technologyvulnerabilities",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_100149_using_components_with_known_vulnerabilities_scanner_825373": {
+      "name": "using_components_with_known_vulnerabilities_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_usingcomponentswithknownvulnerabilities_825738": {
+      "name": "usingcomponentswithknownvulnerabilities",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_xss_826088": {
+      "name": "xss",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH"
+    },
+    "full_scan_20250814_100149_xss_scanner_826445": {
+      "name": "xss_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH"
+    },
+    "full_scan_20250814_100149_xxe_826750": {
+      "name": "xxe",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_100149_xxe_scanner_827108": {
+      "name": "xxe_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    }
+  },
+  "progress": 1.3888888888888888,
+  "total_modules": 72,
+  "completed_modules": 1,
+  "deadline": 1755169309.784523,
+  "performance_metrics": {
+    "http_cache_stats": {},
+    "scanner_timing": {
+      "api_fuzzing_scanner": 0.19158697128295898,
+      "apifuzzing": 0.20349693298339844
+    },
+    "resource_usage": {}
+  },
+  "timing_data": {
+    "start_time": 1755165709.784526,
+    "estimated_completion": 1755165723.52963,
+    "scanner_estimates": {},
+    "last_progress_update": 1755165710.043604
+  }
+}

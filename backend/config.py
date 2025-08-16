@@ -75,7 +75,7 @@ class Settings(BaseSettings):
     ]
     
     # Scanner Settings
-    MAX_CONCURRENT_SCANS: int = 5
+    MAX_CONCURRENT_SCANS: int = 50
     SCAN_TIMEOUT: int = 3600  # 1 hour
     MAX_RETRIES: int = 3
     
@@ -83,6 +83,7 @@ class Settings(BaseSettings):
     MAX_CPU_PERCENT: int = 80
     MAX_MEMORY_MB: int = 1024
     MAX_NETWORK_CONNECTIONS: int = 1000
+    PER_HOST_MAX_CONCURRENCY: int = 6
 
     # WebSocket/Realtime Settings
     WS_MAX_REQUESTS_PER_MINUTE: int = 100
@@ -90,7 +91,8 @@ class Settings(BaseSettings):
 
     # Scanner Orchestration Settings
     SCANNER_TIMEOUT_SECONDS: int = 180
-    GLOBAL_SCAN_HARD_CAP_SECONDS: int = 0  # 0 or negative disables global hard cap
+    # Enforce a strict total scan deadline; user requirement is 180s max
+    GLOBAL_SCAN_HARD_CAP_SECONDS: int = 180
 
     # Scanner Registry
     SCANNER_PRUNING_ENABLED: bool = False
@@ -100,7 +102,10 @@ class Settings(BaseSettings):
     HTTP_MAX_RETRIES: int = 2
     HTTP_BACKOFF_BASE_SECONDS: float = 0.2
     HTTP_BACKOFF_MAX_SECONDS: float = 5.0
-    HTTP_PER_HOST_MIN_INTERVAL_MS: int = 50
+    HTTP_PER_HOST_MIN_INTERVAL_MS: int = 5
+    # Optional token-bucket pacing (enabled when >0)
+    HTTP_BUCKET_MAX_TOKENS: int = 0
+    HTTP_BUCKET_REFILL_PER_SEC: float = 0.0
     HTTP_ALLOWED_HOSTS: List[str] = []
     HTTP_BLOCKED_HOSTS: List[str] = []
     HTTP_MAX_RESPONSE_BYTES: int = 0  # 0 disables size limit

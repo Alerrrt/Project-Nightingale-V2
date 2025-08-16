@@ -1,0 +1,1942 @@
+{
+  "id": "full_scan_20250814_114015",
+  "target": "https://chatgpt.com/",
+  "type": "full_scan",
+  "status": "completed",
+  "start_time": "2025-08-14T11:40:15.428556",
+  "results": [
+    {
+      "id": "0cc50dbc-e6a9-472f-a02a-177e3f233d05",
+      "title": "Sensitive Data Exposure",
+      "severity": "High",
+      "description": "Potential Credit Card exposure detected in the response.",
+      "short_description": "Potential Credit Card exposure detected in the response.",
+      "remediation": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+      "countermeasures": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A04:2021 - Insecure Design",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1755*****6100\",\n  \"context\": \"race-time\\\" content=\\\"1755171876100\\\"/><link rel=\\\"icon\\\" \"\n}",
+        "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1755*****6100\",\n  \"context\": \"race-time\\\" content=\\\"1755171876100\\\"/><link rel=\\\"icon\\\" \"\n}",
+        "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1755*****6100\",\n  \"context\": \"745\\\\\\\",\\\\\\\"traceTime\\\\\\\",1755171876100,\\\\\\\"clientBootstrap\\\\\\\"\"\n}",
+        "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1755*****5564\",\n  \"context\": \",\\\\\\\"6.4.1\\\\\\\",\\\\\\\"time\\\\\\\",1755164265564,\\\\\\\"evaluated_keys\\\\\\\",\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0566\",\n  \"context\": \"q0\\\\\\\",\\\\\\\"stableID\\\\\\\",\\\\\\\"108590566\\\\\\\",{\\\\\\\"_28\\\\\\\":77,\\\\\\\"_46\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-3730\",\n  \"context\": \"79,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"156153730\\\\\\\",{\\\\\\\"_28\\\\\\\":80,\\\\\\\"_46\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6048\",\n  \"context\": \"82,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"174366048\\\\\\\",{\\\\\\\"_28\\\\\\\":83,\\\\\\\"_46\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5335\",\n  \"context\": \"8},\\\\\\\"1923022511\\\\\\\",\\\\\\\"212625335\\\\\\\",{\\\\\\\"_28\\\\\\\":88,\\\\\\\"_46\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5747\",\n  \"context\": \"90,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"218915747\\\\\\\",{\\\\\\\"_28\\\\\\\":91,\\\\\\\"_46\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5887\",\n  \"context\": \",\\\\\\\"workspace_id\\\\\\\",\\\\\\\"222095887\\\\\\\",{\\\\\\\"_28\\\\\\\":96,\\\\\\\"_46\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0275\",\n  \"context\": \"98,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"222560275\\\\\\\",{\\\\\\\"_28\\\\\\\":99,\\\\\\\"_46\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2091\",\n  \"context\": \"Tti:100.00:2\\\\\\\",[],\\\\\\\"223382091\\\\\\\",{\\\\\\\"_28\\\\\\\":104,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1851\",\n  \"context\": \"8},\\\\\\\"3765213438\\\\\\\",\\\\\\\"232791851\\\\\\\",{\\\\\\\"_28\\\\\\\":112,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4420\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"749124420\\\\\\\",{\\\\\\\"_52\\\\\\\":121,\\\\\\\"_5\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8514\",\n  \"context\": \":122,\\\\\\\"_56\\\\\\\":123},\\\\\\\"566128514\\\\\\\",\\\\\\\"true\\\\\\\",\\\\\\\"5hCRKi\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7382\",\n  \"context\": \"mdVvHU:100.00:4\\\\\\\",\\\\\\\"294957382\\\\\\\",{\\\\\\\"_28\\\\\\\":124,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2287\",\n  \"context\": \"DXGxt5PaOi2C\\\\\\\",[],\\\\\\\"296452287\\\\\\\",{\\\\\\\"_28\\\\\\\":128,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9697\",\n  \"context\": \"30,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"317829697\\\\\\\",{\\\\\\\"_28\\\\\\\":131,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-3424\",\n  \"context\": \"33,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"369193424\\\\\\\",{\\\\\\\"_28\\\\\\\":134,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0685\",\n  \"context\": \"5TK:100.00:2\\\\\\\",[],\\\\\\\"392240685\\\\\\\",{\\\\\\\"_28\\\\\\\":138,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1964\",\n  \"context\": \"40,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"402391964\\\\\\\",{\\\\\\\"_28\\\\\\\":141,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9829\",\n  \"context\": \"sUKVV0DFZsAL\\\\\\\",[],\\\\\\\"417039829\\\\\\\",{\\\\\\\"_28\\\\\\\":145,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9809\",\n  \"context\": \"47,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"422449809\\\\\\\",{\\\\\\\"_28\\\\\\\":148,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-3253\",\n  \"context\": \"VZN:100.00:1\\\\\\\",[],\\\\\\\"471233253\\\\\\\",{\\\\\\\"_28\\\\\\\":152,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9851\",\n  \"context\": \"y8eub:0.00:1\\\\\\\",[],\\\\\\\"491279851\\\\\\\",{\\\\\\\"_28\\\\\\\":156,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4897\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"875954897\\\\\\\",{\\\\\\\"_52\\\\\\\":162,\\\\\\\"_5\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0474\",\n  \"context\": \"8},\\\\\\\"2404506894\\\\\\\",\\\\\\\"537200474\\\\\\\",{\\\\\\\"_28\\\\\\\":163,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5176\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"733205176\\\\\\\",\\\\\\\"547652119\\\\\\\",{\\\\\\\"\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2119\",\n  \"context\": \"48},\\\\\\\"733205176\\\\\\\",\\\\\\\"547652119\\\\\\\",{\\\\\\\"_28\\\\\\\":168,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2558\",\n  \"context\": \"dfU48:0.00:7\\\\\\\",[],\\\\\\\"550432558\\\\\\\",{\\\\\\\"_28\\\\\\\":172,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8838\",\n  \"context\": \"74,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"555198838\\\\\\\",{\\\\\\\"_28\\\\\\\":175,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4949\",\n  \"context\": \"77,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"571174949\\\\\\\",{\\\\\\\"_28\\\\\\\":178,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-3305\",\n  \"context\": \"g71gq:0.00:2\\\\\\\",[],\\\\\\\"614413305\\\\\\\",{\\\\\\\"_28\\\\\\\":182,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7762\",\n  \"context\": \"84,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"616577762\\\\\\\",{\\\\\\\"_28\\\\\\\":185,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1034\",\n  \"context\": \"87,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"638971034\\\\\\\",{\\\\\\\"_28\\\\\\\":188,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0164\",\n  \"context\": \"90,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"645560164\\\\\\\",{\\\\\\\"_28\\\\\\\":191,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7038\",\n  \"context\": \"K8P:100.00:2\\\\\\\",[],\\\\\\\"667937038\\\\\\\",{\\\\\\\"_28\\\\\\\":195,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4087\",\n  \"context\": \"97,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"713974087\\\\\\\",{\\\\\\\"_28\\\\\\\":198,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2549\",\n  \"context\": \"00,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"727502549\\\\\\\",{\\\\\\\"_28\\\\\\\":201,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8229\",\n  \"context\": \"05,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"735368229\\\\\\\",{\\\\\\\"_28\\\\\\\":206,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6922\",\n  \"context\": \"08,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"766296922\\\\\\\",{\\\\\\\"_28\\\\\\\":209,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9106\",\n  \"context\": \"fdgNONyvZ4yt\\\\\\\",[],\\\\\\\"773249106\\\\\\\",{\\\\\\\"_28\\\\\\\":213,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0609\",\n  \"context\": \"BS2V2H3LcQuG\\\\\\\",[],\\\\\\\"785520609\\\\\\\",{\\\\\\\"_28\\\\\\\":217,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9557\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"795789557\\\\\\\",{\\\\\\\"_28\\\\\\\":221,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8344\",\n  \"context\": \"26,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"878458344\\\\\\\",{\\\\\\\"_28\\\\\\\":227,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1222\",\n  \"context\": \"41TyPRCHP0cj\\\\\\\",[],\\\\\\\"879591222\\\\\\\",{\\\\\\\"_28\\\\\\\":231,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4942\",\n  \"context\": \"K59:100.00:1\\\\\\\",[],\\\\\\\"891514942\\\\\\\",{\\\\\\\"_28\\\\\\\":235,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0545\",\n  \"context\": \"FgWWhTxEsfCx\\\\\\\",[],\\\\\\\"926440545\\\\\\\",{\\\\\\\"_28\\\\\\\":239,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6609\",\n  \"context\": \"0PM6KienOpud\\\\\\\",[],\\\\\\\"934056609\\\\\\\",{\\\\\\\"_28\\\\\\\":243,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9370\",\n  \"context\": \"45,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"966859370\\\\\\\",{\\\\\\\"_28\\\\\\\":246,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8178\",\n  \"context\": \"48,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"989108178\\\\\\\",{\\\\\\\"_28\\\\\\\":249,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9670\",\n  \"context\": \"8,\\\\\\\"_1401\\\\\\\":1402},\\\\\\\"110789670\\\\\\\",{\\\\\\\"_28\\\\\\\":972,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6899\",\n  \"context\": \"periment_active\\\\\\\",\\\\\\\"269676899\\\\\\\",{\\\\\\\"_28\\\\\\\":985,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7204\",\n  \"context\": \"},\\\\\\\"prestart\\\\\\\",[],\\\\\\\"349697204\\\\\\\",{\\\\\\\"_28\\\\\\\":990,\\\\\\\"_4\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5177\",\n  \"context\": \"g\\\\\\\",[],\\\\\\\"passed\\\\\\\",\\\\\\\"387775177\\\\\\\",{\\\\\\\"_28\\\\\\\":1003,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4797\",\n  \"context\": \"p_name\\\\\\\",\\\\\\\"Test\\\\\\\",\\\\\\\"398474797\\\\\\\",{\\\\\\\"_28\\\\\\\":1011,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6659\",\n  \"context\": \"],\\\\\\\"is_in_layer\\\\\\\",\\\\\\\"422096659\\\\\\\",{\\\\\\\"_28\\\\\\\":1023,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2697\",\n  \"context\": \"erAssignment\\\\\\\",[],\\\\\\\"463092697\\\\\\\",{\\\\\\\"_28\\\\\\\":1028,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5210\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"251005210\\\\\\\",{\\\\\\\"_52\\\\\\\":167,\\\\\\\"_5\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6730\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"516806730\\\\\\\",{\\\\\\\"_28\\\\\\\":1036,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0761\",\n  \"context\": \"\\\\\\\",[],\\\\\\\"Control\\\\\\\",\\\\\\\"550560761\\\\\\\",{\\\\\\\"_28\\\\\\\":1042,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5174\",\n  \"context\": \"ults_limit\\\\\\\",2,[],\\\\\\\"555825174\\\\\\\",{\\\\\\\"_28\\\\\\\":1050,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6823\",\n  \"context\": \"\\\\\\\"_1014\\\\\\\":101},[],\\\\\\\"770426823\\\\\\\",{\\\\\\\"_28\\\\\\\":1054,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5841\",\n  \"context\": \"ZpclcIEZLNhz\\\\\\\",[],\\\\\\\"786015841\\\\\\\",{\\\\\\\"_28\\\\\\\":1059,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1399\",\n  \"context\": \"\\\\\\\"_1014\\\\\\\":101},[],\\\\\\\"948081399\\\\\\\",{\\\\\\\"_28\\\\\\\":1063,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2025\",\n  \"context\": \"m/deep-research/nux.070152025.mp4\\\\\\\",\\\\\\\"posterUrl\\\\\\\"\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2025\",\n  \"context\": \"m/deep-research/nux.070152025.jpg\\\\\\\",[],\\\\\\\"23986498\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8269\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"350498269\\\\\\\",\\\\\\\"3529298638\\\\\\\",{\\\\\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5983\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":1468},\\\\\\\"747145983\\\\\\\",\\\\\\\"1yBehWRiofl3CcN\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8152\",\n  \"context\": \",\\\\\\\"enable\\\\\\\",[],[],\\\\\\\"166098152\\\\\\\",{\\\\\\\"_28\\\\\\\":1484,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4971\",\n  \"context\": \"55,\\\\\\\"_56\\\\\\\":48},[],\\\\\\\"190694971\\\\\\\",{\\\\\\\"_28\\\\\\\":1490,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2723\",\n  \"context\": \"\\\"show_nux\\\\\\\",[],[],\\\\\\\"229662723\\\\\\\",{\\\\\\\"_28\\\\\\\":1496,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5442\",\n  \"context\": \"\\\\\\\":1499},{},[],[],\\\\\\\"312855442\\\\\\\",{\\\\\\\"_28\\\\\\\":1501,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1204\",\n  \"context\": \"p_results\\\\\\\",[],[],\\\\\\\"356691204\\\\\\\",{\\\\\\\"_28\\\\\\\":1508,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2763\",\n  \"context\": \"YvY4B:2.00:1\\\\\\\",[],\\\\\\\"387752763\\\\\\\",{\\\\\\\"_28\\\\\\\":1517,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6882\",\n  \"context\": \"1520],[1524,1525],\\\\\\\"415386882\\\\\\\",{\\\\\\\"_28\\\\\\\":1529,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-3606\",\n  \"context\": \"GZTwDMkp\\\\\\\",[1532],\\\\\\\"979053606\\\\\\\",[1535],\\\\\\\"45302138\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1389\",\n  \"context\": \"79053606\\\\\\\",[1535],\\\\\\\"453021389\\\\\\\",{\\\\\\\"_28\\\\\\\":1541,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8202\",\n  \"context\": \"\\\\\\\"3016192915\\\\\\\",[],\\\\\\\"468168202\\\\\\\",{\\\\\\\"_28\\\\\\\":1550,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4727\",\n  \"context\": \"\\\\\\\"1847092144\\\\\\\",[],\\\\\\\"474444727\\\\\\\",{\\\\\\\"_28\\\\\\\":1586,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9118\",\n  \"context\": \"tion\\\\\\\",1500,[],[],\\\\\\\"478519118\\\\\\\",{\\\\\\\"_28\\\\\\\":1594,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5788\",\n  \"context\": \"ll-prompt\\\\\\\",[],[],\\\\\\\"497415788\\\\\\\",{\\\\\\\"_28\\\\\\\":1600,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1893\",\n  \"context\": \"ULz\\\\\\\",[1609,1607],\\\\\\\"724821893\\\\\\\",[1613],\\\\\\\"59055776\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7768\",\n  \"context\": \"24821893\\\\\\\",[1613],\\\\\\\"590557768\\\\\\\",{\\\\\\\"_28\\\\\\\":1620,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2088\",\n  \"context\": \"_home_btn\\\\\\\",[],[],\\\\\\\"660512088\\\\\\\",{\\\\\\\"_28\\\\\\\":1626,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0678\",\n  \"context\": \":55,\\\\\\\"_56\\\\\\\":1641},\\\\\\\"735930678\\\\\\\",\\\\\\\"6nGV45RQYtcIGTb\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2205\",\n  \"context\": \":55,\\\\\\\"_56\\\\\\\":1647},\\\\\\\"854062205\\\\\\\",\\\\\\\"66y6sNojVqOdoNf\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2707\",\n  \"context\": \"OdoNf0CX0JYC\\\\\\\",[],\\\\\\\"668322707\\\\\\\",{\\\\\\\"_28\\\\\\\":1649,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4542\",\n  \"context\": \"citations\\\\\\\",[],[],\\\\\\\"685344542\\\\\\\",{\\\\\\\"_28\\\\\\\":1656,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6490\",\n  \"context\": \"88643772\\\\\\\",[1662],\\\\\\\"717266490\\\\\\\",{\\\\\\\"_28\\\\\\\":1668,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7404\",\n  \"context\": \",\\\\\\\"canvas\\\\\\\",[],[],\\\\\\\"723297404\\\\\\\",{\\\\\\\"_28\\\\\\\":1687,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7993\",\n  \"context\": \"ll_banner\\\\\\\",[],[],\\\\\\\"730987993\\\\\\\",{\\\\\\\"_28\\\\\\\":1693,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8832\",\n  \"context\": \"smissible\\\\\\\",[],[],\\\\\\\"760468832\\\\\\\",{\\\\\\\"_28\\\\\\\":1700,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0436\",\n  \"context\": \"_infinite\\\\\\\",[],[],\\\\\\\"789160436\\\\\\\",{\\\\\\\"_28\\\\\\\":1706,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9319\",\n  \"context\": \"\\\\\\\":1709},{},[],[],\\\\\\\"790459319\\\\\\\",{\\\\\\\"_28\\\\\\\":1711,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7029\",\n  \"context\": \"5,1721,1722,1716],\\\\\\\"744837029\\\\\\\",[],\\\\\\\"816388808\\\\\\\",\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8808\",\n  \"context\": \",\\\\\\\"744837029\\\\\\\",[],\\\\\\\"816388808\\\\\\\",{\\\\\\\"_28\\\\\\\":1734,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5014\",\n  \"context\": \"\\\\\\\"3730827030\\\\\\\",[],\\\\\\\"871635014\\\\\\\",{\\\\\\\"_28\\\\\\\":1745,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2716\",\n  \"context\": \"YDPBmz7hAK7A\\\\\\\",[],\\\\\\\"892702716\\\\\\\",{\\\\\\\"_28\\\\\\\":1753,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4767\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":1784},\\\\\\\"738814767\\\\\\\",\\\\\\\"7kvM63defY7RtmA\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7515\",\n  \"context\": \"AVAPuUWG\\\\\\\",[1779],\\\\\\\"337607515\\\\\\\",[1782],\\\\\\\"11870492\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2020\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":1796},\\\\\\\"755422020\\\\\\\",\\\\\\\"ERpwwEW2ziUfRVC\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9804\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":1840},\\\\\\\"542939804\\\\\\\",\\\\\\\"3HKCeZxEmUqfFle\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1565\",\n  \"context\": \"eluwlutP\\\\\\\",[1834],\\\\\\\"398231565\\\\\\\",[1838],\\\\\\\"13588494\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6911\",\n  \"context\": \"rride\\\\\\\",[],[1872],\\\\\\\"193576911\\\\\\\",[],\\\\\\\"1547743984\\\\\\\"\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0543\",\n  \"context\": \":55,\\\\\\\"_56\\\\\\\":1915},\\\\\\\"906090543\\\\\\\",\\\\\\\"78EF096o7zVCL33\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0066\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"929070066\\\\\\\",{\\\\\\\"_52\\\\\\\":2011,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8390\",\n  \"context\": \"30780681\\\\\\\",[2005],\\\\\\\"489828390\\\\\\\",[2008],\\\\\\\"18467375\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9096\",\n  \"context\": \"dnY\\\\\\\",[2110,2111],\\\\\\\"996409096\\\\\\\",[2114],\\\\\\\"22399906\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7213\",\n  \"context\": \"56\\\\\\\":1515},[2123],\\\\\\\"707457213\\\\\\\",[2126],\\\\\\\"22591873\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9611\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":2165},\\\\\\\"993789611\\\\\\\",\\\\\\\"17vH1GNVvsIEQOD\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1553\",\n  \"context\": \":55,\\\\\\\"_56\\\\\\\":2185},\\\\\\\"264061553\\\\\\\",\\\\\\\"4h5T1VBZ0rOfoem\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6687\",\n  \"context\": \" to plus\\\\\\\",[2224],\\\\\\\"951376687\\\\\\\",[],\\\\\\\"2716194794\\\\\\\"\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4413\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":2294},\\\\\\\"345894413\\\\\\\",\\\\\\\"7I56Zw3AG0DcBNu\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8561\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":2394},\\\\\\\"633918561\\\\\\\",\\\\\\\"1zxez3OOgO4p29I\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6492\",\n  \"context\": \":55,\\\\\\\"_56\\\\\\\":2397},\\\\\\\"869606492\\\\\\\",\\\\\\\"3e9BPumbMecI44Z\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6910\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"470066910\\\\\\\",{\\\\\\\"_52\\\\\\\":2447,\\\\\\\"_\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6440\",\n  \"context\": \"4,1923,1925,1924],\\\\\\\"938456440\\\\\\\",[],\\\\\\\"3453653771\\\\\\\"\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1744\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"639721744\\\\\\\",[],\\\\\\\"3768341700\\\\\\\"\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0046\",\n  \"context\": \"fer\\\\\\\",[2714,2716],\\\\\\\"545340046\\\\\\\",[2721],\\\\\\\"40206683\"\n}",
+        "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8363\",\n  \"context\": \"01,\\\\\\\"_2890\\\\\\\":101},\\\\\\\"401278363\\\\\\\",\\\\\\\"2173548801\\\\\\\",\\\\\\\"\"\n}",
+        "{\n  \"pattern_type\": \"password\",\n  \"masked_data\": \"pass************ions\",\n  \"context\": \"ce_hrd_for_explicit_password_connections\\\\\\\",\\\\\\\"use_authapi_pas\"\n}",
+        "{\n  \"pattern_type\": \"password\",\n  \"masked_data\": \"pass***********tion\",\n  \"context\": \"ons\\\\\\\",\\\\\\\"use_authapi_password_connection_type\\\\\\\",\\\\\\\"enable_lin\"\n}"
+      ],
+      "scanner": "sensitive_data_exposure_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "16783c12-cb28-4b14-b206-088a8290816b",
+      "title": "Information Disclosure",
+      "severity": "Medium",
+      "description": "Server is revealing Server version information in response headers.",
+      "short_description": "Server is revealing Server version information in response headers.",
+      "remediation": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+      "countermeasures": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A04:2021 - Insecure Design",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"header\": \"server\",\n  \"value\": \"cloudflare\"\n}",
+        "{\n  \"header\": \"server\",\n  \"value\": \"cloudflare\"\n}"
+      ],
+      "scanner": "sensitive_data_exposure_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "04ca02fc-7f97-4d91-bb26-c8256d4d6f65",
+      "title": "Technology Information",
+      "severity": "Info",
+      "description": "Detected technology: Cloudflare (version not identified).",
+      "short_description": "Detected technology: Cloudflare (version not identified).",
+      "remediation": "N/A",
+      "countermeasures": "N/A",
+      "location": "tech:Cloudflare",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 0,
+      "category": "Unknown",
+      "impact": "N/A",
+      "cvss": 0,
+      "evidence": [
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "scanner": "technology_fingerprint_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "7919d18e-0d69-4a2a-ad5c-d889f6ce5c8c",
+      "title": "Technology Information",
+      "severity": "Info",
+      "description": "Detected technology: Envoy (version not identified).",
+      "short_description": "Detected technology: Envoy (version not identified).",
+      "remediation": "N/A",
+      "countermeasures": "N/A",
+      "location": "tech:Envoy",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 0,
+      "category": "Unknown",
+      "impact": "N/A",
+      "cvss": 0,
+      "evidence": [
+        "{}",
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "scanner": "technology_fingerprint_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "2f6655e7-7625-4b59-8481-e8bc3bed20a4",
+      "title": "Missing X-Frame-Options Header",
+      "severity": "Medium",
+      "description": "The X-Frame-Options header is missing. Prevents clickjacking attacks",
+      "short_description": "The X-Frame-Options header is missing. Prevents clickjacking attacks",
+      "remediation": "Add the X-Frame-Options header with value: DENY",
+      "countermeasures": "Add the X-Frame-Options header with value: DENY",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-Frame-Options\",\n  \"recommended_value\": \"DENY\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "dc8e248e-3dd6-4e73-8549-7b46a20ed7d3",
+      "title": "Missing X-XSS-Protection Header",
+      "severity": "Low",
+      "description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+      "short_description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+      "remediation": "Add the X-XSS-Protection header with value: 1; mode=block",
+      "countermeasures": "Add the X-XSS-Protection header with value: 1; mode=block",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "0d6a0371-e268-4511-b97c-05945ea72c65",
+      "title": "Missing Content-Security-Policy Header",
+      "severity": "High",
+      "description": "The Content-Security-Policy header is missing. Controls resource loading",
+      "short_description": "The Content-Security-Policy header is missing. Controls resource loading",
+      "remediation": "Add the Content-Security-Policy header with value: default-src 'self'",
+      "countermeasures": "Add the Content-Security-Policy header with value: default-src 'self'",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "4e13571f-7866-4da0-91a9-025f48b4db4a",
+      "title": "Missing Permissions-Policy Header",
+      "severity": "Medium",
+      "description": "The Permissions-Policy header is missing. Controls browser features",
+      "short_description": "The Permissions-Policy header is missing. Controls browser features",
+      "remediation": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+      "countermeasures": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "e86c6651-9df7-4650-ac39-4244cd96f618",
+      "title": "Misconfigured Cross-Origin-Opener-Policy Header",
+      "severity": "Medium",
+      "description": "The Cross-Origin-Opener-Policy header is present but may not be optimally configured. Helps isolate browsing context (COOP)",
+      "short_description": "The Cross-Origin-Opener-Policy header is present but may not be optimally configured. Helps isolate browsing context (COOP)",
+      "remediation": "Update the Cross-Origin-Opener-Policy header to: same-origin",
+      "countermeasures": "Update the Cross-Origin-Opener-Policy header to: same-origin",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": \"same-origin-allow-popups\"\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "a317bcfb-bcaf-47fe-bf9e-ece06de69184",
+      "title": "Missing Cross-Origin-Embedder-Policy Header",
+      "severity": "Medium",
+      "description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+      "short_description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+      "remediation": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+      "countermeasures": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "57d00133-3fed-47e3-a6e6-52cfb1a9501e",
+      "title": "Missing Cross-Origin-Resource-Policy Header",
+      "severity": "Low",
+      "description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+      "short_description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+      "remediation": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+      "countermeasures": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "02ebd8d4-fcfb-40ef-9569-a0a25963d147",
+      "title": "Missing X-Permitted-Cross-Domain-Policies Header",
+      "severity": "Low",
+      "description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+      "short_description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+      "remediation": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+      "countermeasures": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "749710d7-3550-4c7c-9547-ba720944710d",
+      "title": "Missing Security Header: X-Frame-Options",
+      "severity": "Medium",
+      "description": "X-Frame-Options header missing",
+      "short_description": "X-Frame-Options header missing",
+      "remediation": "Implement the X-Frame-Options header to enhance security.",
+      "countermeasures": "Implement the X-Frame-Options header to enhance security.",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"url\": \"https://chatgpt.com/\",\n  \"missing_header\": \"X-Frame-Options\"\n}",
+      "scanner": "securitymisconfiguration",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "99ea0710-f4dd-4f72-b4d5-a5e1f5a51f7d",
+      "title": "Missing Security Header: X-XSS-Protection",
+      "severity": "Medium",
+      "description": "X-XSS-Protection header missing",
+      "short_description": "X-XSS-Protection header missing",
+      "remediation": "Implement the X-XSS-Protection header to enhance security.",
+      "countermeasures": "Implement the X-XSS-Protection header to enhance security.",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"url\": \"https://chatgpt.com/\",\n  \"missing_header\": \"X-XSS-Protection\"\n}",
+      "scanner": "securitymisconfiguration",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "f1b75a4b-4e43-45d6-948f-65f382f4408d",
+      "title": "Missing Security Header: Content-Security-Policy",
+      "severity": "Medium",
+      "description": "Content-Security-Policy header missing",
+      "short_description": "Content-Security-Policy header missing",
+      "remediation": "Implement the Content-Security-Policy header to enhance security.",
+      "countermeasures": "Implement the Content-Security-Policy header to enhance security.",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"url\": \"https://chatgpt.com/\",\n  \"missing_header\": \"Content-Security-Policy\"\n}",
+      "scanner": "securitymisconfiguration",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "5d5d5450-12e6-4be7-b7c5-f892c4e1908e",
+      "title": "Server Information Disclosure",
+      "severity": "Low",
+      "description": "Server header reveals information: cloudflare",
+      "short_description": "Server header reveals information: cloudflare",
+      "remediation": "Remove or modify the Server header to prevent information disclosure.",
+      "countermeasures": "Remove or modify the Server header to prevent information disclosure.",
+      "location": "https://chatgpt.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"url\": \"https://chatgpt.com/\",\n  \"server_header\": \"cloudflare\"\n}",
+      "scanner": "securitymisconfiguration",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    }
+  ],
+  "errors": [],
+  "sub_scans": {
+    "full_scan_20250814_114015_api_fuzzing_scanner_429230": {
+      "name": "api_fuzzing_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.537059",
+      "execution_time": 0.6795864105224609,
+      "end_time": "2025-08-14T11:40:16.216091"
+    },
+    "full_scan_20250814_114015_api_security_scanner_430475": {
+      "name": "api_security_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.538075",
+      "end_time": "2025-08-14T11:43:35.833028"
+    },
+    "full_scan_20250814_114015_apifuzzing_431286": {
+      "name": "apifuzzing",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.539120",
+      "execution_time": 0.7223265171051025,
+      "end_time": "2025-08-14T11:40:16.260972"
+    },
+    "full_scan_20250814_114015_apisecurity_432048": {
+      "name": "apisecurity",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.540010",
+      "end_time": "2025-08-14T11:43:35.554238"
+    },
+    "full_scan_20250814_114015_authentication_432776": {
+      "name": "authentication",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.540821",
+      "end_time": "2025-08-14T11:46:55.561170"
+    },
+    "full_scan_20250814_114015_authentication_brute_force_credential_stuffing_scanner_433490": {
+      "name": "authentication_brute_force_credential_stuffing_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.541717",
+      "end_time": "2025-08-14T11:46:55.582762"
+    },
+    "full_scan_20250814_114015_authentication_brute_force_scanner_434216": {
+      "name": "authentication_brute_force_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.551946",
+      "end_time": "2025-08-14T11:46:55.586880"
+    },
+    "full_scan_20250814_114015_authentication_bypass_scanner_441585": {
+      "name": "authentication_bypass_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.552929",
+      "end_time": "2025-08-14T11:44:42.178603"
+    },
+    "full_scan_20250814_114015_authentication_scanner_442522": {
+      "name": "authentication_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.553985",
+      "end_time": "2025-08-14T11:44:42.180497"
+    },
+    "full_scan_20250814_114015_authenticationbruteforce_443287": {
+      "name": "authenticationbruteforce",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.554864",
+      "end_time": "2025-08-14T11:44:42.182911"
+    },
+    "full_scan_20250814_114015_authenticationbruteforcecredentialstuffing_444171": {
+      "name": "authenticationbruteforcecredentialstuffing",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.555831",
+      "end_time": "2025-08-14T11:46:55.578572"
+    },
+    "full_scan_20250814_114015_authenticationbypass_445020": {
+      "name": "authenticationbypass",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.563355",
+      "end_time": "2025-08-14T11:44:42.189276"
+    },
+    "full_scan_20250814_114015_automated_cve_lookup_scanner_445952": {
+      "name": "automated_cve_lookup_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.565731",
+      "end_time": "2025-08-14T11:44:42.191961"
+    },
+    "full_scan_20250814_114015_automatedcvelookup_446966": {
+      "name": "automatedcvelookup",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.566580",
+      "end_time": "2025-08-14T11:44:42.197298"
+    },
+    "full_scan_20250814_114015_broken_access_control_scanner_447833": {
+      "name": "broken_access_control_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.567480",
+      "end_time": "2025-08-14T11:44:42.199538"
+    },
+    "full_scan_20250814_114015_broken_authentication_scanner_448712": {
+      "name": "broken_authentication_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.568300",
+      "end_time": "2025-08-14T11:44:42.201891"
+    },
+    "full_scan_20250814_114015_brokenaccesscontrol_450141": {
+      "name": "brokenaccesscontrol",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.569086",
+      "end_time": "2025-08-14T11:44:42.203945"
+    },
+    "full_scan_20250814_114015_brokenauthentication_451393": {
+      "name": "brokenauthentication",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.570004",
+      "end_time": "2025-08-14T11:44:42.206004"
+    },
+    "full_scan_20250814_114015_clickjacking_screenshotter_457359": {
+      "name": "clickjacking_screenshotter",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.570971",
+      "end_time": "2025-08-14T11:44:42.214945"
+    },
+    "full_scan_20250814_114015_clickjackingscreenshotter_458477": {
+      "name": "clickjackingscreenshotter",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.581422",
+      "end_time": "2025-08-14T11:44:42.219581"
+    },
+    "full_scan_20250814_114015_csrf_460543": {
+      "name": "csrf",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.582562",
+      "end_time": "2025-08-14T11:44:42.276813"
+    },
+    "full_scan_20250814_114015_csrf_scanner_461260": {
+      "name": "csrf_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.583532",
+      "end_time": "2025-08-14T11:44:42.279787"
+    },
+    "full_scan_20250814_114015_csrf_token_checker_462171": {
+      "name": "csrf_token_checker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.587061",
+      "end_time": "2025-08-14T11:44:42.282285"
+    },
+    "full_scan_20250814_114015_csrftokenchecker_462897": {
+      "name": "csrftokenchecker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.587945",
+      "end_time": "2025-08-14T11:44:42.293242"
+    },
+    "full_scan_20250814_114015_directory_file_enumeration_scanner_463733": {
+      "name": "directory_file_enumeration_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.588972",
+      "end_time": "2025-08-14T11:44:42.222242"
+    },
+    "full_scan_20250814_114015_directoryfileenumeration_464669": {
+      "name": "directoryfileenumeration",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.589845",
+      "end_time": "2025-08-14T11:44:42.230729"
+    },
+    "full_scan_20250814_114015_insecure_deserialization_scanner_465369": {
+      "name": "insecure_deserialization_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.590649",
+      "execution_time": 0.4508044719696045,
+      "end_time": "2025-08-14T11:40:16.041039"
+    },
+    "full_scan_20250814_114015_insecure_design_scanner_466194": {
+      "name": "insecure_design_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.591450",
+      "end_time": "2025-08-14T11:44:42.232922"
+    },
+    "full_scan_20250814_114015_insecuredeserialization_466962": {
+      "name": "insecuredeserialization",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.592395",
+      "execution_time": 0.4772622585296631,
+      "end_time": "2025-08-14T11:40:16.069123"
+    },
+    "full_scan_20250814_114015_insecuredesign_467713": {
+      "name": "insecuredesign",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.597433",
+      "end_time": "2025-08-14T11:44:42.235661"
+    },
+    "full_scan_20250814_114015_insufficient_logging_and_monitoring_scanner_471953": {
+      "name": "insufficient_logging_and_monitoring_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.603913",
+      "end_time": "2025-08-14T11:44:42.241309"
+    },
+    "full_scan_20250814_114015_insufficientloggingandmonitoring_479367": {
+      "name": "insufficientloggingandmonitoring",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.604805",
+      "end_time": "2025-08-14T11:44:42.247499"
+    },
+    "full_scan_20250814_114015_js_480338": {
+      "name": "js",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.605625",
+      "end_time": "2025-08-14T11:44:42.249848"
+    },
+    "full_scan_20250814_114015_js_scanner_481127": {
+      "name": "js_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.606535",
+      "end_time": "2025-08-14T11:44:42.253772"
+    },
+    "full_scan_20250814_114015_misconfiguration_482302": {
+      "name": "misconfiguration",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.607401",
+      "end_time": "2025-08-14T11:44:42.262898"
+    },
+    "full_scan_20250814_114015_misconfiguration_scanner_483234": {
+      "name": "misconfiguration_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.608326",
+      "end_time": "2025-08-14T11:44:42.265008"
+    },
+    "full_scan_20250814_114015_oob_484136": {
+      "name": "oob",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.609082",
+      "end_time": "2025-08-14T11:44:42.267106"
+    },
+    "full_scan_20250814_114015_oob_scanner_485062": {
+      "name": "oob_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.609916",
+      "end_time": "2025-08-14T11:44:42.295673"
+    },
+    "full_scan_20250814_114015_open_redirect_finder_485932": {
+      "name": "open_redirect_finder",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.610670",
+      "end_time": "2025-08-14T11:44:42.298069"
+    },
+    "full_scan_20250814_114015_open_redirect_scanner_486776": {
+      "name": "open_redirect_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.611546",
+      "end_time": "2025-08-14T11:44:42.300293"
+    },
+    "full_scan_20250814_114015_openredirect_487597": {
+      "name": "openredirect",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.613710",
+      "end_time": "2025-08-14T11:44:42.309649"
+    },
+    "full_scan_20250814_114015_openredirectfinder_498575": {
+      "name": "openredirectfinder",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.621603",
+      "end_time": "2025-08-14T11:44:42.325431"
+    },
+    "full_scan_20250814_114015_path_traversal_tester_499398": {
+      "name": "path_traversal_tester",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.622756",
+      "end_time": "2025-08-14T11:44:47.321550"
+    },
+    "full_scan_20250814_114015_pathtraversaltester_500157": {
+      "name": "pathtraversaltester",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.623783",
+      "end_time": "2025-08-14T11:44:47.324644"
+    },
+    "full_scan_20250814_114015_rate_limiting_bruteforce_scanner_500956": {
+      "name": "rate_limiting_bruteforce_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.624797",
+      "end_time": "2025-08-14T11:44:42.328404"
+    },
+    "full_scan_20250814_114015_ratelimitingbruteforce_501750": {
+      "name": "ratelimitingbruteforce",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.625721",
+      "end_time": "2025-08-14T11:44:42.339660"
+    },
+    "full_scan_20250814_114015_robots_txt_sitemap_crawl_scanner_502500": {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.626529",
+      "end_time": "2025-08-14T11:46:55.914485"
+    },
+    "full_scan_20250814_114015_robotstxtsitemapcrawl_503283": {
+      "name": "robotstxtsitemapcrawl",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.627693",
+      "end_time": "2025-08-14T11:46:55.919289"
+    },
+    "full_scan_20250814_114015_security_headers_analyzer_504102": {
+      "name": "security_headers_analyzer",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:40:15.631637",
+      "end_time": "2025-08-14T11:46:55.868862"
+    },
+    "full_scan_20250814_114015_security_misconfiguration_scanner_504816": {
+      "name": "security_misconfiguration_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:40:15.638388",
+      "end_time": "2025-08-14T11:44:42.343162"
+    },
+    "full_scan_20250814_114015_securityheadersanalyzer_505525": {
+      "name": "securityheadersanalyzer",
+      "status": "completed",
+      "results": [
+        {
+          "id": "2f6655e7-7625-4b59-8481-e8bc3bed20a4",
+          "title": "Missing X-Frame-Options Header",
+          "severity": "Medium",
+          "description": "The X-Frame-Options header is missing. Prevents clickjacking attacks",
+          "short_description": "The X-Frame-Options header is missing. Prevents clickjacking attacks",
+          "remediation": "Add the X-Frame-Options header with value: DENY",
+          "countermeasures": "Add the X-Frame-Options header with value: DENY",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-Frame-Options\",\n  \"recommended_value\": \"DENY\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "dc8e248e-3dd6-4e73-8549-7b46a20ed7d3",
+          "title": "Missing X-XSS-Protection Header",
+          "severity": "Low",
+          "description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+          "short_description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+          "remediation": "Add the X-XSS-Protection header with value: 1; mode=block",
+          "countermeasures": "Add the X-XSS-Protection header with value: 1; mode=block",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "0d6a0371-e268-4511-b97c-05945ea72c65",
+          "title": "Missing Content-Security-Policy Header",
+          "severity": "High",
+          "description": "The Content-Security-Policy header is missing. Controls resource loading",
+          "short_description": "The Content-Security-Policy header is missing. Controls resource loading",
+          "remediation": "Add the Content-Security-Policy header with value: default-src 'self'",
+          "countermeasures": "Add the Content-Security-Policy header with value: default-src 'self'",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "4e13571f-7866-4da0-91a9-025f48b4db4a",
+          "title": "Missing Permissions-Policy Header",
+          "severity": "Medium",
+          "description": "The Permissions-Policy header is missing. Controls browser features",
+          "short_description": "The Permissions-Policy header is missing. Controls browser features",
+          "remediation": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+          "countermeasures": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "e86c6651-9df7-4650-ac39-4244cd96f618",
+          "title": "Misconfigured Cross-Origin-Opener-Policy Header",
+          "severity": "Medium",
+          "description": "The Cross-Origin-Opener-Policy header is present but may not be optimally configured. Helps isolate browsing context (COOP)",
+          "short_description": "The Cross-Origin-Opener-Policy header is present but may not be optimally configured. Helps isolate browsing context (COOP)",
+          "remediation": "Update the Cross-Origin-Opener-Policy header to: same-origin",
+          "countermeasures": "Update the Cross-Origin-Opener-Policy header to: same-origin",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": \"same-origin-allow-popups\"\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "a317bcfb-bcaf-47fe-bf9e-ece06de69184",
+          "title": "Missing Cross-Origin-Embedder-Policy Header",
+          "severity": "Medium",
+          "description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+          "short_description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+          "remediation": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+          "countermeasures": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "57d00133-3fed-47e3-a6e6-52cfb1a9501e",
+          "title": "Missing Cross-Origin-Resource-Policy Header",
+          "severity": "Low",
+          "description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+          "short_description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+          "remediation": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+          "countermeasures": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "02ebd8d4-fcfb-40ef-9569-a0a25963d147",
+          "title": "Missing X-Permitted-Cross-Domain-Policies Header",
+          "severity": "Low",
+          "description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+          "short_description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+          "remediation": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+          "countermeasures": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:43:35.732093",
+      "execution_time": 133.36650133132935,
+      "end_time": "2025-08-14T11:45:49.098155"
+    },
+    "full_scan_20250814_114015_securitymisconfiguration_506304": {
+      "name": "securitymisconfiguration",
+      "status": "completed",
+      "results": [
+        {
+          "id": "749710d7-3550-4c7c-9547-ba720944710d",
+          "title": "Missing Security Header: X-Frame-Options",
+          "severity": "Medium",
+          "description": "X-Frame-Options header missing",
+          "short_description": "X-Frame-Options header missing",
+          "remediation": "Implement the X-Frame-Options header to enhance security.",
+          "countermeasures": "Implement the X-Frame-Options header to enhance security.",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"url\": \"https://chatgpt.com/\",\n  \"missing_header\": \"X-Frame-Options\"\n}",
+          "scanner": "securitymisconfiguration",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "99ea0710-f4dd-4f72-b4d5-a5e1f5a51f7d",
+          "title": "Missing Security Header: X-XSS-Protection",
+          "severity": "Medium",
+          "description": "X-XSS-Protection header missing",
+          "short_description": "X-XSS-Protection header missing",
+          "remediation": "Implement the X-XSS-Protection header to enhance security.",
+          "countermeasures": "Implement the X-XSS-Protection header to enhance security.",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"url\": \"https://chatgpt.com/\",\n  \"missing_header\": \"X-XSS-Protection\"\n}",
+          "scanner": "securitymisconfiguration",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "f1b75a4b-4e43-45d6-948f-65f382f4408d",
+          "title": "Missing Security Header: Content-Security-Policy",
+          "severity": "Medium",
+          "description": "Content-Security-Policy header missing",
+          "short_description": "Content-Security-Policy header missing",
+          "remediation": "Implement the Content-Security-Policy header to enhance security.",
+          "countermeasures": "Implement the Content-Security-Policy header to enhance security.",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"url\": \"https://chatgpt.com/\",\n  \"missing_header\": \"Content-Security-Policy\"\n}",
+          "scanner": "securitymisconfiguration",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "5d5d5450-12e6-4be7-b7c5-f892c4e1908e",
+          "title": "Server Information Disclosure",
+          "severity": "Low",
+          "description": "Server header reveals information: cloudflare",
+          "short_description": "Server header reveals information: cloudflare",
+          "remediation": "Remove or modify the Server header to prevent information disclosure.",
+          "countermeasures": "Remove or modify the Server header to prevent information disclosure.",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"url\": \"https://chatgpt.com/\",\n  \"server_header\": \"cloudflare\"\n}",
+          "scanner": "securitymisconfiguration",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:43:35.870479",
+      "execution_time": 200.00870370864868,
+      "end_time": "2025-08-14T11:46:55.880395"
+    },
+    "full_scan_20250814_114015_sensitive_data_exposure_scanner_506857": {
+      "name": "sensitive_data_exposure_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "0cc50dbc-e6a9-472f-a02a-177e3f233d05",
+          "title": "Sensitive Data Exposure",
+          "severity": "High",
+          "description": "Potential Credit Card exposure detected in the response.",
+          "short_description": "Potential Credit Card exposure detected in the response.",
+          "remediation": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+          "countermeasures": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A04:2021 - Insecure Design",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1755*****6100\",\n  \"context\": \"race-time\\\" content=\\\"1755171876100\\\"/><link rel=\\\"icon\\\" \"\n}",
+            "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1755*****6100\",\n  \"context\": \"race-time\\\" content=\\\"1755171876100\\\"/><link rel=\\\"icon\\\" \"\n}",
+            "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1755*****6100\",\n  \"context\": \"745\\\\\\\",\\\\\\\"traceTime\\\\\\\",1755171876100,\\\\\\\"clientBootstrap\\\\\\\"\"\n}",
+            "{\n  \"pattern_type\": \"credit_card\",\n  \"masked_data\": \"1755*****5564\",\n  \"context\": \",\\\\\\\"6.4.1\\\\\\\",\\\\\\\"time\\\\\\\",1755164265564,\\\\\\\"evaluated_keys\\\\\\\",\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0566\",\n  \"context\": \"q0\\\\\\\",\\\\\\\"stableID\\\\\\\",\\\\\\\"108590566\\\\\\\",{\\\\\\\"_28\\\\\\\":77,\\\\\\\"_46\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-3730\",\n  \"context\": \"79,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"156153730\\\\\\\",{\\\\\\\"_28\\\\\\\":80,\\\\\\\"_46\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6048\",\n  \"context\": \"82,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"174366048\\\\\\\",{\\\\\\\"_28\\\\\\\":83,\\\\\\\"_46\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5335\",\n  \"context\": \"8},\\\\\\\"1923022511\\\\\\\",\\\\\\\"212625335\\\\\\\",{\\\\\\\"_28\\\\\\\":88,\\\\\\\"_46\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5747\",\n  \"context\": \"90,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"218915747\\\\\\\",{\\\\\\\"_28\\\\\\\":91,\\\\\\\"_46\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5887\",\n  \"context\": \",\\\\\\\"workspace_id\\\\\\\",\\\\\\\"222095887\\\\\\\",{\\\\\\\"_28\\\\\\\":96,\\\\\\\"_46\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0275\",\n  \"context\": \"98,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"222560275\\\\\\\",{\\\\\\\"_28\\\\\\\":99,\\\\\\\"_46\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2091\",\n  \"context\": \"Tti:100.00:2\\\\\\\",[],\\\\\\\"223382091\\\\\\\",{\\\\\\\"_28\\\\\\\":104,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1851\",\n  \"context\": \"8},\\\\\\\"3765213438\\\\\\\",\\\\\\\"232791851\\\\\\\",{\\\\\\\"_28\\\\\\\":112,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4420\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"749124420\\\\\\\",{\\\\\\\"_52\\\\\\\":121,\\\\\\\"_5\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8514\",\n  \"context\": \":122,\\\\\\\"_56\\\\\\\":123},\\\\\\\"566128514\\\\\\\",\\\\\\\"true\\\\\\\",\\\\\\\"5hCRKi\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7382\",\n  \"context\": \"mdVvHU:100.00:4\\\\\\\",\\\\\\\"294957382\\\\\\\",{\\\\\\\"_28\\\\\\\":124,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2287\",\n  \"context\": \"DXGxt5PaOi2C\\\\\\\",[],\\\\\\\"296452287\\\\\\\",{\\\\\\\"_28\\\\\\\":128,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9697\",\n  \"context\": \"30,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"317829697\\\\\\\",{\\\\\\\"_28\\\\\\\":131,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-3424\",\n  \"context\": \"33,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"369193424\\\\\\\",{\\\\\\\"_28\\\\\\\":134,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0685\",\n  \"context\": \"5TK:100.00:2\\\\\\\",[],\\\\\\\"392240685\\\\\\\",{\\\\\\\"_28\\\\\\\":138,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1964\",\n  \"context\": \"40,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"402391964\\\\\\\",{\\\\\\\"_28\\\\\\\":141,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9829\",\n  \"context\": \"sUKVV0DFZsAL\\\\\\\",[],\\\\\\\"417039829\\\\\\\",{\\\\\\\"_28\\\\\\\":145,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9809\",\n  \"context\": \"47,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"422449809\\\\\\\",{\\\\\\\"_28\\\\\\\":148,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-3253\",\n  \"context\": \"VZN:100.00:1\\\\\\\",[],\\\\\\\"471233253\\\\\\\",{\\\\\\\"_28\\\\\\\":152,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9851\",\n  \"context\": \"y8eub:0.00:1\\\\\\\",[],\\\\\\\"491279851\\\\\\\",{\\\\\\\"_28\\\\\\\":156,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4897\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"875954897\\\\\\\",{\\\\\\\"_52\\\\\\\":162,\\\\\\\"_5\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0474\",\n  \"context\": \"8},\\\\\\\"2404506894\\\\\\\",\\\\\\\"537200474\\\\\\\",{\\\\\\\"_28\\\\\\\":163,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5176\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"733205176\\\\\\\",\\\\\\\"547652119\\\\\\\",{\\\\\\\"\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2119\",\n  \"context\": \"48},\\\\\\\"733205176\\\\\\\",\\\\\\\"547652119\\\\\\\",{\\\\\\\"_28\\\\\\\":168,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2558\",\n  \"context\": \"dfU48:0.00:7\\\\\\\",[],\\\\\\\"550432558\\\\\\\",{\\\\\\\"_28\\\\\\\":172,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8838\",\n  \"context\": \"74,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"555198838\\\\\\\",{\\\\\\\"_28\\\\\\\":175,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4949\",\n  \"context\": \"77,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"571174949\\\\\\\",{\\\\\\\"_28\\\\\\\":178,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-3305\",\n  \"context\": \"g71gq:0.00:2\\\\\\\",[],\\\\\\\"614413305\\\\\\\",{\\\\\\\"_28\\\\\\\":182,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7762\",\n  \"context\": \"84,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"616577762\\\\\\\",{\\\\\\\"_28\\\\\\\":185,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1034\",\n  \"context\": \"87,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"638971034\\\\\\\",{\\\\\\\"_28\\\\\\\":188,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0164\",\n  \"context\": \"90,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"645560164\\\\\\\",{\\\\\\\"_28\\\\\\\":191,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7038\",\n  \"context\": \"K8P:100.00:2\\\\\\\",[],\\\\\\\"667937038\\\\\\\",{\\\\\\\"_28\\\\\\\":195,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4087\",\n  \"context\": \"97,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"713974087\\\\\\\",{\\\\\\\"_28\\\\\\\":198,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2549\",\n  \"context\": \"00,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"727502549\\\\\\\",{\\\\\\\"_28\\\\\\\":201,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8229\",\n  \"context\": \"05,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"735368229\\\\\\\",{\\\\\\\"_28\\\\\\\":206,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6922\",\n  \"context\": \"08,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"766296922\\\\\\\",{\\\\\\\"_28\\\\\\\":209,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9106\",\n  \"context\": \"fdgNONyvZ4yt\\\\\\\",[],\\\\\\\"773249106\\\\\\\",{\\\\\\\"_28\\\\\\\":213,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0609\",\n  \"context\": \"BS2V2H3LcQuG\\\\\\\",[],\\\\\\\"785520609\\\\\\\",{\\\\\\\"_28\\\\\\\":217,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9557\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"795789557\\\\\\\",{\\\\\\\"_28\\\\\\\":221,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8344\",\n  \"context\": \"26,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"878458344\\\\\\\",{\\\\\\\"_28\\\\\\\":227,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1222\",\n  \"context\": \"41TyPRCHP0cj\\\\\\\",[],\\\\\\\"879591222\\\\\\\",{\\\\\\\"_28\\\\\\\":231,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4942\",\n  \"context\": \"K59:100.00:1\\\\\\\",[],\\\\\\\"891514942\\\\\\\",{\\\\\\\"_28\\\\\\\":235,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0545\",\n  \"context\": \"FgWWhTxEsfCx\\\\\\\",[],\\\\\\\"926440545\\\\\\\",{\\\\\\\"_28\\\\\\\":239,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6609\",\n  \"context\": \"0PM6KienOpud\\\\\\\",[],\\\\\\\"934056609\\\\\\\",{\\\\\\\"_28\\\\\\\":243,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9370\",\n  \"context\": \"45,\\\\\\\"_57\\\\\\\":58},[],\\\\\\\"966859370\\\\\\\",{\\\\\\\"_28\\\\\\\":246,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8178\",\n  \"context\": \"48,\\\\\\\"_57\\\\\\\":76},[],\\\\\\\"989108178\\\\\\\",{\\\\\\\"_28\\\\\\\":249,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9670\",\n  \"context\": \"8,\\\\\\\"_1401\\\\\\\":1402},\\\\\\\"110789670\\\\\\\",{\\\\\\\"_28\\\\\\\":972,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6899\",\n  \"context\": \"periment_active\\\\\\\",\\\\\\\"269676899\\\\\\\",{\\\\\\\"_28\\\\\\\":985,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7204\",\n  \"context\": \"},\\\\\\\"prestart\\\\\\\",[],\\\\\\\"349697204\\\\\\\",{\\\\\\\"_28\\\\\\\":990,\\\\\\\"_4\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5177\",\n  \"context\": \"g\\\\\\\",[],\\\\\\\"passed\\\\\\\",\\\\\\\"387775177\\\\\\\",{\\\\\\\"_28\\\\\\\":1003,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4797\",\n  \"context\": \"p_name\\\\\\\",\\\\\\\"Test\\\\\\\",\\\\\\\"398474797\\\\\\\",{\\\\\\\"_28\\\\\\\":1011,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6659\",\n  \"context\": \"],\\\\\\\"is_in_layer\\\\\\\",\\\\\\\"422096659\\\\\\\",{\\\\\\\"_28\\\\\\\":1023,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2697\",\n  \"context\": \"erAssignment\\\\\\\",[],\\\\\\\"463092697\\\\\\\",{\\\\\\\"_28\\\\\\\":1028,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5210\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"251005210\\\\\\\",{\\\\\\\"_52\\\\\\\":167,\\\\\\\"_5\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6730\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"516806730\\\\\\\",{\\\\\\\"_28\\\\\\\":1036,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0761\",\n  \"context\": \"\\\\\\\",[],\\\\\\\"Control\\\\\\\",\\\\\\\"550560761\\\\\\\",{\\\\\\\"_28\\\\\\\":1042,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5174\",\n  \"context\": \"ults_limit\\\\\\\",2,[],\\\\\\\"555825174\\\\\\\",{\\\\\\\"_28\\\\\\\":1050,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6823\",\n  \"context\": \"\\\\\\\"_1014\\\\\\\":101},[],\\\\\\\"770426823\\\\\\\",{\\\\\\\"_28\\\\\\\":1054,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5841\",\n  \"context\": \"ZpclcIEZLNhz\\\\\\\",[],\\\\\\\"786015841\\\\\\\",{\\\\\\\"_28\\\\\\\":1059,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1399\",\n  \"context\": \"\\\\\\\"_1014\\\\\\\":101},[],\\\\\\\"948081399\\\\\\\",{\\\\\\\"_28\\\\\\\":1063,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2025\",\n  \"context\": \"m/deep-research/nux.070152025.mp4\\\\\\\",\\\\\\\"posterUrl\\\\\\\"\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2025\",\n  \"context\": \"m/deep-research/nux.070152025.jpg\\\\\\\",[],\\\\\\\"23986498\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8269\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"350498269\\\\\\\",\\\\\\\"3529298638\\\\\\\",{\\\\\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5983\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":1468},\\\\\\\"747145983\\\\\\\",\\\\\\\"1yBehWRiofl3CcN\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8152\",\n  \"context\": \",\\\\\\\"enable\\\\\\\",[],[],\\\\\\\"166098152\\\\\\\",{\\\\\\\"_28\\\\\\\":1484,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4971\",\n  \"context\": \"55,\\\\\\\"_56\\\\\\\":48},[],\\\\\\\"190694971\\\\\\\",{\\\\\\\"_28\\\\\\\":1490,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2723\",\n  \"context\": \"\\\"show_nux\\\\\\\",[],[],\\\\\\\"229662723\\\\\\\",{\\\\\\\"_28\\\\\\\":1496,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5442\",\n  \"context\": \"\\\\\\\":1499},{},[],[],\\\\\\\"312855442\\\\\\\",{\\\\\\\"_28\\\\\\\":1501,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1204\",\n  \"context\": \"p_results\\\\\\\",[],[],\\\\\\\"356691204\\\\\\\",{\\\\\\\"_28\\\\\\\":1508,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2763\",\n  \"context\": \"YvY4B:2.00:1\\\\\\\",[],\\\\\\\"387752763\\\\\\\",{\\\\\\\"_28\\\\\\\":1517,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6882\",\n  \"context\": \"1520],[1524,1525],\\\\\\\"415386882\\\\\\\",{\\\\\\\"_28\\\\\\\":1529,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-3606\",\n  \"context\": \"GZTwDMkp\\\\\\\",[1532],\\\\\\\"979053606\\\\\\\",[1535],\\\\\\\"45302138\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1389\",\n  \"context\": \"79053606\\\\\\\",[1535],\\\\\\\"453021389\\\\\\\",{\\\\\\\"_28\\\\\\\":1541,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8202\",\n  \"context\": \"\\\\\\\"3016192915\\\\\\\",[],\\\\\\\"468168202\\\\\\\",{\\\\\\\"_28\\\\\\\":1550,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4727\",\n  \"context\": \"\\\\\\\"1847092144\\\\\\\",[],\\\\\\\"474444727\\\\\\\",{\\\\\\\"_28\\\\\\\":1586,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9118\",\n  \"context\": \"tion\\\\\\\",1500,[],[],\\\\\\\"478519118\\\\\\\",{\\\\\\\"_28\\\\\\\":1594,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5788\",\n  \"context\": \"ll-prompt\\\\\\\",[],[],\\\\\\\"497415788\\\\\\\",{\\\\\\\"_28\\\\\\\":1600,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1893\",\n  \"context\": \"ULz\\\\\\\",[1609,1607],\\\\\\\"724821893\\\\\\\",[1613],\\\\\\\"59055776\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7768\",\n  \"context\": \"24821893\\\\\\\",[1613],\\\\\\\"590557768\\\\\\\",{\\\\\\\"_28\\\\\\\":1620,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2088\",\n  \"context\": \"_home_btn\\\\\\\",[],[],\\\\\\\"660512088\\\\\\\",{\\\\\\\"_28\\\\\\\":1626,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0678\",\n  \"context\": \":55,\\\\\\\"_56\\\\\\\":1641},\\\\\\\"735930678\\\\\\\",\\\\\\\"6nGV45RQYtcIGTb\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2205\",\n  \"context\": \":55,\\\\\\\"_56\\\\\\\":1647},\\\\\\\"854062205\\\\\\\",\\\\\\\"66y6sNojVqOdoNf\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2707\",\n  \"context\": \"OdoNf0CX0JYC\\\\\\\",[],\\\\\\\"668322707\\\\\\\",{\\\\\\\"_28\\\\\\\":1649,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4542\",\n  \"context\": \"citations\\\\\\\",[],[],\\\\\\\"685344542\\\\\\\",{\\\\\\\"_28\\\\\\\":1656,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6490\",\n  \"context\": \"88643772\\\\\\\",[1662],\\\\\\\"717266490\\\\\\\",{\\\\\\\"_28\\\\\\\":1668,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7404\",\n  \"context\": \",\\\\\\\"canvas\\\\\\\",[],[],\\\\\\\"723297404\\\\\\\",{\\\\\\\"_28\\\\\\\":1687,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7993\",\n  \"context\": \"ll_banner\\\\\\\",[],[],\\\\\\\"730987993\\\\\\\",{\\\\\\\"_28\\\\\\\":1693,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8832\",\n  \"context\": \"smissible\\\\\\\",[],[],\\\\\\\"760468832\\\\\\\",{\\\\\\\"_28\\\\\\\":1700,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0436\",\n  \"context\": \"_infinite\\\\\\\",[],[],\\\\\\\"789160436\\\\\\\",{\\\\\\\"_28\\\\\\\":1706,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9319\",\n  \"context\": \"\\\\\\\":1709},{},[],[],\\\\\\\"790459319\\\\\\\",{\\\\\\\"_28\\\\\\\":1711,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7029\",\n  \"context\": \"5,1721,1722,1716],\\\\\\\"744837029\\\\\\\",[],\\\\\\\"816388808\\\\\\\",\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8808\",\n  \"context\": \",\\\\\\\"744837029\\\\\\\",[],\\\\\\\"816388808\\\\\\\",{\\\\\\\"_28\\\\\\\":1734,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-5014\",\n  \"context\": \"\\\\\\\"3730827030\\\\\\\",[],\\\\\\\"871635014\\\\\\\",{\\\\\\\"_28\\\\\\\":1745,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2716\",\n  \"context\": \"YDPBmz7hAK7A\\\\\\\",[],\\\\\\\"892702716\\\\\\\",{\\\\\\\"_28\\\\\\\":1753,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4767\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":1784},\\\\\\\"738814767\\\\\\\",\\\\\\\"7kvM63defY7RtmA\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7515\",\n  \"context\": \"AVAPuUWG\\\\\\\",[1779],\\\\\\\"337607515\\\\\\\",[1782],\\\\\\\"11870492\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-2020\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":1796},\\\\\\\"755422020\\\\\\\",\\\\\\\"ERpwwEW2ziUfRVC\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9804\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":1840},\\\\\\\"542939804\\\\\\\",\\\\\\\"3HKCeZxEmUqfFle\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1565\",\n  \"context\": \"eluwlutP\\\\\\\",[1834],\\\\\\\"398231565\\\\\\\",[1838],\\\\\\\"13588494\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6911\",\n  \"context\": \"rride\\\\\\\",[],[1872],\\\\\\\"193576911\\\\\\\",[],\\\\\\\"1547743984\\\\\\\"\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0543\",\n  \"context\": \":55,\\\\\\\"_56\\\\\\\":1915},\\\\\\\"906090543\\\\\\\",\\\\\\\"78EF096o7zVCL33\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0066\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"929070066\\\\\\\",{\\\\\\\"_52\\\\\\\":2011,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8390\",\n  \"context\": \"30780681\\\\\\\",[2005],\\\\\\\"489828390\\\\\\\",[2008],\\\\\\\"18467375\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9096\",\n  \"context\": \"dnY\\\\\\\",[2110,2111],\\\\\\\"996409096\\\\\\\",[2114],\\\\\\\"22399906\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-7213\",\n  \"context\": \"56\\\\\\\":1515},[2123],\\\\\\\"707457213\\\\\\\",[2126],\\\\\\\"22591873\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-9611\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":2165},\\\\\\\"993789611\\\\\\\",\\\\\\\"17vH1GNVvsIEQOD\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1553\",\n  \"context\": \":55,\\\\\\\"_56\\\\\\\":2185},\\\\\\\"264061553\\\\\\\",\\\\\\\"4h5T1VBZ0rOfoem\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6687\",\n  \"context\": \" to plus\\\\\\\",[2224],\\\\\\\"951376687\\\\\\\",[],\\\\\\\"2716194794\\\\\\\"\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-4413\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":2294},\\\\\\\"345894413\\\\\\\",\\\\\\\"7I56Zw3AG0DcBNu\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8561\",\n  \"context\": \"122,\\\\\\\"_56\\\\\\\":2394},\\\\\\\"633918561\\\\\\\",\\\\\\\"1zxez3OOgO4p29I\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6492\",\n  \"context\": \":55,\\\\\\\"_56\\\\\\\":2397},\\\\\\\"869606492\\\\\\\",\\\\\\\"3e9BPumbMecI44Z\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6910\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"470066910\\\\\\\",{\\\\\\\"_52\\\\\\\":2447,\\\\\\\"_\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-6440\",\n  \"context\": \"4,1923,1925,1924],\\\\\\\"938456440\\\\\\\",[],\\\\\\\"3453653771\\\\\\\"\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-1744\",\n  \"context\": \"\\\\\\\":55,\\\\\\\"_56\\\\\\\":48},\\\\\\\"639721744\\\\\\\",[],\\\\\\\"3768341700\\\\\\\"\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-0046\",\n  \"context\": \"fer\\\\\\\",[2714,2716],\\\\\\\"545340046\\\\\\\",[2721],\\\\\\\"40206683\"\n}",
+            "{\n  \"pattern_type\": \"ssn\",\n  \"masked_data\": \"***-**-8363\",\n  \"context\": \"01,\\\\\\\"_2890\\\\\\\":101},\\\\\\\"401278363\\\\\\\",\\\\\\\"2173548801\\\\\\\",\\\\\\\"\"\n}",
+            "{\n  \"pattern_type\": \"password\",\n  \"masked_data\": \"pass************ions\",\n  \"context\": \"ce_hrd_for_explicit_password_connections\\\\\\\",\\\\\\\"use_authapi_pas\"\n}",
+            "{\n  \"pattern_type\": \"password\",\n  \"masked_data\": \"pass***********tion\",\n  \"context\": \"ons\\\\\\\",\\\\\\\"use_authapi_password_connection_type\\\\\\\",\\\\\\\"enable_lin\"\n}"
+          ],
+          "scanner": "sensitive_data_exposure_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "16783c12-cb28-4b14-b206-088a8290816b",
+          "title": "Information Disclosure",
+          "severity": "Medium",
+          "description": "Server is revealing Server version information in response headers.",
+          "short_description": "Server is revealing Server version information in response headers.",
+          "remediation": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+          "countermeasures": "Remove or mask sensitive information from response headers. Configure the server to not expose version information or technology stack details.",
+          "location": "https://chatgpt.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A04:2021 - Insecure Design",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"header\": \"server\",\n  \"value\": \"cloudflare\"\n}",
+            "{\n  \"header\": \"server\",\n  \"value\": \"cloudflare\"\n}"
+          ],
+          "scanner": "sensitive_data_exposure_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:44:42.346436",
+      "execution_time": 5.057798385620117,
+      "end_time": "2025-08-14T11:44:47.403686"
+    },
+    "full_scan_20250814_114015_sensitivedataexposure_507358": {
+      "name": "sensitivedataexposure",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:44:42.356710",
+      "execution_time": 5.159218788146973,
+      "end_time": "2025-08-14T11:44:47.507278"
+    },
+    "full_scan_20250814_114015_server_side_request_forgery_scanner_516378": {
+      "name": "server_side_request_forgery_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:44:42.358380",
+      "end_time": "2025-08-14T11:49:09.088304"
+    },
+    "full_scan_20250814_114015_serversiderequestforgery_517031": {
+      "name": "serversiderequestforgery",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:44:42.360044",
+      "end_time": "2025-08-14T11:49:09.091255"
+    },
+    "full_scan_20250814_114015_sql_injection_scanner_517544": {
+      "name": "sql_injection_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:40:16.346545",
+      "end_time": "2025-08-14T11:44:49.338398"
+    },
+    "full_scan_20250814_114015_sqlinjection_518063": {
+      "name": "sqlinjection",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:40:16.347458",
+      "end_time": "2025-08-14T11:44:49.344587"
+    },
+    "full_scan_20250814_114015_ssl_tls_configuration_audit_scanner_518586": {
+      "name": "ssl_tls_configuration_audit_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:44:42.361522",
+      "execution_time": 5.248346328735352,
+      "end_time": "2025-08-14T11:44:47.609496"
+    },
+    "full_scan_20250814_114015_ssltlsconfigurationaudit_519209": {
+      "name": "ssltlsconfigurationaudit",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:44:42.362883",
+      "execution_time": 5.350894927978516,
+      "end_time": "2025-08-14T11:44:47.713357"
+    },
+    "full_scan_20250814_114015_subdomain_dns_enumeration_scanner_519765": {
+      "name": "subdomain_dns_enumeration_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:44:42.364768",
+      "end_time": "2025-08-14T11:49:09.093988"
+    },
+    "full_scan_20250814_114015_subdomaindnsenumeration_520352": {
+      "name": "subdomaindnsenumeration",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:44:42.374631",
+      "end_time": "2025-08-14T11:49:09.105055"
+    },
+    "full_scan_20250814_114015_technology_fingerprint_scanner_520914": {
+      "name": "technology_fingerprint_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "04ca02fc-7f97-4d91-bb26-c8256d4d6f65",
+          "title": "Technology Information",
+          "severity": "Info",
+          "description": "Detected technology: Cloudflare (version not identified).",
+          "short_description": "Detected technology: Cloudflare (version not identified).",
+          "remediation": "N/A",
+          "countermeasures": "N/A",
+          "location": "tech:Cloudflare",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 0,
+          "category": "Unknown",
+          "impact": "N/A",
+          "cvss": 0,
+          "evidence": [
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}"
+          ],
+          "scanner": "technology_fingerprint_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "7919d18e-0d69-4a2a-ad5c-d889f6ce5c8c",
+          "title": "Technology Information",
+          "severity": "Info",
+          "description": "Detected technology: Envoy (version not identified).",
+          "short_description": "Detected technology: Envoy (version not identified).",
+          "remediation": "N/A",
+          "countermeasures": "N/A",
+          "location": "tech:Envoy",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 0,
+          "category": "Unknown",
+          "impact": "N/A",
+          "cvss": 0,
+          "evidence": [
+            "{}",
+            "{}",
+            "{}",
+            "{}"
+          ],
+          "scanner": "technology_fingerprint_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "LOW",
+      "start_time": "2025-08-14T11:44:43.111066",
+      "execution_time": 6.9873366355896,
+      "end_time": "2025-08-14T11:44:49.369002"
+    },
+    "full_scan_20250814_114015_technology_vulnerabilities_scanner_521485": {
+      "name": "technology_vulnerabilities_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "LOW",
+      "start_time": "2025-08-14T11:44:43.812830",
+      "execution_time": 6.337788343429565,
+      "end_time": "2025-08-14T11:44:49.450839"
+    },
+    "full_scan_20250814_114015_technologyfingerprint_521999": {
+      "name": "technologyfingerprint",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "LOW",
+      "start_time": "2025-08-14T11:44:44.186535",
+      "execution_time": 5.728520393371582,
+      "end_time": "2025-08-14T11:44:49.542279"
+    },
+    "full_scan_20250814_114015_technologyvulnerabilities_522578": {
+      "name": "technologyvulnerabilities",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "LOW",
+      "start_time": "2025-08-14T11:44:44.188011",
+      "execution_time": 5.446660757064819,
+      "end_time": "2025-08-14T11:44:49.634167"
+    },
+    "full_scan_20250814_114015_using_components_with_known_vulnerabilities_scanner_523104": {
+      "name": "using_components_with_known_vulnerabilities_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:44:42.376226",
+      "end_time": "2025-08-14T11:49:09.107734"
+    },
+    "full_scan_20250814_114015_usingcomponentswithknownvulnerabilities_523632": {
+      "name": "usingcomponentswithknownvulnerabilities",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:44:42.377768",
+      "end_time": "2025-08-14T11:49:09.109964"
+    },
+    "full_scan_20250814_114015_xss_524135": {
+      "name": "xss",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:40:16.452181",
+      "end_time": "2025-08-14T11:44:49.352284"
+    },
+    "full_scan_20250814_114015_xss_scanner_524792": {
+      "name": "xss_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:40:16.453068",
+      "end_time": "2025-08-14T11:44:49.355411"
+    },
+    "full_scan_20250814_114015_xxe_532712": {
+      "name": "xxe",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:44:42.379097",
+      "execution_time": 6.657793760299683,
+      "end_time": "2025-08-14T11:44:49.037253"
+    },
+    "full_scan_20250814_114015_xxe_scanner_533734": {
+      "name": "xxe_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:44:42.380735",
+      "execution_time": 6.779751539230347,
+      "end_time": "2025-08-14T11:44:49.159770"
+    }
+  },
+  "progress": 100.0,
+  "total_modules": 72,
+  "completed_modules": 72,
+  "deadline": 1755175215.429131,
+  "performance_metrics": {
+    "http_cache_stats": {
+      "cache_size": 4,
+      "active_requests": 1,
+      "max_connections": 400,
+      "max_keepalive": 120,
+      "retries": 0,
+      "throttle_waits": 16,
+      "ssrf_blocks": 0
+    },
+    "scanner_timing": {
+      "insecure_deserialization_scanner": 0.4508044719696045,
+      "insecuredeserialization": 0.4772622585296631,
+      "api_fuzzing_scanner": 0.6795864105224609,
+      "apifuzzing": 0.7223265171051025,
+      "sensitive_data_exposure_scanner": 5.057798385620117,
+      "sensitivedataexposure": 5.159218788146973,
+      "ssl_tls_configuration_audit_scanner": 5.248346328735352,
+      "ssltlsconfigurationaudit": 5.350894927978516,
+      "xxe": 6.657793760299683,
+      "xxe_scanner": 6.779751539230347,
+      "technology_fingerprint_scanner": 6.9873366355896,
+      "technology_vulnerabilities_scanner": 6.337788343429565,
+      "technologyfingerprint": 5.728520393371582,
+      "technologyvulnerabilities": 5.446660757064819,
+      "securityheadersanalyzer": 133.36650133132935,
+      "securitymisconfiguration": 200.00870370864868
+    },
+    "resource_usage": {}
+  },
+  "timing_data": {
+    "start_time": 1755171615.429159,
+    "estimated_completion": null,
+    "scanner_estimates": {},
+    "last_progress_update": 1755172149.110484
+  },
+  "end_time": "2025-08-14T11:49:09.110781",
+  "total_findings": 16
+}

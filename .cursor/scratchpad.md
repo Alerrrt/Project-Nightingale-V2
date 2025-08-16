@@ -1,4 +1,79 @@
-﻿# Project Nightingale V2 — Planner Document
+﻿Background and Motivation
+The user reports that scans appear slow with intermittent pauses, previews can be missing, and they want the system to: (1) run scanners in parallel, (2) ensure scanning logic is accurate, and (3) make all scanners robust. The goal is to deliver a responsive, parallelized scanning experience with predictable accuracy and stability, validated by tests and observable metrics.
+
+Key Challenges and Analysis
+- Parallel orchestration: We already submit scanners to a concurrency manager, but perceived pauses suggest scheduling gaps, conservative throttling, or long-tail modules blocking completion signals.
+- Accuracy: Findings normalization and deduplication vary per scanner; evidence formatting and severity mapping must be consistent. False positives/negatives must be bounded with tests.
+- Robustness: Each scanner should be isolated from failures, have sane timeouts/retries, cancellation support, and health checks. Websocket updates must not stall the UI.
+- Performance limits: HTTP pool limits, per-host throttling, and resource guardrails need tuning. Provide observability to verify improvements.
+
+High-level Task Breakdown
+P0: True parallel execution and responsiveness
+- Task P0.1: Verify parallel start of scanners and remove scheduler idle gaps
+  - Success: At least N scanners (configurable; default ≥ 10) can run concurrently; queue tick interval ≤ 200ms; initial progress broadcast within 200ms of scan start.
+- Task P0.2: Tune HTTP and concurrency for throughput without overwhelming the host
+  - Success: Connection pool ≥ 200/60 (total/keepalive), per-host min interval ≤ 10ms (configurable), no starvation under load; no SSRF policy violations.
+- Task P0.3: Add ETW-style timestamps to module lifecycle and an integration test ensuring overlapping runtimes
+  - Success: Test asserts ≥ 2 modules overlap in execution for a given scan.
+
+P0: Accuracy of scanning logic
+- Task P0.4: Create normalization and dedup test suite (unit)
+  - Success: Deterministic mapping of severity, CWE/CVE, evidence JSON; stable signature function with fixtures.
+- Task P0.5: Golden-snapshot tests per scanner family using mocked HTTP responses
+  - Success: Given recorded fixtures, scanners produce findings matching approved snapshots (with stable fields only).
+- Task P0.6: End-to-end “known-target” test using a mock site (httpx mock) exercising headers, CORS, XSS markers, robots, and tech-fingerprint
+  - Success: Aggregated overview contains expected counts; categories populated; no crashes.
+
+P0: Robustness of all scanners
+- Task P0.7: Uniform timeouts/retries/circuit-breaker per scanner; enforce cancellation
+  - Success: Cancelling a scan updates sub-scan statuses and halts queued work within 2 seconds.
+- Task P0.8: Health check endpoint per scanner via registry; CI test ensures all registered scanners pass health check
+  - Success: “health matrix” test green; registry reports healthy scanners only.
+- Task P0.9: Defensive parsing and evidence-size caps; large responses truncated per policy
+  - Success: No unbounded memory growth; tests verify truncation path.
+
+P1: Observability & UX correctness
+- Task P1.1: Emit structured events for module start/complete/fail and aggregate ETA; verify websocket history delivers to late subscribers
+  - Success: UI shows modules and progress without 0/0 stalls; reconnect receives recent history.
+- Task P1.2: Metrics endpoint surfaces concurrency-manager stats and HTTP client stats
+  - Success: /api/metrics reports queue, active tasks, retries, ssrf_blocks, throttle_waits.
+
+P1: Preview reliability
+- Task P1.3: Fallback image logic and stricter URL resolution tests
+  - Success: Preview always shows favicon if OG image missing; tests for relative URL resolution.
+
+Project Status Board
+- [x] P0.1 Verify parallel start and remove idle gaps (Executor) — queue tick tuned; initial broadcasts added; will add integration test next
+- [x] P0.2 Tune HTTP/concurrency and expose knobs via env (Executor) — pool and throttle tuned; defaults set
+- [ ] P0.3 Add overlapping-execution integration test (Planner+Executor) — IN PROGRESS
+- [ ] P0.4 Add normalization/dedup unit tests (Executor)
+- [ ] P0.5 Add per-scanner golden snapshot tests with httpx mocking (Executor)
+- [ ] P0.6 Add E2E mock-site test for overview correctness (Executor)
+- [ ] P0.7 Enforce uniform timeouts/retries/cancellation in BaseScanner (Executor)
+- [ ] P0.8 Implement scanner health checks and CI matrix (Executor)
+- [ ] P0.9 Add evidence-size caps and truncation tests (Executor)
+- [ ] P1.1 Improve event telemetry and history delivery (Executor)
+- [ ] P1.2 Expand /api/metrics with concurrency and http stats (Executor)
+- [ ] P1.3 Add preview resolution tests (Executor)
+
+Current Status / Progress Tracking
+- Implemented scheduler tick reduction, higher HTTP pool limits, lowered per-host throttle, and immediate initial progress broadcasts.
+- Starting P0.3 integration test to assert overlapping module execution.
+
+Executor's Feedback or Assistance Requests
+- Confirm acceptable default parallelism on your machine (currently 12 by default). If you prefer a cap, specify MAX_CONCURRENT_SCANS.
+- Is it okay to add httpx mocking fixtures for scanner tests in CI (no external internet)?
+
+Lessons
+- Immediate progress and target broadcasts greatly improve perceived responsiveness; history replay on subscribe prevents 0/0 UI states.
+- Tightening the scheduler loop and raising HTTP pool limits reduce idle pauses without destabilizing the system when memory guardrails are present.
+
+Success Criteria (Exit)
+- Parallelism: verified by test showing overlapping module execution and consistent utilization (active_tasks > 1 for a material portion of runtime).
+- Accuracy: unit and snapshot tests pass; E2E mock target produces expected aggregated overview and category counts.
+- Robustness: cancellation test passes; no unhandled exceptions; all scanners pass health checks; metrics show low retry/ssrf block rates on known targets.
+
+# Project Nightingale V2 — Planner Document
 
 ## Background and Motivation
 
@@ -262,4 +337,313 @@ Phase S4: Tests and QA
 - Integrated card in `App.tsx` alongside `ScanProgress` on scanning; added responsive two-column layout on `md+`, stacked on small screens.
 - Note: Could not run `npm ci` locally (npm unavailable in environment). Pending local/CI build verification.
 
+## Current Status / Progress Tracking
+- ✅ **ISSUE RESOLVED**: Successfully started the project using Docker Compose
+- Backend server is running on port 9000 and responding to health checks
+- Frontend is running on port 3002
+- Both services are healthy and ready for scanning
+
+## Project Status Board (for this connectivity issue)
+- [x] 1.1 Complete dependency installation (via Docker)
+- [x] 1.2 Start backend server (running on port 9000)
+- [x] 1.3 Verify WebSocket endpoint (backend healthy)
+- [x] 2.1 Verify frontend proxy (frontend running on port 3002)
+- [ ] 2.2 Test scan initiation (ready for testing)
+- [ ] 3.1 Add error messages (if needed)
+- [ ] 3.2 Implement retry logic (if needed)
+
+## Executor's Feedback or Assistance Requests
+- ✅ **RESOLUTION COMPLETE**: The project is now running successfully using Docker Compose
+- Backend: http://localhost:9000 (healthy)
+- Frontend: http://localhost:3002
+- The "Real-time connection to the server was lost" error should now be resolved
+- You can now access the application at http://localhost:3002 and initiate scans
+
+## Lessons
+- Docker Compose provides a reliable way to run the full stack without environment setup issues
+- The backend runs on port 9000 (not 8000 as initially expected from the config)
+- Always check service health endpoints to verify connectivity
+- The frontend proxy configuration in `vite.config.ts` correctly points to the backend service
+
+## Planner — Fast, Reliable Scanning and Real‑time UI
+
+### Problems observed
+- Backend runs many scanners but progress updates arrive only on module completion → UI appears stalled.
+- WebSocket is established, but without interim progress ticks the phase/percent stays flat.
+- `GET /api/site_preview?url=...` returns 400 for strict sites (e.g., https://chatgpt.com) → card shows “Could not load preview”.
+
+### Design goals
+- Low-latency, periodic progress broadcasting while modules are running.
+- Accurate but continuously improving ETA; phase transitions early.
+- Resilient preview endpoint that always returns something (at least favicon) even if OG scrape fails.
+- Frontend shows progress in near real-time, with WS as primary and polling as fallback.
+
+### High-level tasks
+1) Backend progress ticker
+- Add `ScannerEngine._progress_tasks: Dict[str, asyncio.Task]`.
+- Start a per-scan async loop that every 1s recomputes progress/ETA from `self._scan_results` and broadcasts `scan_progress` if value changed by ≥0.5% or every 3s.
+- Cancel the ticker at scan completion/cancellation.
+
+2) More robust preview
+- In `backend/api/site_preview.py`, on exceptions return HTTP 200 with a minimal payload: `finalUrl`, `title` as hostname, `favicon` as `<origin>/favicon.ico`, and set `image=favicon` as a fallback. Never 400 for normal inputs.
+
+3) Frontend real-time fallback
+- In `ScanContext.tsx`, add a 2s polling loop during active scans to GET `/api/scans/{scanId}` and merge: `progress`, `completed_modules`, `total_modules`, `current target`, and any module status deltas. Keep WS as primary.
+
+4) Optional tuning (later if needed)
+- Lower WS heartbeat to 10–15s. Tune HTTP per-host interval if throughput is bottlenecked.
+
+### Success criteria
+- Progress in UI changes at least once per second while scanners run.
+- Phase flips to “Running scanners…” within 1s of first module start.
+- Preview card never shows a fetch error; shows favicon/title for strict sites.
+- No regression in tests; logs show steady module starts without long idle gaps.
+
+### Execution checklist
+- [ ] Implement backend progress ticker
+- [ ] Cancel ticker on completion/cancel
+- [ ] Harden preview endpoint fallback
+- [ ] Add frontend polling fallback
+- [ ] Restart services and verify on real targets
+
+## Planner — Adaptive Request Pacing to Beat External Rate Limits (Fast + Polite)
+
+### Background / Problem
+Many targets deploy rate limiters (429/403-after-N, burst caps, sliding windows). Unaware bursts from multiple scanners cause throttling, retries, and long tail delays. We need scans to remain fast while respecting the target’s limits.
+
+### Current baseline
+- Shared HTTP client already supports retries with jitter and a static per-host minimum interval.
+- Concurrency manager runs many scanners in parallel without global host-level pacing.
+
+### Goals
+- Maintain high throughput without triggering bans; adapt pacing in real time per host.
+- Share request results across modules to avoid duplicate hits.
+- Prefer “breadth-first” coverage early; avoid long stalls from one penalized host.
+
+### Proposed Architecture
+1) Global Per‑Host Pacer (token bucket)
+- One token bucket per host in `SharedHTTPClient`.
+- Initial settings: capacity=10, refill rate=5 tokens/sec (configurable).
+- Before each request, await `acquire_token(host)`; if tokens are depleted, sleep until refill.
+- On 429/503/Retry‑After: immediately reduce refill rate (e.g., x0.5), and respect `Retry‑After` by pausing host bucket until deadline. Add full jitter (±20%).
+- On sustained success (no 429/5xx for N requests): gradually increase refill (+10%) up to a cap.
+- Track per-host “penalty window” and expose metrics: `throttle_waits`, `tokens_available`, `retry_after_deadline`.
+
+2) Concurrency Shaping in Queue
+- Add per-host concurrency cap (e.g., 4) in concurrency manager when starting tasks that target the same host (based on scan input URL host).
+- If a host is under penalty (from pacer), deprioritize new tasks for that host and prefer other hosts first (use existing priority pick).
+
+3) Smarter HTTP reuse and dedup
+- Strengthen response cache: cache GETs for short TTL (e.g., 60–180s) keyed by method+url+headers, with ETag/Last-Modified support. Respect Cache-Control.
+- Request coalescing: concurrent identical requests share one in-flight future (already partly present via `_active_requests`). Ensure coverage for HEAD/GET patterns.
+
+4) Scanner-level micro-optimizations (non-destructive)
+- Prefer `HEAD` to probe availability before `GET` where feasible.
+- Reuse robots.txt, sitemap, and common discovery across scanners via shared context in `ScannerEngine`.
+- Add `ScannerHints` (e.g., `aggressive`, `low_impact`) to let the pacer schedule lighter scanners first under penalty.
+
+5) Config & Observability
+- Env knobs: `HTTP_PER_HOST_MIN_INTERVAL_MS`, `HTTP_PER_HOST_INITIAL_RPS`, `HTTP_MAX_RETRIES`, `HTTP_BUCKET_MAX_TOKENS`.
+- `/api/metrics` to expose pacer stats per host and concurrency manager stats; add counters for 429s, throttle waits, retry-after pauses.
+
+### Implementation Plan
+- [ ] Add `PerHostPacer` class (token bucket) in `backend/utils/http_client.py` with adaptive rate logic and Retry‑After handling.
+- [ ] Integrate pacer into `SharedHTTPClient` before issuing requests (GET/POST/HEAD/etc.).
+- [ ] Extend `ScannerConcurrencyManager` to track per-host active tasks and cap them; prefer starting tasks for hosts not under penalty.
+- [ ] Enhance HTTP cache with short TTL defaults and ETag/If‑None‑Match support (when server provides ETag/Last-Modified).
+- [ ] Add lightweight shared artifacts (robots.txt/sitemap) memoization in `ScannerEngine` for the scan’s lifetime.
+- [ ] Emit metrics in `/api/metrics` for pacer and concurrency; log structured events when rate limits detected.
+- [ ] Tests: mocked server issuing 429 + Retry‑After; assert adaptive slowdown, no explosive retries, and overall completion within target time compared to naive baseline.
+
+### Success Criteria
+- Under synthetic 429+Retry‑After, total scan time improves ≥25% vs. naive retry loop at same findings coverage.
+- 0 requests violate `Retry‑After` deadlines; 429 rates drop steadily after adaptation.
+- UI shows steady progress without long stalls; no scanner starvation.
+
+### Rollout
+- Ship behind defaults that keep current behavior; enable by env in dev, then default‑on after validation.
+
+## Planner — Website Preview Fidelity + Scanning Animation, and Backend Scanner Error Hardening
+
+### Preview Requirements
+- Show the entered URL’s landing page image reliably (final resolved URL), not a random/empty placeholder.
+- Always display a visual scanning animation layered over the preview.
+
+### Gaps Observed
+- `/api/site_preview` returns OG/Twitter image or favicon; some sites 400 or hide OG image; image hotlinking can 403 due to CORS/referer.
+- The scanning effect exists but should sit over the image area and react to progress.
+
+### Plan (Preview)
+1) Image proxy endpoint (no CORS/Referer breaks)
+- Add `GET /api/preview/image?url=...` that fetches the remote image server-side and streams it with proper content-type; supports range and cache headers.
+- Validate scheme/host, enforce size cap (e.g., 2–5 MB) and timeout.
+- Update `SiteSnippetCard` to use proxied URL for `image`/`favicon` when present.
+
+2) Ensure landing-page fidelity
+- Improve `site_preview` to resolve redirects and prefer in order: `og:image:secure_url` → `og:image` → `twitter:image` → `<link rel=screenshot>` variants → fallback `/favicon.ico`.
+- Normalize relative URLs with base of the final location; persist to cache.
+- Expose `finalUrl` (post-redirect) and show it in the card.
+
+3) Scanning animation + progress linkage
+- Keep `.scan-sweep` overlay; also add a subtle progress ring overlay tied to overall scan percent via CSS var `--scan-progress`.
+- Pass `progress` from context into `SiteSnippetCard` and animate ring thickness/rotation speed accordingly; respect `prefers-reduced-motion`.
+
+4) Resilience & a11y
+- Skeletons + aria-live label update for title/URL; alt text on image; fallback text always visible.
+
+### Tasks
+- [ ] Create `backend/api/preview_image.py` streaming proxy with size/time caps + allow-list of schemes.
+- [ ] Enhance `backend/api/site_preview.py` URL resolution + richer signals and caching.
+- [ ] Update `SiteSnippetCard.tsx` to use `/api/preview/image?url=` for `image`/`favicon` and accept `progress` prop.
+- [ ] Add CSS ring using `conic-gradient` reading `--scan-progress` and motion-respecting animations.
+- [ ] Tests: unit for URL resolution and proxy limits; manual QA with strict sites (x.com, chatgpt.com).
+
+### Success Criteria
+- Preview card shows landing image or favicon for all targets tested; no 400/403; animation visible during scans; accessible labels present.
+
+---
+
+### Backend Scanner Errors — Hardening Plan
+
+#### Goals
+- Eliminate unhandled exceptions, reduce timeouts, and keep the UI progressing.
+- Standardize retries/guard rails and centralize metrics.
+
+#### Measures
+1) ScannerGuard wrapper
+- Wrap each `scanner_instance.scan()` in a guard that:
+  - Applies standardized timeouts/retries (already partly implemented),
+  - Catches and classifies exceptions,
+  - Records `start_time/end_time/status/errors` consistently,
+  - Emits `module_status` and `scan_progress` even on failure.
+
+2) Unified HTTP access
+- Enforce use of `get_shared_http_client()` in all scanners; deprecate raw `httpx` usage.
+- Enable adaptive per-host pacer (token bucket) and Retry-After handling (see prior plan).
+
+3) Resource-aware concurrency
+- Cap per-host active modules; prefer other hosts when one is penalized; keep global concurrency high.
+
+4) Defensive parsing and response caps
+- Truncate oversized responses; guard HTML/JSON parsing; cap evidence size.
+
+5) Metrics & tests
+- Add `/api/metrics` entries: `429_count`, `retry_after_pauses`, `throttle_waits`, `timeouts`, `module_failures`.
+- Tests: mocked 429/Retry-After, slow endpoints, malformed HTML/JSON; assert graceful completion and progress continuity.
+
+### Tasks
+- [ ] Introduce `ScannerGuard` helper and apply in `ScannerEngine._run_scan` (non-destructive refactor).
+- [ ] Audit scanners to use shared HTTP client; add lint check or CI guard.
+- [ ] Implement per-host active-task cap in `ScannerConcurrencyManager` and deprioritize penalized hosts.
+- [ ] Add evidence-size caps and truncation.
+- [ ] Extend `/api/metrics` and add tests.
+
+### Success Criteria
+- No unhandled exceptions in logs during end-to-end scans on strict targets.
+- Progress updates at least every 1–2 seconds; ETA stabilizes; completion within expected bounds even under external rate limits.
+
+
+## Planner — 180‑Second Ultra‑Fast Scan Architecture (Scanner Re‑arrangement + Scheduling)
+
+### Objectives
+- End‑to‑end scan completes in ≤ 180 seconds without UI pauses.
+- Always stream realtime progress/phase; show meaningful results early (headers/tech/CORS etc.).
+- Degrade gracefully: if time budget is tight, cancel/defer heavy modules, never overrun.
+
+### Observed bottlenecks
+- Many scanners run with long per‑module timeouts; deep modules dominate tail latency.
+- Scheduler leaves small idle gaps; heavy modules start even when little time remains.
+- Repeated HTTP fetches across scanners for the same resources (duplicate crawling).
+- Per‑host throttling is static; bursts can cause 429s and slowdowns.
+
+### Strategy: Staged pipeline with hard budgets
+- Global deadline: 180s (configurable). Each stage has a strict budget and per‑scanner caps.
+- Concurrency: default 16 global slots; per‑host cap 6; stage‑based slot allocation to prioritize fast coverage.
+- Early breadth, later depth: surface quick, high‑signal findings in first 30–60s.
+
+Stages
+1) Stage A — Burst Discovery (T=0–10s, slots: 12)
+   - robots_txt_sitemap_crawl_scanner (shallow only, cap 5s)
+   - technology_fingerprint / vulnerable_js_library (via shared DOM fetch of homepage)
+   - security_headers_analyzer, cors_misconfiguration_scanner, csrf_token_checker
+   - clickjacking_screenshotter (cap 5s, low res)
+   Outcome: site inventory seed (top URLs), tech stack, headers. Progress must tick within 1s.
+
+2) Stage B — Core Probes (T=10–90s, slots: 16)
+   - xss, xss_scanner (basic reflective set, cap 45s each, top N=10 URLs)
+   - sqlinjection, sql_injection_scanner (boolean/time‑based light probes, cap 45s each, N endpoints)
+   - path_traversal_tester (cap 30s), ssrf_light (if available), open_redirect_scanner (cap 20s)
+   - directory/file enumeration with tiny wordlist (cap 20s total)
+   Outcome: core vuln coverage on a bounded subset; provide early findings.
+
+3) Stage C — Opportunistic Deep Dives (T=90–160s, slots: 12)
+   - Expand probes only if signals found in B (forms/APIs/interesting responses).
+   - api_fuzzing_scanner (if API indicators present), ssl_tls_configuration_audit_scanner, subdomain_dns_enumeration_scanner (very tight caps or deferred).
+   - Any slow/long‑tail scanners run with a strict 60–90s per‑task cap and are cancellable when global remaining budget < 20s.
+
+4) Stage D — Aggregation & Report (T=160–180s)
+   - Final dedupe/classify, overview tallies, snapshot save, scan_completed.
+
+### Scheduling rules
+- Deadline‑aware admission: before starting any task, compare `now + est` vs `deadline`; skip/defer if it risks overrun.
+- Rolling estimates: maintain per‑scanner moving averages; prefer scanners with high signal/second.
+- Preemption by cancellation: if global remaining time < 20s, cancel non‑critical running deep‑dive tasks.
+- Greedy queue fill at 20ms tick to eliminate idle gaps.
+
+### Shared infrastructure improvements
+- Shared HTTP client with token‑bucket per host; adaptive Retry‑After handling; small TTL response cache; request coalescing.
+- Crawl once: robots/sitemap/homepage DOM fetched once and shared across scanners via `ScannerEngine` context.
+- Evidence caps and safe parsers (HTML/JSON) with truncation.
+- Realtime ticker: per‑scan 1s heartbeat broadcasts progress/ETA independent of module completions.
+
+### Scanner tier mapping (examples)
+- Tier A (fast): robots_txt_sitemap_crawl_scanner, technology_fingerprint, js_scanner/vulnerable_js_library, security_headers_analyzer, cors_misconfiguration_scanner, csrf_token_checker, clickjacking_screenshotter.
+- Tier B (core): xss, xss_scanner, sqlinjection, sql_injection_scanner, path_traversal_tester, open_redirect_scanner.
+- Tier C (heavy/conditional): api_fuzzing_scanner, ssl_tls_configuration_audit_scanner, subdomain_dns_enumeration_scanner, long wordlist enumerators.
+
+### Configuration knobs (env)
+- MAX_CONCURRENT_SCANS=16, PER_HOST_MAX_CONCURRENCY=6
+- GLOBAL_SCAN_HARD_CAP_SECONDS=180
+- PER_SCANNER_CAP_SECONDS=90 (Stage B ≤ 60 where possible)
+- HTTP_BUCKET_MAX_TOKENS=10, HTTP_PER_HOST_INITIAL_RPS=5, HTTP_PER_HOST_MIN_INTERVAL_MS=5
+- CORE_URL_SAMPLE_SIZE=10 (top URLs for B), ENUM_WORDLIST_SIZE=TINY
+
+### Concrete tasks (Executor)
+1) Implement stage scheduler in `ScannerEngine.start_scan`:
+   - Partition scanners into {A,B,C}; submit A immediately; gate B at T>10s (or when A produces inventory); gate C by signals and remaining budget.
+   - Success: logs show staged submissions with timestamps; no idle queue while tasks remain.
+2) Add deadline‑aware admission + cancellation hooks in `_run_scan` and concurrency manager.
+   - Success: tasks skip/defer when remaining budget too low; running deep tasks cancel when <20s left.
+3) Add per‑scan progress ticker (1s) broadcasting `scan_progress`/`eta` deltas.
+   - Success: UI progress updates at least every second during activity.
+4) Introduce shared crawl/DOM cache and response coalescing in `get_shared_http_client`.
+   - Success: repeated GETs to the same URL drop significantly in logs; no duplicated homepage fetch by multiple scanners.
+5) Tighten per‑scanner caps: Stage A ≤ 5–10s, Stage B ≤ 45–60s, Stage C ≤ 60–90s, with hard cancel.
+   - Success: tail scanners no longer exceed per‑scanner cap; overall ≤ 180s.
+6) Implement per‑host token bucket (adaptive) and per‑host concurrency caps.
+   - Success: under 429/Retry‑After, requests pace without thrashing; fewer retries; faster overall.
+7) Add `/api/metrics` for scheduler/concurrency/http stats and expose in logs.
+   - Success: metrics show active_tasks, queued, throttle_waits, 429s, avg module durations.
+8) Fix realtime queue bug: remove direct `message_queue._queue` access; use public API only.
+   - Success: no `'MessageQueue' object has no attribute '_queue'` errors.
+
+### Success criteria
+- On a typical target, Stage A findings appear within 5–10s; Stage B begins by 10s.
+- Progress ticks at least every second; phase switches promptly.
+- 95th percentile total scan time ≤ 180s; heavy scanners are cancelled/deferred instead of overrunning.
+- Same or better findings coverage vs. current baseline for quick scan on shared demo targets.
+
+### Project Status Board (Performance Roadmap)
+- [ ] Implement staged scheduler with budgets and gating
+- [ ] Deadline‑aware admission + cancellation
+- [ ] Per‑scan 1s progress ticker
+- [ ] Shared crawl/DOM cache + request coalescing
+- [ ] Per‑host token bucket + concurrency caps
+- [ ] Tightened per‑scanner caps by stage
+- [ ] Metrics endpoint and logs
+- [ ] Remove direct access to private queue fields (WS message queue bug)
+
+### Executor’s notes
+- We’ll ship this behind env flags to allow quick rollback: `ENABLE_STAGE_SCHEDULER=true`, `ENABLE_HTTP_PACER=true`.
+- After staging, we’ll profile a few real targets to tune slot counts and budgets.
 

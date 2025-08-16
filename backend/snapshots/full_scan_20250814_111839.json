@@ -1,0 +1,595 @@
+{
+  "id": "full_scan_20250814_111839",
+  "target": "http://testphp.vulnweb.com/",
+  "type": "full_scan",
+  "status": "running",
+  "start_time": "2025-08-14T11:18:39.711686",
+  "results": [],
+  "errors": [],
+  "sub_scans": {
+    "full_scan_20250814_111839_api_fuzzing_scanner_711793": {
+      "name": "api_fuzzing_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.742461",
+      "execution_time": 0.2751438617706299,
+      "end_time": "2025-08-14T11:18:40.017207"
+    },
+    "full_scan_20250814_111839_api_security_scanner_712434": {
+      "name": "api_security_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.743276"
+    },
+    "full_scan_20250814_111839_apifuzzing_712851": {
+      "name": "apifuzzing",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.744043",
+      "execution_time": 0.287412166595459,
+      "end_time": "2025-08-14T11:18:40.031008"
+    },
+    "full_scan_20250814_111839_apisecurity_713239": {
+      "name": "apisecurity",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.744877"
+    },
+    "full_scan_20250814_111839_authentication_713587": {
+      "name": "authentication",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.745867"
+    },
+    "full_scan_20250814_111839_authentication_brute_force_credential_stuffing_scanner_713973": {
+      "name": "authentication_brute_force_credential_stuffing_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.746662"
+    },
+    "full_scan_20250814_111839_authentication_brute_force_scanner_714289": {
+      "name": "authentication_brute_force_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.747604"
+    },
+    "full_scan_20250814_111839_authentication_bypass_scanner_714598": {
+      "name": "authentication_bypass_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.748501"
+    },
+    "full_scan_20250814_111839_authentication_scanner_714894": {
+      "name": "authentication_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.749478"
+    },
+    "full_scan_20250814_111839_authenticationbruteforce_715231": {
+      "name": "authenticationbruteforce",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.750620"
+    },
+    "full_scan_20250814_111839_authenticationbruteforcecredentialstuffing_715605": {
+      "name": "authenticationbruteforcecredentialstuffing",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.752149"
+    },
+    "full_scan_20250814_111839_authenticationbypass_716077": {
+      "name": "authenticationbypass",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.752847"
+    },
+    "full_scan_20250814_111839_automated_cve_lookup_scanner_716578": {
+      "name": "automated_cve_lookup_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.753388"
+    },
+    "full_scan_20250814_111839_automatedcvelookup_716992": {
+      "name": "automatedcvelookup",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.753922"
+    },
+    "full_scan_20250814_111839_broken_access_control_scanner_717379": {
+      "name": "broken_access_control_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.754426"
+    },
+    "full_scan_20250814_111839_broken_authentication_scanner_717735": {
+      "name": "broken_authentication_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.754948"
+    },
+    "full_scan_20250814_111839_brokenaccesscontrol_718164": {
+      "name": "brokenaccesscontrol",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.755494"
+    },
+    "full_scan_20250814_111839_brokenauthentication_718633": {
+      "name": "brokenauthentication",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.756089"
+    },
+    "full_scan_20250814_111839_clickjacking_screenshotter_719631": {
+      "name": "clickjacking_screenshotter",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.756675"
+    },
+    "full_scan_20250814_111839_clickjackingscreenshotter_722203": {
+      "name": "clickjackingscreenshotter",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.757145"
+    },
+    "full_scan_20250814_111839_csrf_723290": {
+      "name": "csrf",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.757558"
+    },
+    "full_scan_20250814_111839_csrf_scanner_723953": {
+      "name": "csrf_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.757950"
+    },
+    "full_scan_20250814_111839_csrf_token_checker_724591": {
+      "name": "csrf_token_checker",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.758383"
+    },
+    "full_scan_20250814_111839_csrftokenchecker_725322": {
+      "name": "csrftokenchecker",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.758927"
+    },
+    "full_scan_20250814_111839_directory_file_enumeration_scanner_725792": {
+      "name": "directory_file_enumeration_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.759431"
+    },
+    "full_scan_20250814_111839_directoryfileenumeration_726102": {
+      "name": "directoryfileenumeration",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.759980"
+    },
+    "full_scan_20250814_111839_insecure_deserialization_scanner_726606": {
+      "name": "insecure_deserialization_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.760455",
+      "execution_time": 0.1965007781982422,
+      "end_time": "2025-08-14T11:18:39.956711"
+    },
+    "full_scan_20250814_111839_insecure_design_scanner_727180": {
+      "name": "insecure_design_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.761109"
+    },
+    "full_scan_20250814_111839_insecuredeserialization_727607": {
+      "name": "insecuredeserialization",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.761659",
+      "execution_time": 0.21009135246276855,
+      "end_time": "2025-08-14T11:18:39.971466"
+    },
+    "full_scan_20250814_111839_insecuredesign_727948": {
+      "name": "insecuredesign",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.762138"
+    },
+    "full_scan_20250814_111839_insufficient_logging_and_monitoring_scanner_728215": {
+      "name": "insufficient_logging_and_monitoring_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.762669"
+    },
+    "full_scan_20250814_111839_insufficientloggingandmonitoring_728655": {
+      "name": "insufficientloggingandmonitoring",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.763300"
+    },
+    "full_scan_20250814_111839_js_728921": {
+      "name": "js",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.764054"
+    },
+    "full_scan_20250814_111839_js_scanner_729168": {
+      "name": "js_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.764915"
+    },
+    "full_scan_20250814_111839_misconfiguration_729435": {
+      "name": "misconfiguration",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.765655"
+    },
+    "full_scan_20250814_111839_misconfiguration_scanner_729688": {
+      "name": "misconfiguration_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.766354"
+    },
+    "full_scan_20250814_111839_oob_730071": {
+      "name": "oob",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.767134"
+    },
+    "full_scan_20250814_111839_oob_scanner_730379": {
+      "name": "oob_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.769081"
+    },
+    "full_scan_20250814_111839_open_redirect_finder_730685": {
+      "name": "open_redirect_finder",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.770130"
+    },
+    "full_scan_20250814_111839_open_redirect_scanner_731022": {
+      "name": "open_redirect_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.771224"
+    },
+    "full_scan_20250814_111839_openredirect_731254": {
+      "name": "openredirect",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.772354"
+    },
+    "full_scan_20250814_111839_openredirectfinder_731475": {
+      "name": "openredirectfinder",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.773114"
+    },
+    "full_scan_20250814_111839_path_traversal_tester_731695": {
+      "name": "path_traversal_tester",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.774058"
+    },
+    "full_scan_20250814_111839_pathtraversaltester_731962": {
+      "name": "pathtraversaltester",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.774969"
+    },
+    "full_scan_20250814_111839_rate_limiting_bruteforce_scanner_732170": {
+      "name": "rate_limiting_bruteforce_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.775962"
+    },
+    "full_scan_20250814_111839_ratelimitingbruteforce_732381": {
+      "name": "ratelimitingbruteforce",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.776757"
+    },
+    "full_scan_20250814_111839_robots_txt_sitemap_crawl_scanner_732615": {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.777378"
+    },
+    "full_scan_20250814_111839_robotstxtsitemapcrawl_732853": {
+      "name": "robotstxtsitemapcrawl",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.777970"
+    },
+    "full_scan_20250814_111839_security_headers_analyzer_733516": {
+      "name": "security_headers_analyzer",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T11:18:39.778471"
+    },
+    "full_scan_20250814_111839_security_misconfiguration_scanner_733821": {
+      "name": "security_misconfiguration_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T11:18:39.779010"
+    },
+    "full_scan_20250814_111839_securityheadersanalyzer_734070": {
+      "name": "securityheadersanalyzer",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_securitymisconfiguration_734358": {
+      "name": "securitymisconfiguration",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_sensitive_data_exposure_scanner_734732": {
+      "name": "sensitive_data_exposure_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_sensitivedataexposure_735655": {
+      "name": "sensitivedataexposure",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_server_side_request_forgery_scanner_735999": {
+      "name": "server_side_request_forgery_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_serversiderequestforgery_736234": {
+      "name": "serversiderequestforgery",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_sql_injection_scanner_736488": {
+      "name": "sql_injection_scanner",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:18:40.013893"
+    },
+    "full_scan_20250814_111839_sqlinjection_736693": {
+      "name": "sqlinjection",
+      "status": "running",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T11:18:40.014393"
+    },
+    "full_scan_20250814_111839_ssl_tls_configuration_audit_scanner_736897": {
+      "name": "ssl_tls_configuration_audit_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_ssltlsconfigurationaudit_737138": {
+      "name": "ssltlsconfigurationaudit",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_subdomain_dns_enumeration_scanner_737344": {
+      "name": "subdomain_dns_enumeration_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_subdomaindnsenumeration_737589": {
+      "name": "subdomaindnsenumeration",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_technology_fingerprint_scanner_737853": {
+      "name": "technology_fingerprint_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_111839_technology_vulnerabilities_scanner_738208": {
+      "name": "technology_vulnerabilities_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_111839_technologyfingerprint_738499": {
+      "name": "technologyfingerprint",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_111839_technologyvulnerabilities_738773": {
+      "name": "technologyvulnerabilities",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "LOW"
+    },
+    "full_scan_20250814_111839_using_components_with_known_vulnerabilities_scanner_739076": {
+      "name": "using_components_with_known_vulnerabilities_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_usingcomponentswithknownvulnerabilities_739383": {
+      "name": "usingcomponentswithknownvulnerabilities",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_xss_739698": {
+      "name": "xss",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH"
+    },
+    "full_scan_20250814_111839_xss_scanner_740035": {
+      "name": "xss_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "HIGH"
+    },
+    "full_scan_20250814_111839_xxe_740270": {
+      "name": "xxe",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    },
+    "full_scan_20250814_111839_xxe_scanner_740482": {
+      "name": "xxe_scanner",
+      "status": "queued",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM"
+    }
+  },
+  "progress": 4.166666666666666,
+  "total_modules": 72,
+  "completed_modules": 3,
+  "deadline": 1755173919.711695,
+  "performance_metrics": {
+    "http_cache_stats": {},
+    "scanner_timing": {
+      "insecure_deserialization_scanner": 0.1965007781982422,
+      "insecuredeserialization": 0.21009135246276855,
+      "api_fuzzing_scanner": 0.2751438617706299,
+      "apifuzzing": 0.287412166595459
+    },
+    "resource_usage": {}
+  },
+  "timing_data": {
+    "start_time": 1755170319.711699,
+    "estimated_completion": 1755170327.364987,
+    "scanner_estimates": {},
+    "last_progress_update": 1755170320.030586
+  }
+}

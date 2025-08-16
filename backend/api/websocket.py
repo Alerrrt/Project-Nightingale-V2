@@ -147,11 +147,9 @@ class ConnectionManager:
         # Send recent history if requested
         if options and options.get("include_history", False):
             history = self.message_history.get(scan_id, [])
-            await self._send_message(websocket, "scan_history", {
-                "scan_id": scan_id,
-                "history": [{"type": msg.type, "data": msg.data, "timestamp": msg.timestamp.isoformat()} 
-                          for msg in history[-options.get("history_limit", 10):]]
-            })
+            # Replay recent history as individual messages so existing frontend handlers process them
+            for msg in history[-options.get("history_limit", 25):]:
+                await self._send_message(websocket, msg.type, msg.data)
         
         logger.info(f"Client {client_id} subscribed to scan {scan_id}")
 
@@ -198,15 +196,25 @@ class ConnectionManager:
         if len(self.message_history[scan_id]) > self.max_history_size:
             self.message_history[scan_id] = self.message_history[scan_id][-self.max_history_size:]
 
-        # Queue message for each subscriber
-        for websocket in self.scan_subscriptions.get(scan_id, set()):
-            client_id = self._get_client_id(websocket)
-            if client_id and self.rate_limiter.check_rate_limit(client_id):
-                await self.message_queue.enqueue(
-                    client_id,
-                    message,
-                    self.client_metadata[client_id].get("subscription_options", {})
-                )
+        # Send immediately to all subscribers for critical updates
+        if update_type in ["scan_progress", "scan_phase", "new_finding", "module_status"]:
+            for websocket in self.scan_subscriptions.get(scan_id, set()):
+                try:
+                    await self._send_message(websocket, update_type, data)
+                except Exception as e:
+                    logger.warning(f"Failed to send {update_type} to subscriber: {e}")
+                    # Remove failed websocket
+                    self.scan_subscriptions[scan_id].discard(websocket)
+        else:
+            # Queue other messages for each subscriber
+            for websocket in self.scan_subscriptions.get(scan_id, set()):
+                client_id = self._get_client_id(websocket)
+                if client_id and self.rate_limiter.check_rate_limit(client_id):
+                    await self.message_queue.enqueue(
+                        client_id,
+                        message,
+                        self.client_metadata[client_id].get("subscription_options", {})
+                    )
 
     async def stop_scan(self, scan_id: str, scanner_engine: "ScannerEngine"):
         """Stop a running scan."""
@@ -327,7 +335,12 @@ async def websocket_endpoint(
 
     client_id = websocket.headers.get("x-client-id", "anonymous")
     await manager.connect(websocket, client_id)
-    await manager.subscribe_to_scan(websocket, scan_id)
+    # Include recent history so the UI immediately sees initial progress/phase messages
+    await manager.subscribe_to_scan(
+        websocket,
+        scan_id,
+        options={"include_history": True, "history_limit": 50}
+    )
 
     try:
         # Send initial connection confirmation
@@ -336,6 +349,35 @@ async def websocket_endpoint(
             "client_id": client_id,
             "timestamp": datetime.now().isoformat()
         })
+        # Try to send a live snapshot so the UI gets immediate numbers even if history is empty
+        try:
+            from backend.main import app as _app
+            engine = _app.state.scanner_engine
+            scan_data = await engine.get_scan_status(scan_id)
+            # Compute modules summary
+            total_modules = int(scan_data.get("total_modules") or len((scan_data.get("sub_scans") or {})))
+            completed_modules = int(scan_data.get("completed_modules") or 0)
+            progress = float(scan_data.get("progress") or 0.0)
+            # Phase hint
+            phase = "Running scanners…" if progress > 0 else "Initializing..."
+            await manager._send_message(websocket, "scan_phase", {"phase": phase, "scan_id": scan_id})
+            await manager._send_message(websocket, "scan_progress", {
+                "progress": progress,
+                "completed_modules": completed_modules,
+                "total_modules": total_modules,
+            })
+            # Current target
+            if scan_data.get("target"):
+                await manager._send_message(websocket, "current_target_url", {"url": scan_data.get("target")})
+        except Exception as e:
+            logger.warning(f"Failed to send live snapshot for {scan_id}: {e}")
+            # Send fallback initial state
+            await manager._send_message(websocket, "scan_phase", {"phase": "Initializing...", "scan_id": scan_id})
+            await manager._send_message(websocket, "scan_progress", {
+                "progress": 0,
+                "completed_modules": 0,
+                "total_modules": 72,
+            })
         
         # Keep connection alive until scan completes or client disconnects
         while True:

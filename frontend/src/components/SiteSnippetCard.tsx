@@ -41,7 +41,12 @@ const SiteSnippetCard: React.FC<SiteSnippetCardProps> = ({ targetUrl }) => {
         if (!res.ok) throw new Error('Failed to load site preview');
         const json: SitePreviewData = await res.json();
         if (!cancelled) {
-          setData(json);
+          // If no image was found but favicon exists, use favicon as a lightweight preview
+          const withFallback = {
+            ...json,
+            image: json.image || json.favicon || undefined,
+          };
+          setData(withFallback);
           setLoading(false);
         }
       } catch (e) {

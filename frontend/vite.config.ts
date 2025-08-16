@@ -34,6 +34,19 @@ export default defineConfig(({ mode }) => {
             });
           },
         },
+        '/ws': {
+          target: apiTarget,
+          changeOrigin: true,
+          ws: true,
+          configure: (proxy, options) => {
+            proxy.on('error', (err, req, res) => {
+              console.log('WebSocket proxy error', err);
+            });
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              console.log('WebSocket Request to Target:', req.method, req.url);
+            });
+          },
+        },
       },
     },
   }

@@ -1,0 +1,2160 @@
+{
+  "id": "full_scan_20250814_121638",
+  "target": "https://www.rexcybersolutions.com/",
+  "type": "full_scan",
+  "status": "completed",
+  "start_time": "2025-08-14T12:16:38.945373",
+  "results": [
+    {
+      "id": "ea919fea-5a38-47e2-8ae8-89dad007e918",
+      "title": "Sensitive Data Exposure",
+      "severity": "High",
+      "description": "Potential Email exposure detected in the response.",
+      "short_description": "Potential Email exposure detected in the response.",
+      "remediation": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+      "countermeasures": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A04:2021 - Insecure Design",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": [
+        "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c*******s@fidusinfosec.com\",\n  \"context\": \"r \\u2013 <a href=\\\"mailto:contactus@fidusinfosec.com\\\" class=\\\"link-14\\\">co\"\n}",
+        "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c*******s@fidusinfosec.com\",\n  \"context\": \"r \\u2013 <a href=\\\"mailto:contactus@fidusinfosec.com\\\" class=\\\"link-14\\\">co\"\n}",
+        "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c*****t@rexcybersolutions.com\",\n  \"context\": \"om\\\" class=\\\"link-14\\\">contact@rexcybersolutions.com</a></p><div class=\\\"\"\n}",
+        "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c*****t@rexcybersolutions.com\",\n  \"context\": \"div><a href=\\\"mailto:contact@rexcybersolutions.com\\\" class=\\\"footer-link\"\n}",
+        "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c*****t@rexcybersolutions.com\",\n  \"context\": \"class=\\\"footer-link\\\">contact@rexcybersolutions.com</a><div class=\\\"text\"\n}",
+        "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c****r@rexcybersolutions.com\",\n  \"context\": \"div><a href=\\\"mailto:career@rexcybersolutions.com\\\" class=\\\"footer-link\"\n}",
+        "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c****r@rexcybersolutions.com\",\n  \"context\": \"class=\\\"footer-link\\\">career@rexcybersolutions.com</a></div><div id=\\\"w\"\n}"
+      ],
+      "scanner": "sensitive_data_exposure_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "fed13c35-64d1-4465-a284-638975d43ec1",
+      "title": "Technology Fingerprint Error",
+      "severity": "Info",
+      "description": "Error during CVE lookup: name 'httpx' is not defined",
+      "short_description": "Error during CVE lookup: name 'httpx' is not defined",
+      "remediation": "N/A",
+      "countermeasures": "N/A",
+      "location": "Scanner",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 0,
+      "category": "Unknown",
+      "impact": "N/A",
+      "cvss": 0,
+      "evidence": [
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "scanner": "technology_fingerprint_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "2d3ea26f-8b9c-424f-a8be-144114ec6af6",
+      "title": "Technology Information",
+      "severity": "Info",
+      "description": "Detected technology: Google Font API (version not identified).",
+      "short_description": "Detected technology: Google Font API (version not identified).",
+      "remediation": "N/A",
+      "countermeasures": "N/A",
+      "location": "tech:Google Font API",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 0,
+      "category": "Unknown",
+      "impact": "N/A",
+      "cvss": 0,
+      "evidence": [
+        "{}",
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "scanner": "technology_fingerprint_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "07b34af7-2cce-45f4-81a8-718aaa1bf684",
+      "title": "Technology Information",
+      "severity": "Info",
+      "description": "Detected technology: Webflow (version not identified).",
+      "short_description": "Detected technology: Webflow (version not identified).",
+      "remediation": "N/A",
+      "countermeasures": "N/A",
+      "location": "tech:Webflow",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 0,
+      "category": "Unknown",
+      "impact": "N/A",
+      "cvss": 0,
+      "evidence": [
+        "{}",
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "scanner": "technology_fingerprint_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "e21f33d4-6719-4f8a-9568-1f13142e94e8",
+      "title": "Technology Information",
+      "severity": "Info",
+      "description": "Detected technology: jsDelivr (version not identified).",
+      "short_description": "Detected technology: jsDelivr (version not identified).",
+      "remediation": "N/A",
+      "countermeasures": "N/A",
+      "location": "tech:jsDelivr",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 0,
+      "category": "Unknown",
+      "impact": "N/A",
+      "cvss": 0,
+      "evidence": [
+        "{}",
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "scanner": "technology_fingerprint_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "6ce5fd37-ab56-4392-a6d1-c4c612422eca",
+      "title": "Technology Information",
+      "severity": "Info",
+      "description": "Detected technology: Cloudflare (version not identified).",
+      "short_description": "Detected technology: Cloudflare (version not identified).",
+      "remediation": "N/A",
+      "countermeasures": "N/A",
+      "location": "tech:Cloudflare",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 0,
+      "category": "Unknown",
+      "impact": "N/A",
+      "cvss": 0,
+      "evidence": [
+        "{}",
+        "{}",
+        "{}",
+        "{}"
+      ],
+      "scanner": "technology_fingerprint_scanner",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "579c4ee2-7a18-43d8-a99f-dc9c27265857",
+      "title": "Missing Strict-Transport-Security Header",
+      "severity": "High",
+      "description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+      "short_description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+      "remediation": "Add the Strict-Transport-Security header with value: max-age=31536000; includeSubDomains; preload",
+      "countermeasures": "Add the Strict-Transport-Security header with value: max-age=31536000; includeSubDomains; preload",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "d5876ba5-3800-449b-a781-b7008a49fb4c",
+      "title": "Missing X-Content-Type-Options Header",
+      "severity": "Medium",
+      "description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+      "short_description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+      "remediation": "Add the X-Content-Type-Options header with value: nosniff",
+      "countermeasures": "Add the X-Content-Type-Options header with value: nosniff",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-Content-Type-Options\",\n  \"recommended_value\": \"nosniff\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "bcf2166f-7340-42bf-93cc-6e52aee057a8",
+      "title": "Misconfigured X-Frame-Options Header",
+      "severity": "Medium",
+      "description": "The X-Frame-Options header is present but may not be optimally configured. Prevents clickjacking attacks",
+      "short_description": "The X-Frame-Options header is present but may not be optimally configured. Prevents clickjacking attacks",
+      "remediation": "Update the X-Frame-Options header to: DENY",
+      "countermeasures": "Update the X-Frame-Options header to: DENY",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-Frame-Options\",\n  \"recommended_value\": \"DENY\",\n  \"current_value\": \"SAMEORIGIN\"\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "36e123d9-d876-4db2-8242-248de1689e78",
+      "title": "Missing X-XSS-Protection Header",
+      "severity": "Low",
+      "description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+      "short_description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+      "remediation": "Add the X-XSS-Protection header with value: 1; mode=block",
+      "countermeasures": "Add the X-XSS-Protection header with value: 1; mode=block",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "c62cb500-3763-4f65-a9db-066f38d142c7",
+      "title": "Misconfigured Content-Security-Policy Header",
+      "severity": "High",
+      "description": "The Content-Security-Policy header is present but may not be optimally configured. Controls resource loading",
+      "short_description": "The Content-Security-Policy header is present but may not be optimally configured. Controls resource loading",
+      "remediation": "Update the Content-Security-Policy header to: default-src 'self'",
+      "countermeasures": "Update the Content-Security-Policy header to: default-src 'self'",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": \"frame-ancestors 'self'\"\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "eb38d231-de31-4a15-a270-4546bf4f694b",
+      "title": "Missing Referrer-Policy Header",
+      "severity": "Low",
+      "description": "The Referrer-Policy header is missing. Controls referrer information",
+      "short_description": "The Referrer-Policy header is missing. Controls referrer information",
+      "remediation": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+      "countermeasures": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "24d55374-1b55-4be5-9fd4-9afef100dab0",
+      "title": "Missing Permissions-Policy Header",
+      "severity": "Medium",
+      "description": "The Permissions-Policy header is missing. Controls browser features",
+      "short_description": "The Permissions-Policy header is missing. Controls browser features",
+      "remediation": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+      "countermeasures": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "9fdf9d88-f6f5-407d-b4ee-d47ed13c83fb",
+      "title": "Missing Cross-Origin-Opener-Policy Header",
+      "severity": "Medium",
+      "description": "The Cross-Origin-Opener-Policy header is missing. Helps isolate browsing context (COOP)",
+      "short_description": "The Cross-Origin-Opener-Policy header is missing. Helps isolate browsing context (COOP)",
+      "remediation": "Add the Cross-Origin-Opener-Policy header with value: same-origin",
+      "countermeasures": "Add the Cross-Origin-Opener-Policy header with value: same-origin",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "a309ec90-63f8-4cab-aeae-f393c43ec69e",
+      "title": "Missing Cross-Origin-Embedder-Policy Header",
+      "severity": "Medium",
+      "description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+      "short_description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+      "remediation": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+      "countermeasures": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "3fe25eba-336c-46e8-8d72-94bb5d97ac73",
+      "title": "Missing Cross-Origin-Resource-Policy Header",
+      "severity": "Low",
+      "description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+      "short_description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+      "remediation": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+      "countermeasures": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "84e5e939-7162-45e5-bdf9-38656cc403ee",
+      "title": "Missing X-Permitted-Cross-Domain-Policies Header",
+      "severity": "Low",
+      "description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+      "short_description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+      "remediation": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+      "countermeasures": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+      "location": "https://www.rexcybersolutions.com/",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}",
+      "scanner": "securityheadersanalyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    }
+  ],
+  "errors": [],
+  "sub_scans": {
+    "full_scan_20250814_121638_api_fuzzing_scanner_945468": {
+      "name": "api_fuzzing_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.154528",
+      "execution_time": 0.9063313007354736,
+      "end_time": "2025-08-14T12:16:40.059863"
+    },
+    "full_scan_20250814_121638_api_security_scanner_946406": {
+      "name": "api_security_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.156521",
+      "end_time": "2025-08-14T12:19:55.806247"
+    },
+    "full_scan_20250814_121638_apifuzzing_947371": {
+      "name": "apifuzzing",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.167604",
+      "execution_time": 0.9637606143951416,
+      "end_time": "2025-08-14T12:16:40.130433"
+    },
+    "full_scan_20250814_121638_apisecurity_948229": {
+      "name": "apisecurity",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.170383",
+      "end_time": "2025-08-14T12:19:55.494353"
+    },
+    "full_scan_20250814_121638_authentication_954844": {
+      "name": "authentication",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.181506",
+      "end_time": "2025-08-14T12:23:11.878540"
+    },
+    "full_scan_20250814_121638_authentication_brute_force_credential_stuffing_scanner_955820": {
+      "name": "authentication_brute_force_credential_stuffing_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.183143",
+      "end_time": "2025-08-14T12:23:11.885406"
+    },
+    "full_scan_20250814_121638_authentication_brute_force_scanner_957940": {
+      "name": "authentication_brute_force_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.185727",
+      "end_time": "2025-08-14T12:23:11.895034"
+    },
+    "full_scan_20250814_121638_authentication_bypass_scanner_958740": {
+      "name": "authentication_bypass_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.221802",
+      "end_time": "2025-08-14T12:23:11.926358"
+    },
+    "full_scan_20250814_121638_authentication_scanner_959436": {
+      "name": "authentication_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.223741",
+      "end_time": "2025-08-14T12:23:11.930721"
+    },
+    "full_scan_20250814_121638_authenticationbruteforce_960210": {
+      "name": "authenticationbruteforce",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.225343",
+      "end_time": "2025-08-14T12:23:11.941799"
+    },
+    "full_scan_20250814_121638_authenticationbruteforcecredentialstuffing_961000": {
+      "name": "authenticationbruteforcecredentialstuffing",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.226566",
+      "end_time": "2025-08-14T12:23:11.946874"
+    },
+    "full_scan_20250814_121638_authenticationbypass_961870": {
+      "name": "authenticationbypass",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.227917",
+      "end_time": "2025-08-14T12:23:11.959430"
+    },
+    "full_scan_20250814_121638_automated_cve_lookup_scanner_962641": {
+      "name": "automated_cve_lookup_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.229021",
+      "end_time": "2025-08-14T12:23:11.963026"
+    },
+    "full_scan_20250814_121638_automatedcvelookup_963422": {
+      "name": "automatedcvelookup",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.230320",
+      "end_time": "2025-08-14T12:23:11.974282"
+    },
+    "full_scan_20250814_121638_broken_access_control_scanner_964189": {
+      "name": "broken_access_control_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.240045",
+      "end_time": "2025-08-14T12:23:11.980305"
+    },
+    "full_scan_20250814_121638_broken_authentication_scanner_965002": {
+      "name": "broken_authentication_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.240791",
+      "end_time": "2025-08-14T12:23:11.990071"
+    },
+    "full_scan_20250814_121638_brokenaccesscontrol_965800": {
+      "name": "brokenaccesscontrol",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.241515",
+      "end_time": "2025-08-14T12:23:11.998928"
+    },
+    "full_scan_20250814_121638_brokenauthentication_966571": {
+      "name": "brokenauthentication",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.242172",
+      "end_time": "2025-08-14T12:23:12.012289"
+    },
+    "full_scan_20250814_121638_clickjacking_screenshotter_967351": {
+      "name": "clickjacking_screenshotter",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.242900",
+      "end_time": "2025-08-14T12:21:01.025248"
+    },
+    "full_scan_20250814_121638_clickjackingscreenshotter_977420": {
+      "name": "clickjackingscreenshotter",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.243600",
+      "end_time": "2025-08-14T12:21:01.030976"
+    },
+    "full_scan_20250814_121638_csrf_978578": {
+      "name": "csrf",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.244268",
+      "end_time": "2025-08-14T12:21:01.040738"
+    },
+    "full_scan_20250814_121638_csrf_scanner_979354": {
+      "name": "csrf_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.245125",
+      "end_time": "2025-08-14T12:21:01.043147"
+    },
+    "full_scan_20250814_121638_csrf_token_checker_980058": {
+      "name": "csrf_token_checker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.254932",
+      "end_time": "2025-08-14T12:21:01.046467"
+    },
+    "full_scan_20250814_121638_csrftokenchecker_980815": {
+      "name": "csrftokenchecker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.255891",
+      "end_time": "2025-08-14T12:21:01.048667"
+    },
+    "full_scan_20250814_121638_directory_file_enumeration_scanner_981505": {
+      "name": "directory_file_enumeration_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.256886",
+      "end_time": "2025-08-14T12:23:12.015541"
+    },
+    "full_scan_20250814_121638_directoryfileenumeration_982271": {
+      "name": "directoryfileenumeration",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.257698",
+      "end_time": "2025-08-14T12:23:12.027938"
+    },
+    "full_scan_20250814_121638_insecure_deserialization_scanner_991060": {
+      "name": "insecure_deserialization_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.258772",
+      "execution_time": 0.6232848167419434,
+      "end_time": "2025-08-14T12:16:39.881424"
+    },
+    "full_scan_20250814_121638_insecure_design_scanner_992188": {
+      "name": "insecure_design_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.259591",
+      "end_time": "2025-08-14T12:23:12.047827"
+    },
+    "full_scan_20250814_121638_insecuredeserialization_993158": {
+      "name": "insecuredeserialization",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.269503",
+      "execution_time": 0.6770575046539307,
+      "end_time": "2025-08-14T12:16:39.937010"
+    },
+    "full_scan_20250814_121638_insecuredesign_994228": {
+      "name": "insecuredesign",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.270517",
+      "end_time": "2025-08-14T12:23:12.033923"
+    },
+    "full_scan_20250814_121638_insufficient_logging_and_monitoring_scanner_995896": {
+      "name": "insufficient_logging_and_monitoring_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.271654",
+      "end_time": "2025-08-14T12:23:12.050542"
+    },
+    "full_scan_20250814_121638_insufficientloggingandmonitoring_006067": {
+      "name": "insufficientloggingandmonitoring",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.272901",
+      "end_time": "2025-08-14T12:23:12.053152"
+    },
+    "full_scan_20250814_121638_js_008132": {
+      "name": "js",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.283559",
+      "end_time": "2025-08-14T12:23:12.066513"
+    },
+    "full_scan_20250814_121638_js_scanner_009698": {
+      "name": "js_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.299223",
+      "end_time": "2025-08-14T12:23:12.069134"
+    },
+    "full_scan_20250814_121638_misconfiguration_010781": {
+      "name": "misconfiguration",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.300025",
+      "end_time": "2025-08-14T12:23:12.063949"
+    },
+    "full_scan_20250814_121638_misconfiguration_scanner_021427": {
+      "name": "misconfiguration_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.300793",
+      "end_time": "2025-08-14T12:23:12.081275"
+    },
+    "full_scan_20250814_121638_oob_023226": {
+      "name": "oob",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.301499",
+      "end_time": "2025-08-14T12:23:12.084406"
+    },
+    "full_scan_20250814_121638_oob_scanner_024718": {
+      "name": "oob_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.302281",
+      "end_time": "2025-08-14T12:23:12.087451"
+    },
+    "full_scan_20250814_121638_open_redirect_finder_034841": {
+      "name": "open_redirect_finder",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.302979",
+      "end_time": "2025-08-14T12:23:12.094584"
+    },
+    "full_scan_20250814_121638_open_redirect_scanner_036124": {
+      "name": "open_redirect_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.303674",
+      "end_time": "2025-08-14T12:23:12.103269"
+    },
+    "full_scan_20250814_121638_openredirect_037396": {
+      "name": "openredirect",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.304469",
+      "end_time": "2025-08-14T12:23:12.113775"
+    },
+    "full_scan_20250814_121638_openredirectfinder_038563": {
+      "name": "openredirectfinder",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.305188",
+      "end_time": "2025-08-14T12:21:02.089035"
+    },
+    "full_scan_20250814_121638_path_traversal_tester_044854": {
+      "name": "path_traversal_tester",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.305890",
+      "end_time": "2025-08-14T12:21:02.137185"
+    },
+    "full_scan_20250814_121638_pathtraversaltester_049788": {
+      "name": "pathtraversaltester",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.306469",
+      "end_time": "2025-08-14T12:21:02.139785"
+    },
+    "full_scan_20250814_121638_rate_limiting_bruteforce_scanner_050677": {
+      "name": "rate_limiting_bruteforce_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.307073",
+      "end_time": "2025-08-14T12:21:02.097993"
+    },
+    "full_scan_20250814_121638_ratelimitingbruteforce_051625": {
+      "name": "ratelimitingbruteforce",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.307745",
+      "end_time": "2025-08-14T12:21:02.100421"
+    },
+    "full_scan_20250814_121638_robots_txt_sitemap_crawl_scanner_052717": {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.308460",
+      "end_time": "2025-08-14T12:23:12.119080"
+    },
+    "full_scan_20250814_121638_robotstxtsitemapcrawl_054019": {
+      "name": "robotstxtsitemapcrawl",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.317352",
+      "end_time": "2025-08-14T12:23:12.122927"
+    },
+    "full_scan_20250814_121638_security_headers_analyzer_064859": {
+      "name": "security_headers_analyzer",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-08-14T12:16:39.318600",
+      "end_time": "2025-08-14T12:23:12.133074"
+    },
+    "full_scan_20250814_121638_security_misconfiguration_scanner_066314": {
+      "name": "security_misconfiguration_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:16:39.319527",
+      "end_time": "2025-08-14T12:21:02.103030"
+    },
+    "full_scan_20250814_121638_securityheadersanalyzer_068078": {
+      "name": "securityheadersanalyzer",
+      "status": "completed",
+      "results": [
+        {
+          "id": "579c4ee2-7a18-43d8-a99f-dc9c27265857",
+          "title": "Missing Strict-Transport-Security Header",
+          "severity": "High",
+          "description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+          "short_description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+          "remediation": "Add the Strict-Transport-Security header with value: max-age=31536000; includeSubDomains; preload",
+          "countermeasures": "Add the Strict-Transport-Security header with value: max-age=31536000; includeSubDomains; preload",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "d5876ba5-3800-449b-a781-b7008a49fb4c",
+          "title": "Missing X-Content-Type-Options Header",
+          "severity": "Medium",
+          "description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+          "short_description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+          "remediation": "Add the X-Content-Type-Options header with value: nosniff",
+          "countermeasures": "Add the X-Content-Type-Options header with value: nosniff",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-Content-Type-Options\",\n  \"recommended_value\": \"nosniff\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "bcf2166f-7340-42bf-93cc-6e52aee057a8",
+          "title": "Misconfigured X-Frame-Options Header",
+          "severity": "Medium",
+          "description": "The X-Frame-Options header is present but may not be optimally configured. Prevents clickjacking attacks",
+          "short_description": "The X-Frame-Options header is present but may not be optimally configured. Prevents clickjacking attacks",
+          "remediation": "Update the X-Frame-Options header to: DENY",
+          "countermeasures": "Update the X-Frame-Options header to: DENY",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-Frame-Options\",\n  \"recommended_value\": \"DENY\",\n  \"current_value\": \"SAMEORIGIN\"\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "36e123d9-d876-4db2-8242-248de1689e78",
+          "title": "Missing X-XSS-Protection Header",
+          "severity": "Low",
+          "description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+          "short_description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+          "remediation": "Add the X-XSS-Protection header with value: 1; mode=block",
+          "countermeasures": "Add the X-XSS-Protection header with value: 1; mode=block",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "c62cb500-3763-4f65-a9db-066f38d142c7",
+          "title": "Misconfigured Content-Security-Policy Header",
+          "severity": "High",
+          "description": "The Content-Security-Policy header is present but may not be optimally configured. Controls resource loading",
+          "short_description": "The Content-Security-Policy header is present but may not be optimally configured. Controls resource loading",
+          "remediation": "Update the Content-Security-Policy header to: default-src 'self'",
+          "countermeasures": "Update the Content-Security-Policy header to: default-src 'self'",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": \"frame-ancestors 'self'\"\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "eb38d231-de31-4a15-a270-4546bf4f694b",
+          "title": "Missing Referrer-Policy Header",
+          "severity": "Low",
+          "description": "The Referrer-Policy header is missing. Controls referrer information",
+          "short_description": "The Referrer-Policy header is missing. Controls referrer information",
+          "remediation": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+          "countermeasures": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "24d55374-1b55-4be5-9fd4-9afef100dab0",
+          "title": "Missing Permissions-Policy Header",
+          "severity": "Medium",
+          "description": "The Permissions-Policy header is missing. Controls browser features",
+          "short_description": "The Permissions-Policy header is missing. Controls browser features",
+          "remediation": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+          "countermeasures": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "9fdf9d88-f6f5-407d-b4ee-d47ed13c83fb",
+          "title": "Missing Cross-Origin-Opener-Policy Header",
+          "severity": "Medium",
+          "description": "The Cross-Origin-Opener-Policy header is missing. Helps isolate browsing context (COOP)",
+          "short_description": "The Cross-Origin-Opener-Policy header is missing. Helps isolate browsing context (COOP)",
+          "remediation": "Add the Cross-Origin-Opener-Policy header with value: same-origin",
+          "countermeasures": "Add the Cross-Origin-Opener-Policy header with value: same-origin",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "a309ec90-63f8-4cab-aeae-f393c43ec69e",
+          "title": "Missing Cross-Origin-Embedder-Policy Header",
+          "severity": "Medium",
+          "description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+          "short_description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+          "remediation": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+          "countermeasures": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "3fe25eba-336c-46e8-8d72-94bb5d97ac73",
+          "title": "Missing Cross-Origin-Resource-Policy Header",
+          "severity": "Low",
+          "description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+          "short_description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+          "remediation": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+          "countermeasures": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "84e5e939-7162-45e5-bdf9-38656cc403ee",
+          "title": "Missing X-Permitted-Cross-Domain-Policies Header",
+          "severity": "Low",
+          "description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+          "short_description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+          "remediation": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+          "countermeasures": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}",
+          "scanner": "securityheadersanalyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:19:55.553926",
+      "execution_time": 196.61781454086304,
+      "end_time": "2025-08-14T12:23:12.176282"
+    },
+    "full_scan_20250814_121638_securitymisconfiguration_079200": {
+      "name": "securitymisconfiguration",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:19:55.909160",
+      "end_time": "2025-08-14T12:23:12.100104"
+    },
+    "full_scan_20250814_121638_sensitive_data_exposure_scanner_080256": {
+      "name": "sensitive_data_exposure_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "ea919fea-5a38-47e2-8ae8-89dad007e918",
+          "title": "Sensitive Data Exposure",
+          "severity": "High",
+          "description": "Potential Email exposure detected in the response.",
+          "short_description": "Potential Email exposure detected in the response.",
+          "remediation": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+          "countermeasures": "Implement proper data protection measures. Ensure sensitive data is encrypted in transit and at rest. Follow the principle of least privilege and only expose necessary data.",
+          "location": "https://www.rexcybersolutions.com/",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A04:2021 - Insecure Design",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": [
+            "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c*******s@fidusinfosec.com\",\n  \"context\": \"r \\u2013 <a href=\\\"mailto:contactus@fidusinfosec.com\\\" class=\\\"link-14\\\">co\"\n}",
+            "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c*******s@fidusinfosec.com\",\n  \"context\": \"r \\u2013 <a href=\\\"mailto:contactus@fidusinfosec.com\\\" class=\\\"link-14\\\">co\"\n}",
+            "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c*****t@rexcybersolutions.com\",\n  \"context\": \"om\\\" class=\\\"link-14\\\">contact@rexcybersolutions.com</a></p><div class=\\\"\"\n}",
+            "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c*****t@rexcybersolutions.com\",\n  \"context\": \"div><a href=\\\"mailto:contact@rexcybersolutions.com\\\" class=\\\"footer-link\"\n}",
+            "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c*****t@rexcybersolutions.com\",\n  \"context\": \"class=\\\"footer-link\\\">contact@rexcybersolutions.com</a><div class=\\\"text\"\n}",
+            "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c****r@rexcybersolutions.com\",\n  \"context\": \"div><a href=\\\"mailto:career@rexcybersolutions.com\\\" class=\\\"footer-link\"\n}",
+            "{\n  \"pattern_type\": \"email\",\n  \"masked_data\": \"c****r@rexcybersolutions.com\",\n  \"context\": \"class=\\\"footer-link\\\">career@rexcybersolutions.com</a></div><div id=\\\"w\"\n}"
+          ],
+          "scanner": "sensitive_data_exposure_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:21:01.060474",
+      "execution_time": 0.715306282043457,
+      "end_time": "2025-08-14T12:21:01.775635"
+    },
+    "full_scan_20250814_121638_sensitivedataexposure_081328": {
+      "name": "sensitivedataexposure",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:21:01.061887",
+      "execution_time": 0.7652249336242676,
+      "end_time": "2025-08-14T12:21:01.826980"
+    },
+    "full_scan_20250814_121638_server_side_request_forgery_scanner_082088": {
+      "name": "server_side_request_forgery_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:21:01.063375",
+      "end_time": "2025-08-14T12:23:12.116021"
+    },
+    "full_scan_20250814_121638_serversiderequestforgery_082844": {
+      "name": "serversiderequestforgery",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:21:01.065077",
+      "end_time": "2025-08-14T12:23:12.117430"
+    },
+    "full_scan_20250814_121638_sql_injection_scanner_093721": {
+      "name": "sql_injection_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T12:16:40.230112",
+      "end_time": "2025-08-14T12:21:04.861321"
+    },
+    "full_scan_20250814_121638_sqlinjection_108324": {
+      "name": "sqlinjection",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T12:16:40.231011",
+      "end_time": "2025-08-14T12:21:04.865880"
+    },
+    "full_scan_20250814_121638_ssl_tls_configuration_audit_scanner_112085": {
+      "name": "ssl_tls_configuration_audit_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:21:01.069915",
+      "execution_time": 0.8399448394775391,
+      "end_time": "2025-08-14T12:21:01.908342"
+    },
+    "full_scan_20250814_121638_ssltlsconfigurationaudit_112816": {
+      "name": "ssltlsconfigurationaudit",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:21:01.072598",
+      "execution_time": 0.9439363479614258,
+      "end_time": "2025-08-14T12:21:02.016083"
+    },
+    "full_scan_20250814_121638_subdomain_dns_enumeration_scanner_113510": {
+      "name": "subdomain_dns_enumeration_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:21:02.116061",
+      "execution_time": 2.7797279357910156,
+      "end_time": "2025-08-14T12:21:04.895406"
+    },
+    "full_scan_20250814_121638_subdomaindnsenumeration_123443": {
+      "name": "subdomaindnsenumeration",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:21:02.117707",
+      "execution_time": 2.818880081176758,
+      "end_time": "2025-08-14T12:21:04.936328"
+    },
+    "full_scan_20250814_121638_technology_fingerprint_scanner_124408": {
+      "name": "technology_fingerprint_scanner",
+      "status": "completed",
+      "results": [
+        {
+          "id": "fed13c35-64d1-4465-a284-638975d43ec1",
+          "title": "Technology Fingerprint Error",
+          "severity": "Info",
+          "description": "Error during CVE lookup: name 'httpx' is not defined",
+          "short_description": "Error during CVE lookup: name 'httpx' is not defined",
+          "remediation": "N/A",
+          "countermeasures": "N/A",
+          "location": "Scanner",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 0,
+          "category": "Unknown",
+          "impact": "N/A",
+          "cvss": 0,
+          "evidence": [
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}",
+            "{}"
+          ],
+          "scanner": "technology_fingerprint_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "2d3ea26f-8b9c-424f-a8be-144114ec6af6",
+          "title": "Technology Information",
+          "severity": "Info",
+          "description": "Detected technology: Google Font API (version not identified).",
+          "short_description": "Detected technology: Google Font API (version not identified).",
+          "remediation": "N/A",
+          "countermeasures": "N/A",
+          "location": "tech:Google Font API",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 0,
+          "category": "Unknown",
+          "impact": "N/A",
+          "cvss": 0,
+          "evidence": [
+            "{}",
+            "{}",
+            "{}",
+            "{}"
+          ],
+          "scanner": "technology_fingerprint_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "07b34af7-2cce-45f4-81a8-718aaa1bf684",
+          "title": "Technology Information",
+          "severity": "Info",
+          "description": "Detected technology: Webflow (version not identified).",
+          "short_description": "Detected technology: Webflow (version not identified).",
+          "remediation": "N/A",
+          "countermeasures": "N/A",
+          "location": "tech:Webflow",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 0,
+          "category": "Unknown",
+          "impact": "N/A",
+          "cvss": 0,
+          "evidence": [
+            "{}",
+            "{}",
+            "{}",
+            "{}"
+          ],
+          "scanner": "technology_fingerprint_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "e21f33d4-6719-4f8a-9568-1f13142e94e8",
+          "title": "Technology Information",
+          "severity": "Info",
+          "description": "Detected technology: jsDelivr (version not identified).",
+          "short_description": "Detected technology: jsDelivr (version not identified).",
+          "remediation": "N/A",
+          "countermeasures": "N/A",
+          "location": "tech:jsDelivr",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 0,
+          "category": "Unknown",
+          "impact": "N/A",
+          "cvss": 0,
+          "evidence": [
+            "{}",
+            "{}",
+            "{}",
+            "{}"
+          ],
+          "scanner": "technology_fingerprint_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "6ce5fd37-ab56-4392-a6d1-c4c612422eca",
+          "title": "Technology Information",
+          "severity": "Info",
+          "description": "Detected technology: Cloudflare (version not identified).",
+          "short_description": "Detected technology: Cloudflare (version not identified).",
+          "remediation": "N/A",
+          "countermeasures": "N/A",
+          "location": "tech:Cloudflare",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 0,
+          "category": "Unknown",
+          "impact": "N/A",
+          "cvss": 0,
+          "evidence": [
+            "{}",
+            "{}",
+            "{}",
+            "{}"
+          ],
+          "scanner": "technology_fingerprint_scanner",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "LOW",
+      "start_time": "2025-08-14T12:21:05.919293",
+      "execution_time": 11.163432836532593,
+      "end_time": "2025-08-14T12:21:16.202000"
+    },
+    "full_scan_20250814_121638_technology_vulnerabilities_scanner_125274": {
+      "name": "technology_vulnerabilities_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "LOW",
+      "start_time": "2025-08-14T12:21:06.678940",
+      "execution_time": 10.337570667266846,
+      "end_time": "2025-08-14T12:21:16.258267"
+    },
+    "full_scan_20250814_121638_technologyfingerprint_126075": {
+      "name": "technologyfingerprint",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "LOW",
+      "start_time": "2025-08-14T12:21:07.055643",
+      "execution_time": 9.64033317565918,
+      "end_time": "2025-08-14T12:21:16.320681"
+    },
+    "full_scan_20250814_121638_technologyvulnerabilities_126955": {
+      "name": "technologyvulnerabilities",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "LOW",
+      "start_time": "2025-08-14T12:21:07.056752",
+      "execution_time": 9.314092636108398,
+      "end_time": "2025-08-14T12:21:16.370515"
+    },
+    "full_scan_20250814_121638_using_components_with_known_vulnerabilities_scanner_127798": {
+      "name": "using_components_with_known_vulnerabilities_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:21:02.119578",
+      "end_time": "2025-08-14T12:25:23.948222"
+    },
+    "full_scan_20250814_121638_usingcomponentswithknownvulnerabilities_138004": {
+      "name": "usingcomponentswithknownvulnerabilities",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:21:02.121158",
+      "end_time": "2025-08-14T12:25:23.952920"
+    },
+    "full_scan_20250814_121638_xss_138998": {
+      "name": "xss",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T12:16:40.389986",
+      "end_time": "2025-08-14T12:21:07.057696"
+    },
+    "full_scan_20250814_121638_xss_scanner_139871": {
+      "name": "xss_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "HIGH",
+      "start_time": "2025-08-14T12:16:40.390889",
+      "end_time": "2025-08-14T12:21:07.060311"
+    },
+    "full_scan_20250814_121638_xxe_140613": {
+      "name": "xxe",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:21:05.025147",
+      "execution_time": 7.6659486293792725,
+      "end_time": "2025-08-14T12:21:12.689973"
+    },
+    "full_scan_20250814_121638_xxe_scanner_141068": {
+      "name": "xxe_scanner",
+      "status": "completed",
+      "results": [],
+      "errors": [],
+      "priority": "MEDIUM",
+      "start_time": "2025-08-14T12:21:05.036791",
+      "execution_time": 11.071771144866943,
+      "end_time": "2025-08-14T12:21:16.098468"
+    }
+  },
+  "progress": 100.0,
+  "total_modules": 72,
+  "completed_modules": 72,
+  "deadline": 1755177398.9454,
+  "performance_metrics": {
+    "http_cache_stats": {
+      "cache_size": 1,
+      "active_requests": 3,
+      "max_connections": 400,
+      "max_keepalive": 120,
+      "retries": 0,
+      "throttle_waits": 14,
+      "ssrf_blocks": 0
+    },
+    "scanner_timing": {
+      "insecure_deserialization_scanner": 0.6232848167419434,
+      "insecuredeserialization": 0.6770575046539307,
+      "api_fuzzing_scanner": 0.9063313007354736,
+      "apifuzzing": 0.9637606143951416,
+      "sensitive_data_exposure_scanner": 0.715306282043457,
+      "sensitivedataexposure": 0.7652249336242676,
+      "ssl_tls_configuration_audit_scanner": 0.8399448394775391,
+      "ssltlsconfigurationaudit": 0.9439363479614258,
+      "subdomain_dns_enumeration_scanner": 2.7797279357910156,
+      "subdomaindnsenumeration": 2.818880081176758,
+      "xxe": 7.6659486293792725,
+      "xxe_scanner": 11.071771144866943,
+      "technology_fingerprint_scanner": 11.163432836532593,
+      "technology_vulnerabilities_scanner": 10.337570667266846,
+      "technologyfingerprint": 9.64033317565918,
+      "technologyvulnerabilities": 9.314092636108398,
+      "securityheadersanalyzer": 196.61781454086304
+    },
+    "resource_usage": {}
+  },
+  "timing_data": {
+    "start_time": 1755173798.94541,
+    "estimated_completion": null,
+    "scanner_estimates": {},
+    "last_progress_update": 1755174323.953538
+  },
+  "modules": [
+    {
+      "name": "api_fuzzing_scanner",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "api_security_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "apifuzzing",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "apisecurity",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "authentication",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "authentication_brute_force_credential_stuffing_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "authentication_brute_force_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "authentication_bypass_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "authentication_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "authenticationbruteforce",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "authenticationbruteforcecredentialstuffing",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "authenticationbypass",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "automated_cve_lookup_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "automatedcvelookup",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "broken_access_control_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "broken_authentication_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "brokenaccesscontrol",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "brokenauthentication",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "clickjacking_screenshotter",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "clickjackingscreenshotter",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "csrf",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "csrf_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "csrf_token_checker",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "csrftokenchecker",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "directory_file_enumeration_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "directoryfileenumeration",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "insecure_deserialization_scanner",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "insecure_design_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "insecuredeserialization",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "insecuredesign",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "insufficient_logging_and_monitoring_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "insufficientloggingandmonitoring",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "js",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "js_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "misconfiguration",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "misconfiguration_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "oob",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "oob_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "open_redirect_finder",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "open_redirect_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "openredirect",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "openredirectfinder",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "path_traversal_tester",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "pathtraversaltester",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "rate_limiting_bruteforce_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "ratelimitingbruteforce",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "robotstxtsitemapcrawl",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "security_headers_analyzer",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "security_misconfiguration_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "securityheadersanalyzer",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "securitymisconfiguration",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "sensitive_data_exposure_scanner",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "sensitivedataexposure",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "server_side_request_forgery_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "serversiderequestforgery",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "sql_injection_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "sqlinjection",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "ssl_tls_configuration_audit_scanner",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "ssltlsconfigurationaudit",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "subdomain_dns_enumeration_scanner",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "subdomaindnsenumeration",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "technology_fingerprint_scanner",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "technology_vulnerabilities_scanner",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "technologyfingerprint",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "technologyvulnerabilities",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "using_components_with_known_vulnerabilities_scanner",
+      "status": "running",
+      "error": null
+    },
+    {
+      "name": "usingcomponentswithknownvulnerabilities",
+      "status": "running",
+      "error": null
+    },
+    {
+      "name": "xss",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "xss_scanner",
+      "status": "failed",
+      "error": "Scanner terminated unexpectedly"
+    },
+    {
+      "name": "xxe",
+      "status": "completed",
+      "error": null
+    },
+    {
+      "name": "xxe_scanner",
+      "status": "completed",
+      "error": null
+    }
+  ],
+  "overview": {
+    "technologyInfo": [],
+    "headersSummary": {
+      "issues": 0
+    },
+    "tlsSummary": {
+      "issues": 0
+    }
+  },
+  "end_time": "2025-08-14T12:25:23.955810",
+  "total_findings": 17
+}

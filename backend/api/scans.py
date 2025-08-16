@@ -62,6 +62,13 @@ async def start_scan(
             scan_type=scan_input.scan_type,
             options=scan_input.options or {}
         )
+        # Immediately nudge websocket subscribers with initial progress if any are connected
+        try:
+            from backend.api.websocket import get_connection_manager
+            mgr = get_connection_manager()
+            await mgr.broadcast_scan_update(scan_id, "scan_phase", {"phase": "Initializing...", "scan_id": scan_id})
+        except Exception:
+            pass
         return {"scan_id": scan_id, "status": "started"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

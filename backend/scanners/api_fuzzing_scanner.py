@@ -137,17 +137,13 @@ class ApiFuzzingScanner(BaseScanner):
                     "affected_url": url
                 }
         except Exception as e:
-            logger.error(f"Error fuzzing endpoint", extra={
-                "url": url,
-                "payload_type": payload_type,
-                "error": str(e)
-            })
-        except Exception as e:
-            logger.error(f"Unexpected error during API fuzzing", extra={
-                "url": url,
-                "payload_type": payload_type,
-                "error": str(e)
-            }, exc_info=True)
+            # Log at debug level to avoid spam, only log unique errors
+            error_key = f"{type(e).__name__}:{url}"
+            if not hasattr(self, '_logged_errors'):
+                self._logged_errors = set()
+            if error_key not in self._logged_errors:
+                self._logged_errors.add(error_key)
+                logger.debug(f"API fuzzing error for {url}: {type(e).__name__}")
         return None 
 
     def _create_error_finding(self, description: str) -> Dict:
