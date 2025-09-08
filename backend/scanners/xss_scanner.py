@@ -6,7 +6,7 @@ import httpx
 import re
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
-from backend.types.models import ScanInput, Severity, OwaspCategory
+from backend.config_types.models import ScanInput, Severity, OwaspCategory
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils import get_http_client
 from backend.utils.crawler import seed_urls

@@ -1,11 +1,14 @@
-﻿import asyncio
+import asyncio
 from backend.utils import get_http_client
 from typing import List, Dict, Any, Optional
 
 from Wappalyzer import Wappalyzer, WebPage
 
+import warnings
+import json
+import httpx
 from backend.scanners.base_scanner import BaseScanner
-from backend.types.models import ScanInput, Severity, OwaspCategory
+from backend.config_types.models import ScanInput, Severity, OwaspCategory
 from backend.utils.enrichment import EnrichmentService
 from backend.utils.logging_config import get_context_logger
 from backend.utils import get_http_client
@@ -23,7 +26,7 @@ ECOSYSTEM_MAPPING = {
     "ui-frameworks": "npm",
 }
 
-# Direct tech→ecosystem overrides for common frameworks/libraries
+# Direct tech?ecosystem overrides for common frameworks/libraries
 TECH_ECOSYSTEM_OVERRIDES = {
     # Python
     "django": "PyPI",
@@ -61,7 +64,13 @@ class TechnologyFingerprintScanner(BaseScanner):
         # Initialize Wappalyzer. This can be slow, so we do it once.
         # Wappalyzer.latest(update=True) is blocking, so we avoid it in an async app
         # or would run it in a thread pool on startup. For now, use cached version.
-        self.wappalyzer = Wappalyzer.latest()
+        try:
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=UserWarning)
+                self.wappalyzer = Wappalyzer.latest()
+        except Exception as e:
+            self.logger.warning(f"Failed to initialize Wappalyzer; technology analysis will be degraded: {e}")
+            self.wappalyzer = None
         self._enrichment = EnrichmentService()
         self._osv_cache: Dict[str, Any] = {}
 
@@ -107,7 +116,17 @@ class TechnologyFingerprintScanner(BaseScanner):
                         headers = {}
 
                 webpage = WebPage(str(final_url), html_text, headers)
-                technologies = self.wappalyzer.analyze_with_versions_and_categories(webpage)
+                technologies = {}
+                if self.wappalyzer:
+                    try:
+                        with warnings.catch_warnings():
+                            warnings.filterwarnings("ignore", category=UserWarning)
+                            technologies = self.wappalyzer.analyze_with_versions_and_categories(webpage)
+                    except Exception as e:
+                        self.logger.warning(f"Wappalyzer analysis failed; continuing with heuristics only: {e}")
+                        technologies = {}
+                else:
+                    self.logger.info("Wappalyzer not initialized; skipping technology fingerprint analysis")
 
                 # Heuristic extraction: meta generator, server header, powered-by
                 try:

@@ -1,4 +1,4 @@
-﻿import re
+import re
 import httpx
 from typing import List, Dict
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
@@ -6,7 +6,7 @@ import logging
 import asyncio
 
 from backend.scanners.base_scanner import BaseScanner
-from backend.types.models import ScanInput, Severity, OwaspCategory
+from backend.config_types.models import ScanInput, Severity, OwaspCategory
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils import get_http_client
 from backend.utils.crawler import seed_urls

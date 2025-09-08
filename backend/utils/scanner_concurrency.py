@@ -36,11 +36,11 @@ class ScannerConcurrencyManager:
     """Manages concurrent execution of scanners with resource monitoring."""
     
     def __init__(self, 
-                 max_concurrent_scanners: int = 10,
-                 max_memory_percent: float = 80.0,
+                 max_concurrent_scanners: int = 50,  # Increased from 30 to 50 for higher parallelism
+                 max_memory_percent: float = 95.0,  # Increased from 90.0 to 95.0 for better resource utilization
                  priority_queues: bool = True,
                  enable_circuit_breaker: bool = True,
-                 per_host_max_concurrency: int = 6):
+                 per_host_max_concurrency: int = 25):  # Increased from 15 to 25 for faster scanning
         
         self.max_concurrent_scanners = max_concurrent_scanners
         self.max_memory_percent = max_memory_percent
@@ -53,11 +53,11 @@ class ScannerConcurrencyManager:
         self._completed_tasks: List[ScannerTask] = []
         self._failed_tasks: List[ScannerTask] = []
         
-        # Resource monitoring
+        # Resource monitoring - more lenient settings
         self._memory_monitor = psutil.Process()
         self._circuit_breaker_failures = 0
-        self._circuit_breaker_threshold = 5
-        self._circuit_breaker_cooldown = 60  # seconds
+        self._circuit_breaker_threshold = 15  # Increased from 5 to 15
+        self._circuit_breaker_cooldown = 30  # Reduced from 60 to 30 seconds
         self._last_circuit_breaker_trip = 0
         
         # Statistics
@@ -69,14 +69,14 @@ class ScannerConcurrencyManager:
         self._running = False
         self._shutdown_event = asyncio.Event()
         
-        # Thread pool for CPU-bound operations
-        self._thread_pool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="ScannerWorker")
+        # Thread pool for CPU-bound operations - increased worker count
+        self._thread_pool = ThreadPoolExecutor(max_workers=12, thread_name_prefix="ScannerWorker")  # Increased from 4 to 12
 
-        # Per-scanner circuit breaker
+        # Per-scanner circuit breaker - more lenient settings
         self._per_scanner_failures: Dict[str, int] = {}
         self._per_scanner_open_until: Dict[str, float] = {}
-        self._per_scanner_threshold = 3
-        self._per_scanner_cooldown = 120.0  # seconds
+        self._per_scanner_threshold = 10  # Increased from 3 to 10
+        self._per_scanner_cooldown = 60.0  # Reduced from 120.0 to 60.0 seconds
         # Per-host concurrency caps
         self._per_host_max = max(1, int(per_host_max_concurrency))
         self._per_host_active: Dict[str, int] = {}
@@ -174,8 +174,8 @@ class ScannerConcurrencyManager:
                     ]
                     
                     if high_priority_tasks:
-                        # Start high-priority tasks immediately
-                        for task in high_priority_tasks[:2]:  # Start up to 2 high-priority tasks
+                        # Start high-priority tasks immediately - increased from 2 to 4
+                        for task in high_priority_tasks[:4]:  # Start up to 4 high-priority tasks
                             if len(self._active_tasks) < self.max_concurrent_scanners:
                                 await self._start_task(task)
                                 continue
@@ -196,7 +196,7 @@ class ScannerConcurrencyManager:
                 await self._check_completed_tasks()
                 
                 # Reduced sleep time for faster response (avoid visible pauses)
-                await asyncio.sleep(0.02)
+                await asyncio.sleep(0.01)  # Reduced from 0.02 to 0.01 for faster task processing
                 
             except Exception as e:
                 logger.error(f"Error in task queue processor: {e}")
@@ -402,19 +402,19 @@ class ScannerConcurrencyManager:
                 # Adjust concurrency based on memory pressure with less aggressive thresholds
                 if memory_percent > self.max_memory_percent * 0.95:
                     # Only reduce concurrency under very high memory pressure
-                    new_limit = max(5, self.max_concurrent_scanners - 2)
+                    new_limit = max(10, self.max_concurrent_scanners - 5)
                     if new_limit != self.max_concurrent_scanners:
                         self.max_concurrent_scanners = new_limit
                         logger.warning(f"Reduced max concurrent scanners to {self.max_concurrent_scanners} due to high memory pressure ({memory_percent:.1f}%)")
                 elif memory_percent < self.max_memory_percent * 0.7:
-                    # Increase concurrency when memory is available
-                    new_limit = min(50, self.max_concurrent_scanners + 2)
+                    # Increase concurrency when memory is available - allow higher limit
+                    new_limit = min(100, self.max_concurrent_scanners + 5)
                     if new_limit != self.max_concurrent_scanners:
                         self.max_concurrent_scanners = new_limit
                         logger.debug(f"Increased max concurrent scanners to {self.max_concurrent_scanners} (memory: {memory_percent:.1f}%)")
                 
                 # More frequent monitoring for better responsiveness
-                await asyncio.sleep(1)  # Check every second
+                await asyncio.sleep(0.5)  # Check twice per second for faster adaptation
                 
             except Exception as e:
                 logger.error(f"Error in resource monitor: {e}")
@@ -482,16 +482,16 @@ def get_scanner_concurrency_manager() -> ScannerConcurrencyManager:
     if _concurrency_manager is None:
         try:
             from backend.config import settings as _settings
-            # Honor configured max concurrent scans; allow up to 50 per user request
-            configured_max = int(getattr(_settings, 'MAX_CONCURRENT_SCANS', 10) or 10)
-            max_scanners = max(10, min(50, configured_max))
-            per_host_max = int(getattr(_settings, 'PER_HOST_MAX_CONCURRENCY', 6) or 6)
+            # Increase default concurrency for faster scanning
+            configured_max = int(getattr(_settings, 'MAX_CONCURRENT_SCANS', 75) or 75)
+            max_scanners = max(30, min(100, configured_max))
+            per_host_max = int(getattr(_settings, 'PER_HOST_MAX_CONCURRENCY', 12) or 12)
         except Exception:
-            max_scanners = 10
-            per_host_max = 6
+            max_scanners = 30
+            per_host_max = 12
         _concurrency_manager = ScannerConcurrencyManager(
             max_concurrent_scanners=max_scanners,
-            max_memory_percent=80.0,
+            max_memory_percent=85.0,  # Allow slightly higher memory usage
             priority_queues=True,
             enable_circuit_breaker=True,
             per_host_max_concurrency=per_host_max,

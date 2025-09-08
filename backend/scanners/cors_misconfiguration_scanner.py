@@ -3,7 +3,7 @@ from typing import Dict, List
 from datetime import datetime
 
 from backend.scanners.base_scanner import BaseScanner
-from backend.types.models import Severity
+from backend.config_types.models import Severity
 from backend.utils import get_http_client
 from backend.utils.crawler import seed_urls
 import re
@@ -59,58 +59,58 @@ class CorsMisconfigurationScanner(BaseScanner):
                     acrh = resp.headers.get("Access-Control-Allow-Headers")
                     vary = resp.headers.get("Vary")
 
-                        # High: wildcard with credentials
-                        if acao == "*" and (acac or "").lower() == "true":
-                            f = self._finding(
-                                severity=Severity.HIGH,
-                                title="CORS allows any origin with credentials",
-                                description="Access-Control-Allow-Origin is '*' while Access-Control-Allow-Credentials is true. This allows credentialed requests from any origin.",
-                                location=url,
-                                remediation="Do not combine '*' with credentials. Set ACAO to a specific trusted origin and review credential usage.",
-                                evidence={"headers": dict(resp.headers)}
-                            )
-                            self._enrich_with_cwe_cve(f)
-                            findings.append(f)
+                    # High: wildcard with credentials
+                    if acao == "*" and (acac or "").lower() == "true":
+                        f = self._finding(
+                            severity=Severity.HIGH,
+                            title="CORS allows any origin with credentials",
+                            description="Access-Control-Allow-Origin is '*' while Access-Control-Allow-Credentials is true. This allows credentialed requests from any origin.",
+                            location=url,
+                            remediation="Do not combine '*' with credentials. Set ACAO to a specific trusted origin and review credential usage.",
+                            evidence={"headers": dict(resp.headers)}
+                        )
+                        self._enrich_with_cwe_cve(f)
+                        findings.append(f)
 
-                        # High: reflective origin with credentials
-                        if acao and acao == test_origin and (acac or "").lower() == "true":
-                            f = self._finding(
-                                severity=Severity.HIGH,
-                                title="CORS reflects arbitrary Origin with credentials",
-                                description="The server reflects the request Origin in ACAO and also allows credentials, enabling cross-origin credential theft.",
-                                location=url,
-                                remediation="Whitelist specific trusted origins and avoid credentials unless strictly required.",
-                                evidence={"headers": dict(resp.headers), "origin": test_origin}
-                            )
-                            self._enrich_with_cwe_cve(f)
-                            findings.append(f)
+                    # High: reflective origin with credentials
+                    if acao and acao == test_origin and (acac or "").lower() == "true":
+                        f = self._finding(
+                            severity=Severity.HIGH,
+                            title="CORS reflects arbitrary Origin with credentials",
+                            description="The server reflects the request Origin in ACAO and also allows credentials, enabling cross-origin credential theft.",
+                            location=url,
+                            remediation="Whitelist specific trusted origins and avoid credentials unless strictly required.",
+                            evidence={"headers": dict(resp.headers), "origin": test_origin}
+                        )
+                        self._enrich_with_cwe_cve(f)
+                        findings.append(f)
 
-                        # Medium: overly permissive methods/headers
-                        if acam and ("*" in acam or "DELETE" in acam or "PUT" in acam):
-                            f = self._finding(
-                                severity=Severity.MEDIUM,
-                                title="CORS allows overly permissive methods",
-                                description="Allowed methods include '*' or powerful methods like DELETE/PUT.",
-                                location=url,
-                                remediation="Limit allowed methods to those strictly needed (e.g., GET, POST).",
-                                evidence={"methods": acam}
-                            )
-                            self._enrich_with_cwe_cve(f)
-                            findings.append(f)
+                    # Medium: overly permissive methods/headers
+                    if acam and ("*" in acam or "DELETE" in acam or "PUT" in acam):
+                        f = self._finding(
+                            severity=Severity.MEDIUM,
+                            title="CORS allows overly permissive methods",
+                            description="Allowed methods include '*' or powerful methods like DELETE/PUT.",
+                            location=url,
+                            remediation="Limit allowed methods to those strictly needed (e.g., GET, POST).",
+                            evidence={"methods": acam}
+                        )
+                        self._enrich_with_cwe_cve(f)
+                        findings.append(f)
 
-                        if acrh and ("*" in acrh or "authorization" in acrh.lower()):
-                            f = self._finding(
-                                severity=Severity.MEDIUM,
-                                title="CORS allows overly permissive headers",
-                                description="Allowed headers include '*' or sensitive headers like Authorization.",
-                                location=url,
-                                remediation="Limit allowed headers to a minimal, explicit list. Avoid exposing Authorization unless necessary.",
-                                evidence={"headers": acrh}
-                            )
-                            self._enrich_with_cwe_cve(f)
-                            findings.append(f)
+                    if acrh and ("*" in acrh or "authorization" in acrh.lower()):
+                        f = self._finding(
+                            severity=Severity.MEDIUM,
+                            title="CORS allows overly permissive headers",
+                            description="Allowed headers include '*' or sensitive headers like Authorization.",
+                            location=url,
+                            remediation="Limit allowed headers to a minimal, explicit list. Avoid exposing Authorization unless necessary.",
+                            evidence={"headers": acrh}
+                        )
+                        self._enrich_with_cwe_cve(f)
+                        findings.append(f)
 
-                        # Low: missing Vary: Origin for dynamic ACAO
+                    # Low: missing Vary: Origin for dynamic ACAO
                         if acao and acao != "*" and (not vary or "origin" not in vary.lower()):
                             f = self._finding(
                                 severity=Severity.LOW,

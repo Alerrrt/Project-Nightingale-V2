@@ -1,8 +1,10 @@
-﻿import asyncio
+import asyncio
 import logging
+import importlib
+import inspect
 from typing import Dict, List, Optional, Any
 from datetime import datetime
-from backend.types.models import ScanInput, Finding
+from backend.config_types.models import ScanInput, Finding
 from backend.plugins.plugin_manager import PluginManager
 from backend.config import settings
 import uuid
@@ -15,24 +17,24 @@ from backend.utils.enrichment import EnrichmentService
 from backend.utils.scanner_concurrency import get_scanner_concurrency_manager, ScannerPriority
 from backend.utils.http_client import get_shared_http_client
 from backend.utils.vuln_mapper import map_vulnerability_fields, map_severity_from_cvss, deduplicate_vulnerabilities, merge_vulnerability_instances
+from backend.scanners.base_scanner import BaseScanner
 import time
 
 logger = logging.getLogger(__name__)
 
-# Use env-configurable per-scanner timeout; fallback to 300s (5 minutes)
+# Use env-configurable per-scanner timeout with optimized defaults for faster completion
 try:
     from backend.config import settings as _settings
-    SCANNER_TIMEOUT = float(getattr(_settings, 'SCANNER_TIMEOUT_SECONDS', 300))
-    GLOBAL_HARD_CAP = int(getattr(_settings, 'GLOBAL_SCAN_HARD_CAP_SECONDS', 1800))  # 30 minutes default
-    SCANNER_MAX_RETRIES = int(getattr(_settings, 'SCANNER_MAX_RETRIES', 1))
+    SCANNER_TIMEOUT = float(getattr(_settings, 'SCANNER_TIMEOUT_SECONDS', 120))  # Reduced to 2 minutes for faster scans
+    GLOBAL_HARD_CAP = int(getattr(_settings, 'GLOBAL_SCAN_HARD_CAP_SECONDS', 600))  # Reduced to 10 minutes
+    SCANNER_MAX_RETRIES = int(getattr(_settings, 'SCANNER_MAX_RETRIES', 1))  # Reduced retries for speed
 except Exception:
-    SCANNER_TIMEOUT = 300.0
-    GLOBAL_HARD_CAP = 1800
-    SCANNER_MAX_RETRIES = 1
+    SCANNER_TIMEOUT = 120.0  # 2 minutes default timeout for faster completion
+    GLOBAL_HARD_CAP = 600  # 10 minutes global cap
+    SCANNER_MAX_RETRIES = 1  # Single retry for speed
 
-# Enforce an upper bound per scanner so the whole scan can finish within a strict window
-# Cap single scanner runtime to at most 90s or the configured timeout, whichever is lower
-PER_SCANNER_CAP_SECONDS = min(90.0, SCANNER_TIMEOUT)
+# No per-scanner cap to allow scanners to run as long as needed
+PER_SCANNER_CAP_SECONDS = 0  # 0 means no timeout
 
 def _transform_finding_for_frontend(finding_data: Dict, target: str) -> Dict:
     """Normalize raw module finding to a frontend-facing structure.
@@ -147,7 +149,7 @@ class ScannerEngine:
         self.scanner_registry = None
         self._scan_results: Dict[str, Dict] = {}
         self._active_scans: Dict[str, asyncio.Task] = {}
-        self._semaphore = asyncio.Semaphore(10)  # Keep for backward compatibility
+        self._semaphore = asyncio.Semaphore(20)  # Increased for better concurrency
         
         # Enhanced components
         self._concurrency_manager = get_scanner_concurrency_manager()
@@ -182,12 +184,86 @@ class ScannerEngine:
             logger.info("Scanner concurrency manager started successfully")
         except Exception as e:
             logger.warning(f"Failed to start concurrency manager: {e}")
+            
+        # Preload all scanners to ensure they're ready when the frontend is ready
+        try:
+            logger.info("Preloading all scanners during initialization")
+            await self.load_scanners(preload_all=True)
+            logger.info("All scanners preloaded successfully")
+        except Exception as e:
+            logger.error(f"Error preloading scanners during initialization: {e}", exc_info=True)
 
-    async def load_scanners(self):
-        """Load available scanners from the registry."""
+    async def load_scanners(self, preload_all=True):
+        """Load available scanners and plugins from the registry.
+
+        Args:
+            preload_all: If True, force load all scanners and plugins immediately for faster response
+                        when the frontend is ready.
+        """
         if self.scanner_registry:
+            # Force load all scanners and plugins if requested
+            if preload_all and hasattr(self.scanner_registry, '_lazy_modules'):
+                logger.info("Preloading all scanners and plugins for faster response")
+                start_time = time.time()
+
+                # Get all lazy modules that haven't been loaded yet
+                lazy_modules = list(set(self.scanner_registry._lazy_modules) -
+                                   set(self.scanner_registry._loaded_modules))
+
+                # Load all modules in parallel for better performance
+                for module_name in lazy_modules:
+                    try:
+                        # Try to import as scanner first
+                        try:
+                            module = importlib.import_module(f'backend.scanners.{module_name}')
+                            module_type = "scanner"
+                        except ImportError:
+                            # Try to import as plugin
+                            try:
+                                module = importlib.import_module(f'backend.plugins.{module_name}')
+                                module_type = "plugin"
+                            except ImportError:
+                                logger.warning(f"Could not import module {module_name} as scanner or plugin")
+                                continue
+
+                        self.scanner_registry._loaded_modules.add(module_name)
+
+                        if module_type == "scanner":
+                            # Find scanner classes in the module
+                            scanner_classes = [obj for name, obj in inspect.getmembers(module, inspect.isclass)
+                                             if issubclass(obj, BaseScanner) and obj != BaseScanner]
+
+                            for scanner_class in scanner_classes:
+                                name = scanner_class.__name__
+                                # Register with class name
+                                scanner_name = name.lower().replace('scanner', '')
+                                self.scanner_registry.register(scanner_name, scanner_class)
+                                # Register with module name
+                                if module_name not in self.scanner_registry._scanners:
+                                    self.scanner_registry.register(module_name, scanner_class)
+                        else:
+                            # Find plugin classes in the module
+                            from backend.plugins.base_plugin import BasePlugin
+                            plugin_classes = [obj for name, obj in inspect.getmembers(module, inspect.isclass)
+                                            if issubclass(obj, BasePlugin) and obj != BasePlugin]
+
+                            for plugin_class in plugin_classes:
+                                name = plugin_class.__name__
+                                # Register with class name
+                                plugin_name = name.lower().replace('plugin', '')
+                                self.scanner_registry.register(plugin_name, plugin_class)
+                                # Register with module name
+                                if module_name not in self.scanner_registry._scanners:
+                                    self.scanner_registry.register(module_name, plugin_class)
+
+                    except Exception as e:
+                        logger.error(f"Error preloading module: {module_name}", exc_info=True)
+
+                elapsed = time.time() - start_time
+                logger.info(f"Preloaded all scanners and plugins in {elapsed:.2f} seconds")
+
             scanners = self.scanner_registry.get_all_scanners()
-            logger.info(f"Loaded {len(scanners)} scanners from registry")
+            logger.info(f"Loaded {len(scanners)} scanners/plugins from registry")
             return scanners
         return {}
 
@@ -202,28 +278,92 @@ class ScannerEngine:
             raise Exception("Scanner registry not configured")
             
         try:
+            # Normalize target and compute idempotent job key
+            from urllib.parse import urlparse, urlunparse
+            def _normalize(t: str) -> str:
+                try:
+                    parsed = urlparse(t if "://" in t else f"http://{t}")
+                    scheme = (parsed.scheme or "http").lower()
+                    netloc = (parsed.netloc or "").lower()
+                    path = parsed.path or ""
+                    return urlunparse((scheme, netloc, path if path else "", "", "", ""))
+                except Exception:
+                    return t
+            normalized_target = _normalize(target)
+
+            # Compute deterministic job key
+            scanners_list = (options or {}).get("scanners")
+            scanners_key = ",".join(sorted(scanners_list)) if isinstance(scanners_list, list) else ("ALL" if scan_type in ("full_scan", "quick_scan") else scan_type)
+            job_key = f"{scan_type}:{normalized_target}:{scanners_key}"
+
+            # Idempotency: if a matching running/queued scan exists, return it
+            for existing_id, data in self._scan_results.items():
+                if isinstance(data, dict) and data.get("job_key") == job_key and data.get("status") in ("running", "queued"):
+                    return existing_id
+
             # Generate scan ID
             scan_id = f"{scan_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-            
+
             # Create ScanInput object
-            scan_input = ScanInput(target=target, scan_type=scan_type, options=options or {})
+            scan_input = ScanInput(target=normalized_target, scan_type=scan_type, options=options or {})
 
             scanners_to_run = []
             if scan_type == "full_scan":
                 logger.info(f"Initiating full scan with ID: {scan_id}")
-                scanners_to_run = list(self.scanner_registry.get_all_scanners().keys())
-                # Prefer stable module-name aliases where available
-                scanners_to_run = sorted(set(scanners_to_run))
+                # Force load all scanners for full scan to ensure they're registered
+                if hasattr(self.scanner_registry, '_lazy_modules') and self.scanner_registry._lazy_modules:
+                    logger.info("Preloading all scanner modules for full scan")
+                    # Load all modules that haven't been loaded yet
+                    for module_name in self.scanner_registry._lazy_modules:
+                        if module_name not in getattr(self.scanner_registry, '_loaded_modules', set()):
+                            try:
+                                # Import the module
+                                module = importlib.import_module(f'backend.scanners.{module_name}')
+                                # Find scanner classes
+                                scanner_classes = [obj for name, obj in inspect.getmembers(module, inspect.isclass) 
+                                                if issubclass(obj, BaseScanner) and obj != BaseScanner]
+                                
+                                for scanner_class in scanner_classes:
+                                    name = scanner_class.__name__
+                                    # Register with class name
+                                    class_scanner_name = name.lower().replace('scanner', '')
+                                    self.scanner_registry.register(class_scanner_name, scanner_class)
+                                    # Register with module name
+                                    self.scanner_registry.register(module_name, scanner_class)
+                            except Exception as e:
+                                logger.error(f"Error loading scanner module: {module_name}", exc_info=True)
+                
+                # Get all available scanners
+                all_scanners = list(self.scanner_registry.get_all_scanners().keys())
+                all_scanners = set(all_scanners)
+                
+                # Define critical scanners that should run first
+                critical_scanners = [
+                    'security_headers_analyzer',
+                    'cors_misconfiguration_scanner',
+                    'xss_scanner',
+                    'sql_injection_scanner',
+                    'csrf_token_checker',
+                    'authentication_scanner'
+                ]
+                
+                # Prioritize critical scanners first, then add remaining scanners
+                scanners_to_run = [s for s in critical_scanners if s in all_scanners]
+                remaining_scanners = sorted(all_scanners - set(scanners_to_run))
+                scanners_to_run.extend(remaining_scanners)
             elif scan_type == "quick_scan":
                 logger.info(f"Initiating quick scan with ID: {scan_id}")
-                # Predefined list of fast, non-intrusive scanners
+                # Predefined list of fast, non-intrusive scanners with optimized order
                 scanners_to_run = [
-                    'robots_txt_sitemap_crawl_scanner',
-                    'security_headers_analyzer',
-                    'csrf_token_checker',
+                    # Critical security scanners first
+                    'security_headers_analyzer',  # Fast and critical
+                    'cors_misconfiguration_scanner',  # Critical security check
+                    'csrf_token_checker',  # Important security check
+                    
+                    # Secondary scanners
                     'clickjacking_screenshotter',
                     'js_scanner',
-                    'cors_misconfiguration_scanner'
+                    'robots_txt_sitemap_crawl_scanner'
                 ]
             elif scan_type == "custom_scan":
                 logger.info(f"Initiating custom scan with ID: {scan_id}")
@@ -241,7 +381,7 @@ class ScannerEngine:
             # Initialize results
             self._scan_results[scan_id] = {
                 "id": scan_id,
-                "target": target,
+                "target": normalized_target,
                 "type": scan_type,
                 "status": "running",
                 "start_time": datetime.now().isoformat(),
@@ -254,6 +394,7 @@ class ScannerEngine:
                 # Optional global hard cap; use generous default if not set
                 "deadline": (datetime.now()).timestamp() + (GLOBAL_HARD_CAP if GLOBAL_HARD_CAP and GLOBAL_HARD_CAP > 0 else 3600),  # 1 hour default
                 "_finding_keys": set(),
+                "job_key": job_key,
                 "performance_metrics": {
                     "http_cache_stats": {},
                     "scanner_timing": {},
@@ -291,7 +432,7 @@ class ScannerEngine:
                 await manager.broadcast_scan_update(
                     scan_id,
                     "current_target_url",
-                    {"url": target}
+                    {"url": normalized_target}
                 )
             except Exception:
                 # Non-fatal if realtime updates fail here; the UI will catch up on first module
@@ -341,7 +482,7 @@ class ScannerEngine:
                                 scanner_id=sub_scan_id,
                                 scanner_name=scanner_name,
                                 coro=scanner_coro,
-                                options={**(options or {}), "target": target},
+                                options={**(options or {}), "target": normalized_target},
                                 priority=priority
                             )
                             self._scan_results[scan_id]["sub_scans"][sub_scan_id] = {
@@ -396,21 +537,21 @@ class ScannerEngine:
             raise
 
     def _get_scanner_priority(self, scanner_name: str) -> ScannerPriority:
-        """Determine priority for a scanner based on its type and importance."""
-        # Critical security scanners
-        if any(keyword in scanner_name.lower() for keyword in ['auth', 'security_headers', 'csrf']):
+        """Determine scanner priority based on name and type - optimized for faster critical scans."""
+        # Critical security scanners - expanded list
+        if any(keyword in scanner_name.lower() for keyword in ['auth', 'security_headers', 'csrf', 'jwt', 'oauth', 'password', 'login', 'session']):
             return ScannerPriority.CRITICAL
         
-        # High-priority vulnerability scanners
-        if any(keyword in scanner_name.lower() for keyword in ['xss', 'sql', 'ssrf', 'csrf']):
+        # High-priority vulnerability scanners - expanded list
+        if any(keyword in scanner_name.lower() for keyword in ['xss', 'sql', 'ssrf', 'csrf', 'injection', 'rce', 'xxe', 'deserialization', 'command']):
             return ScannerPriority.HIGH
         
         # Medium-priority enumeration and discovery
-        if any(keyword in scanner_name.lower() for keyword in ['directory', 'file', 'enum', 'crawl']):
+        if any(keyword in scanner_name.lower() for keyword in ['directory', 'file', 'enum', 'crawl', 'path', 'endpoint']):
             return ScannerPriority.MEDIUM
         
         # Low-priority analysis and reporting
-        if any(keyword in scanner_name.lower() for keyword in ['tech', 'fingerprint', 'report']):
+        if any(keyword in scanner_name.lower() for keyword in ['tech', 'fingerprint', 'report', 'info', 'version', 'banner', 'header']):
             return ScannerPriority.LOW
         
         # Default to medium priority
@@ -487,18 +628,23 @@ class ScannerEngine:
             last_exc: Optional[Exception] = None
             for attempt in range(0, max(1, SCANNER_MAX_RETRIES) + 1):
                 try:
-                    # Adaptive timeout: shorter for fast/critical modules, longer for heavy ones
-                    adaptive_timeout = min(SCANNER_TIMEOUT, PER_SCANNER_CAP_SECONDS)
-                    name_lower = scan_type.lower()
-                    if any(k in name_lower for k in ["headers", "csrf", "clickjacking", "robots", "cors"]):
-                        adaptive_timeout = min(adaptive_timeout, 60)
-                    elif any(k in name_lower for k in ["subdomain", "ssl", "tls", "api_fuzz", "fuzz"]):
-                        # Heavy modules still must respect the per-scanner cap
-                        adaptive_timeout = min(max(SCANNER_TIMEOUT, 120), PER_SCANNER_CAP_SECONDS)
+                    # Determine if we should use a timeout or not
+                    if SCANNER_TIMEOUT == 0 and PER_SCANNER_CAP_SECONDS == 0:
+                        # No timeout - let scanner run as long as needed
+                        results = await scanner_instance.scan(scan_input)
+                    else:
+                        # Use adaptive timeout if configured
+                        adaptive_timeout = min(SCANNER_TIMEOUT or float('inf'), PER_SCANNER_CAP_SECONDS or float('inf'))
+                        name_lower = scan_type.lower()
+                        if any(k in name_lower for k in ["headers", "csrf", "clickjacking", "robots", "cors"]) and adaptive_timeout != 0:
+                            adaptive_timeout = min(adaptive_timeout, 30)  # Reduced to 30 seconds for fast scanners
+                        elif any(k in name_lower for k in ["subdomain", "ssl", "tls", "api_fuzz", "fuzz"]) and adaptive_timeout != 0:
+                            # Heavy modules get moderate time
+                            adaptive_timeout = min(max(SCANNER_TIMEOUT or 60, 60), PER_SCANNER_CAP_SECONDS or float('inf'))  # Reduced to 60 seconds
 
-                    # Use asyncio.create_task to ensure non-blocking execution
-                    scan_task = asyncio.create_task(scanner_instance.scan(scan_input))
-                    results = await asyncio.wait_for(scan_task, timeout=adaptive_timeout)
+                        # Use asyncio.create_task to ensure non-blocking execution
+                        scan_task = asyncio.create_task(scanner_instance.scan(scan_input))
+                        results = await asyncio.wait_for(scan_task, timeout=adaptive_timeout)
                     last_exc = None
                     break
                 except asyncio.TimeoutError as te:
@@ -558,7 +704,8 @@ class ScannerEngine:
                         logger.warning("Failed to save snapshot for %s", parent_scan_id)
 
         except asyncio.TimeoutError:
-            error_message = f"Scanner {scan_type} timed out after {SCANNER_TIMEOUT}s"
+            timeout_value = "global deadline" if SCANNER_TIMEOUT == 0 else f"{SCANNER_TIMEOUT}s"
+            error_message = f"Scanner {scan_type} timed out after {timeout_value}"
             logger.warning(error_message)
             
             if parent_scan_id and parent_scan_id in self._scan_results:
@@ -766,6 +913,13 @@ class ScannerEngine:
                 
                 # Replace with cleaned data
                 self._scan_results[scan_id] = cleaned_data
+
+                # Ensure legacy active list does not report completed scans
+                if scan_id in self._active_scans:
+                    try:
+                        del self._active_scans[scan_id]
+                    except Exception:
+                        pass
                 
                 logger.info(f"Cleaned up scan data for {scan_id}")
                 
@@ -890,17 +1044,48 @@ class ScannerEngine:
         return self._scan_results[scan_id]
 
     async def get_active_scans(self) -> List[Dict]:
-        """Get list of active scans."""
-        return [
-            {
-                "id": scan_id,
-                "status": self._scan_results[scan_id]["status"],
-                "type": self._scan_results[scan_id]["type"],
-                "target": self._scan_results[scan_id]["target"],
-                "start_time": self._scan_results[scan_id]["start_time"]
-            }
-            for scan_id in self._active_scans
-        ]
+        """Get list of active scans.
+
+        Prefer authoritative store (_scan_results) so the UI sees scans even if no local task is tracked.
+        """
+        scans: List[Dict[str, Any]] = []
+        try:
+            # Primary: any scan currently marked as running
+            for sid, data in self._scan_results.items():
+                if isinstance(data, dict) and data.get("status") == "running":
+                    scans.append({
+                        "id": sid,
+                        "status": data.get("status"),
+                        "type": data.get("type"),
+                        "target": data.get("target"),
+                        "start_time": data.get("start_time"),
+                    })
+            # Secondary: legacy placeholder tasks tracked in _active_scans
+            for sid in list(self._active_scans.keys()):
+                if not any(s.get("id") == sid for s in scans):
+                    data = self._scan_results.get(sid)
+                    if data:
+                        scans.append({
+                            "id": sid,
+                            "status": data.get("status"),
+                            "type": data.get("type"),
+                            "target": data.get("target"),
+                            "start_time": data.get("start_time"),
+                        })
+        except Exception:
+            # Fall back to previous behavior if anything goes wrong
+            scans = [
+                {
+                    "id": scan_id,
+                    "status": self._scan_results[scan_id]["status"],
+                    "type": self._scan_results[scan_id]["type"],
+                    "target": self._scan_results[scan_id]["target"],
+                    "start_time": self._scan_results[scan_id]["start_time"],
+                }
+                for scan_id in self._active_scans
+                if scan_id in self._scan_results
+            ]
+        return scans
 
     def get_performance_stats(self) -> Dict[str, Any]:
         """Get performance statistics for monitoring."""

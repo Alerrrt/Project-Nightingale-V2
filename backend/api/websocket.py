@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Depends, Request
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException, Depends, Request
 from typing import Dict, Set, Optional, List, Any
 import json
 import logging
@@ -40,8 +40,14 @@ class ConnectionManager:
         # Allow larger history window to improve resilience
         self.max_history_size = 5000
 
-    async def connect(self, websocket: WebSocket, client_id: str, token: Optional[str] = None):
+    async def connect(self, websocket: WebSocket, client_id: str = None, token: Optional[str] = None):
         """Connect a new client with authentication (FORCED: accept all connections for local dev, never raise)."""
+        # Generate UUID for client_id if not provided
+        if not client_id or client_id == "anonymous":
+            import uuid
+            client_id = str(uuid.uuid4())
+            logger.info(f"Generated new client_id: {client_id}")
+            
         logger.info(f"WebSocket connection attempt: client_id={client_id}, token_present={bool(token)}")
         # Log remote address if possible
         if hasattr(websocket, 'client') and websocket.client:
@@ -74,13 +80,25 @@ class ConnectionManager:
                 "client_id": client_id,
                 "timestamp": datetime.now().isoformat()
             })
+            return client_id
         except Exception as e:
             logger.error(f"Error after accepting websocket for client {client_id}: {e}")
             # Do not raise, just log and return
-            return
+            return client_id
 
-    def disconnect(self, websocket: WebSocket, client_id: str):
+    def disconnect(self, websocket: WebSocket, client_id: str = None):
         """Disconnect a client and clean up resources."""
+        # Find client_id if not provided
+        if client_id is None:
+            for cid, connections in self.active_connections.items():
+                if websocket in connections:
+                    client_id = cid
+                    break
+        
+        if client_id is None:
+            logger.warning(f"Could not find client_id for disconnecting WebSocket")
+            return
+            
         logger.info(f"WebSocket disconnect: client_id={client_id}")
         if client_id in self.active_connections:
             self.active_connections[client_id].remove(websocket)
@@ -126,9 +144,13 @@ class ConnectionManager:
         if not client_id:
             return
 
+        logger.info(f"Subscribing client {client_id} to scan updates for scan_id: {scan_id}")
+        
         if scan_id not in self.scan_subscriptions:
+            logger.info(f"Creating new subscription set for scan_id: {scan_id}")
             self.scan_subscriptions[scan_id] = set()
         self.scan_subscriptions[scan_id].add(websocket)
+        logger.info(f"Client {client_id} subscribed to scan_id: {scan_id}. Total subscribers: {len(self.scan_subscriptions[scan_id])}")
         
         # Update client metadata
         self.client_metadata[client_id]["subscriptions"].add(scan_id)
@@ -147,11 +169,20 @@ class ConnectionManager:
         # Send recent history if requested
         if options and options.get("include_history", False):
             history = self.message_history.get(scan_id, [])
+            history_limit = options.get("history_limit", 25)
+            logger.info(f"Sending {min(len(history), history_limit)} history messages for scan_id: {scan_id}")
             # Replay recent history as individual messages so existing frontend handlers process them
-            for msg in history[-options.get("history_limit", 25):]:
-                await self._send_message(websocket, msg.type, msg.data)
+            for msg in history[-history_limit:]:
+                try:
+                    await self._send_message(websocket, msg.type, msg.data)
+                    logger.debug(f"Sent history message of type {msg.type} for scan_id: {scan_id}")
+                except Exception as e:
+                    logger.error(f"Failed to send history message: {e}")
+        else:
+            logger.info(f"No history requested for scan_id: {scan_id}")
         
         logger.info(f"Client {client_id} subscribed to scan {scan_id}")
+        logger.info(f"Subscription complete for scan_id: {scan_id}")
 
     async def unsubscribe_from_scan(self, websocket: WebSocket, scan_id: str):
         """Unsubscribe from scan updates."""
@@ -185,8 +216,11 @@ class ConnectionManager:
 
     async def broadcast_scan_update(self, scan_id: str, update_type: str, data: dict, priority: int = 0):
         """Broadcast scan updates with priority queuing."""
+        logger.info(f"Broadcasting {update_type} update for scan {scan_id}")
+        
+        # Always retain history even if no active subscribers yet
         if scan_id not in self.scan_subscriptions:
-            return
+            logger.info(f"No subscribers currently for scan {scan_id}; storing history and waiting for clients")
 
         # Create message
         message = WebSocketMessage(update_type, data, priority)
@@ -198,9 +232,13 @@ class ConnectionManager:
 
         # Send immediately to all subscribers for critical updates
         if update_type in ["scan_progress", "scan_phase", "new_finding", "module_status"]:
-            for websocket in self.scan_subscriptions.get(scan_id, set()):
+            subscribers = self.scan_subscriptions.get(scan_id, set())
+            logger.info(f"Sending {update_type} to {len(subscribers)} subscribers for scan {scan_id}")
+            
+            for websocket in subscribers:
                 try:
                     await self._send_message(websocket, update_type, data)
+                    logger.debug(f"Successfully sent {update_type} to subscriber for scan {scan_id}")
                 except Exception as e:
                     logger.warning(f"Failed to send {update_type} to subscriber: {e}")
                     # Remove failed websocket
@@ -323,32 +361,54 @@ class ConnectionManager:
 async def get_scanner_engine_from_state(request: Request) -> "ScannerEngine":
     return request.app.state.scanner_engine
 
+# The frontend expects the WebSocket endpoint at /api/ws/{scan_id}
+# Since the API router is mounted at /api, we need to register this at /ws/{scan_id}
 @router.websocket("/ws/{scan_id}")
 async def websocket_endpoint(
     websocket: WebSocket, 
     scan_id: str
 ):
+    logger.info(f"WebSocket connection attempt for scan_id: {scan_id}")
+    # Log the request headers to debug connection issues
+    logger.info(f"WebSocket headers: {websocket.headers}")
+    logger.info(f"WebSocket client host: {websocket.client.host if hasattr(websocket, 'client') and websocket.client else 'unknown'}")
+    
     # This is not ideal, but it's a way to get the app state without a request object
     # In a real app, you might pass the engine to the manager upon creation
     from backend.main import app 
     scanner_engine = app.state.scanner_engine
 
     client_id = websocket.headers.get("x-client-id", "anonymous")
-    await manager.connect(websocket, client_id)
-    # Include recent history so the UI immediately sees initial progress/phase messages
-    await manager.subscribe_to_scan(
-        websocket,
-        scan_id,
-        options={"include_history": True, "history_limit": 50}
-    )
+    logger.info(f"WebSocket client connecting with client_id: {client_id}")
+    
+    try:
+        # The connection is handled in the manager.connect method
+        # No need to call websocket.accept() here as it's done in the manager
+        # connect() will return the client_id (which may be generated if not provided)
+        client_id = await manager.connect(websocket, client_id) or client_id
+        logger.info(f"WebSocket client {client_id} connected successfully")
+        logger.info(f"Active WebSocket connections: {len(manager.active_connections)}")
+        logger.info(f"Scan subscriptions: {list(manager.scan_subscriptions.keys())}")
+        logger.info(f"WebSocket connection established for scan_id: {scan_id}")
+        
+        # Include recent history so the UI immediately sees initial progress/phase messages
+        await manager.subscribe_to_scan(
+            websocket,
+            scan_id,
+            options={"include_history": True, "history_limit": 50}
+        )
+        logger.info(f"WebSocket client {client_id} subscribed to scan {scan_id}")  
+    except Exception as e:
+        logger.error(f"Error during WebSocket connection/subscription: {e}", exc_info=True)
+        # Ensure proper cleanup on connection error
+        try:
+            manager.disconnect(websocket, client_id)
+        except Exception as cleanup_error:
+            logger.error(f"Error during connection cleanup: {cleanup_error}")
+        return
 
     try:
-        # Send initial connection confirmation
-        await manager._send_message(websocket, "connection_established", {
-            "scan_id": scan_id,
-            "client_id": client_id,
-            "timestamp": datetime.now().isoformat()
-        })
+        # No need to send connection confirmation again as it's already sent in connect()
         # Try to send a live snapshot so the UI gets immediate numbers even if history is empty
         try:
             from backend.main import app as _app
@@ -406,7 +466,11 @@ async def websocket_endpoint(
 
     except WebSocketDisconnect:
         logger.info(f"WebSocket disconnected for client {client_id} on scan {scan_id}")
-        manager.disconnect(websocket, client_id)
+        try:
+            manager.disconnect(websocket, client_id)
+            logger.info(f"Client {client_id} disconnected and cleaned up")
+        except Exception as cleanup_error:
+            logger.error(f"Error during disconnection cleanup: {cleanup_error}")
     except Exception as e:
         logger.error(f"Error in WebSocket endpoint for client {client_id}: {e}", exc_info=True)
         # Don't disconnect immediately, try to send error message first
@@ -415,11 +479,16 @@ async def websocket_endpoint(
                 "message": "An error occurred",
                 "timestamp": datetime.now().isoformat()
             })
-        except:
-            pass
-        manager.disconnect(websocket, client_id)
+        except Exception as msg_error:
+            logger.error(f"Failed to send error message: {msg_error}")
+        # Ensure connection is properly cleaned up
+        try:
+            manager.disconnect(websocket, client_id)
+            logger.info(f"Cleaned up connection for client {client_id} after error")
+        except Exception as cleanup_error:
+            logger.error(f"Error during connection cleanup: {cleanup_error}")
 
 manager = ConnectionManager()
 
 def get_connection_manager() -> ConnectionManager:
-    return manager 
+    return manager

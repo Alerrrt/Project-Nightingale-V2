@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 import json
 import pickle
 import base64
@@ -10,7 +10,7 @@ from backend.utils.logging_config import get_context_logger
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
-from backend.types.models import ScanInput, Severity, OwaspCategory
+from backend.config_types.models import ScanInput, Severity, OwaspCategory
 
 logger = get_context_logger(__name__)
 

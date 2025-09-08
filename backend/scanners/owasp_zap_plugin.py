@@ -1,8 +1,8 @@
-﻿import logging
+import logging
 from typing import List, Dict
 
 from backend.plugins.base_plugin import BasePlugin
-from backend.types.models import ScanInput
+from backend.config_types.models import ScanInput
 
 logger = logging.getLogger(__name__)
 

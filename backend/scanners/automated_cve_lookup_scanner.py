@@ -1,10 +1,10 @@
-﻿import asyncio
+import asyncio
 from typing import List, Optional, Dict
 from datetime import datetime
 import logging
 
 from .base_scanner import BaseScanner
-from ..types.models import ScanInput, Severity, OwaspCategory
+from ..config_types.models import ScanInput, Severity, OwaspCategory
 from backend.utils import get_http_client
 
 logger = logging.getLogger(__name__)

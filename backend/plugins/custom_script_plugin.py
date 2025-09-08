@@ -1,9 +1,64 @@
-﻿import importlib.util
+import importlib.util
 import sys
 from typing import List, Dict, Any, Optional
 from inspect import iscoroutinefunction # Import needed for async check
 
-from backend.types.models import Finding, ScanInput
+from backend.plugins.base_plugin import BasePlugin
+from backend.config_types.models import Finding, ScanInput
+
+
+class CustomScriptPlugin(BasePlugin):
+    """Custom Script Plugin for running user-defined scanning scripts."""
+
+    def __init__(self, script_path: Optional[str] = None):
+        super().__init__()
+        self.script_path = script_path
+
+    async def _run_plugin(self, scan_input: ScanInput, config: Dict) -> List[Dict]:
+        """Run the custom script plugin."""
+        try:
+            script_path = config.get('script_path') or self.script_path
+            if not script_path:
+                return [self._create_error_finding("No script path provided")]
+
+            findings = await run_custom_script(script_path, scan_input, config)
+            # Convert Finding objects to dictionaries
+            return [self._finding_to_dict(finding) for finding in findings]
+        except Exception as e:
+            print(f"Custom Script Plugin failed: {e}")
+            return [self._create_error_finding(f"Custom Script Plugin failed: {e}")]
+
+    def _finding_to_dict(self, finding: Finding) -> Dict:
+        """Convert a Finding object to a dictionary."""
+        return {
+            "type": finding.vulnerability_type,
+            "severity": finding.severity.value if hasattr(finding.severity, 'value') else str(finding.severity),
+            "title": finding.vulnerability_type,
+            "description": finding.description,
+            "location": str(finding.affected_url) if finding.affected_url else "",
+            "cwe": "N/A",
+            "remediation": finding.remediation,
+            "confidence": 75,
+            "cvss": 0.0,
+            "evidence": str(finding.proof) if finding.proof else "",
+            "category": "CUSTOM_SCRIPT"
+        }
+
+    def _create_error_finding(self, description: str) -> Dict:
+        """Create an error finding."""
+        return {
+            "type": "error",
+            "severity": "INFO",
+            "title": "Custom Script Plugin Error",
+            "description": description,
+            "location": "Plugin",
+            "cwe": "N/A",
+            "remediation": "N/A",
+            "confidence": 0,
+            "cvss": 0,
+            "evidence": "",
+            "category": "CUSTOM_SCRIPT"
+        }
 
 
 class CustomScript:

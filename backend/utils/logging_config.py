@@ -50,12 +50,19 @@ def setup_logging(
 ) -> None:
     """
     Set up logging configuration.
-    
+
     Args:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         log_dir: Directory for log files
         app_name: Application name for log files
     """
+    # Set up logging with UTF-8 encoding
+    logging.basicConfig(
+        encoding='utf-8',
+        level=log_level.upper(),
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
     # Create logs directory if it doesn't exist
     os.makedirs(log_dir, exist_ok=True)
 
@@ -71,34 +78,52 @@ def setup_logging(
     # Clear existing handlers
     root_logger.handlers = []
 
-    # Console handler with structured formatting
+    # Add console handler
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(StructuredLogFormatter())
+    console_handler.setFormatter(logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    ))
     root_logger.addHandler(console_handler)
 
-    # File handler for all logs
-    all_logs_handler = logging.handlers.RotatingFileHandler(
-        filename=os.path.join(log_dir, f"{app_name}.log"),
-        maxBytes=10 * 1024 * 1024,  # 10MB
-        backupCount=5
-    )
-    all_logs_handler.setFormatter(StructuredLogFormatter())
-    root_logger.addHandler(all_logs_handler)
-
-    # File handler for error logs
-    error_logs_handler = logging.handlers.RotatingFileHandler(
-        filename=os.path.join(log_dir, f"{app_name}_error.log"),
-        maxBytes=10 * 1024 * 1024,  # 10MB
-        backupCount=5
-    )
-    error_logs_handler.setFormatter(StructuredLogFormatter())
-    error_logs_handler.addFilter(ErrorLogFilter())
-    root_logger.addHandler(error_logs_handler)
+    # Add file handlers
+    handlers = [
+        RotatingFileHandler(
+            filename=os.path.join(log_dir, f"{app_name}.log"),
+            maxBytes=10 * 1024 * 1024,
+            backupCount=5,
+            encoding='utf-8'
+        ),
+        RotatingFileHandler(
+            filename=os.path.join(log_dir, f"{app_name}_error.log"),
+            maxBytes=10 * 1024 * 1024,
+            backupCount=5,
+            encoding='utf-8'
+        )
+    ]
+    
+    for handler in handlers:
+        handler.setFormatter(logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        ))
+        if handler filenames endswith '_error.log':
+            handler.addFilter(ErrorLogFilter())
+        root_logger.addHandler(handler)
 
     # Set logging levels for specific modules
     logging.getLogger("uvicorn").setLevel(logging.WARNING)
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("asyncio").setLevel(logging.WARNING)
+
+    # Add filter for Unicode characters
+    class UnicodeEncodeFilter(logging.Filter):
+        def filter(self, record):
+            try:
+                record.msg = record.msg.encode('utf-8').decode('latin-1')
+                return True
+            except (UnicodeEncodeError, UnicodeDecodeError):
+                return False
+
+    root_logger.addFilter(UnicodeEncodeFilter())
 
     # Log startup message
     logging.info(

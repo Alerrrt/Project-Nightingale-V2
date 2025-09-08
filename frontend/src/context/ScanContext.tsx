@@ -99,28 +99,73 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
+    console.log('ScanContext useEffect triggered - scanId:', scanId, 'isScanning:', isScanning);
     if (scanId && isScanning) {
-      // Use the correct WebSocket endpoint exposed under /api in the backend
-      const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
-      const wsUrl = `${scheme}://${window.location.host}/api/ws/${scanId}`;
+      console.log('WebSocket useEffect triggered - scanId:', scanId, 'isScanning:', isScanning);
+      // Prefer same-origin WS so Vite proxy can forward to backend (supports Docker dev and local dev).
+      // In production, only use VITE_API_URL when it points to a real browser-reachable host (not "backend").
+      let wsUrl = '';
+      const isDev = Boolean((import.meta as any).env?.DEV);
+      const envApiBase: string | undefined = (import.meta as any).env?.VITE_API_URL;
+      const sameOriginScheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+      const sameOriginUrl = `${sameOriginScheme}://${window.location.host}/api/ws/${scanId}`;
+  
+      if (isDev) {
+        // Dev: always use same-origin so Vite proxy (ws: true) handles WS to backend
+        wsUrl = sameOriginUrl;
+      } else if (envApiBase) {
+        try {
+          const api = new URL(envApiBase);
+          const wsScheme = api.protocol === 'https:' ? 'wss' : 'ws';
+          // If the env host is a container-internal name or localhost, prefer same-origin (browser cannot resolve "backend")
+          if (['backend'].includes(api.hostname)) {
+            wsUrl = sameOriginUrl;
+          } else {
+            wsUrl = `${wsScheme}://${api.host}/api/ws/${scanId}`;
+          }
+        } catch {
+          wsUrl = sameOriginUrl;
+        }
+      } else {
+        wsUrl = sameOriginUrl;
+      }
+  
+      console.log('Attempting to connect to WebSocket URL:', wsUrl);
       ws.current = new WebSocket(wsUrl);
 
+      // Add connection timeout
+      const connectionTimeout = setTimeout(() => {
+        if (ws.current && ws.current.readyState === WebSocket.CONNECTING) {
+          console.error('WebSocket connection timeout - closing connection');
+          ws.current.close();
+        }
+      }, 5000);
+
       ws.current.onopen = () => {
+        console.log('WebSocket onopen event fired');
         setError(null);
-        console.log('WebSocket connection established');
+        console.log('WebSocket connection established to:', wsUrl);
         scanStartTime.current = new Date();
 
         // Start a short grace window: if we don't get any WS messages, enable polling fallback
         if (fallbackTimeout.current == null) {
           fallbackTimeout.current = window.setTimeout(() => {
+            console.log('Checking if WebSocket messages have been received...');
             if (lastWsMessageAt.current === 0) {
+              console.log('No WebSocket messages received within grace period, activating polling fallback');
               // No messages received within grace window — start polling as fallback
               if (pollingTimer.current == null) {
+                console.log('Starting polling fallback for scan status');
                 pollingTimer.current = window.setInterval(async () => {
                   try {
+                    console.log(`Polling for scan status: /api/scans/${scanId}`);
                     const res = await fetch(`/api/scans/${scanId}`);
-                    if (!res.ok) return;
+                    if (!res.ok) {
+                      console.error('Polling request failed:', res.status);
+                      return;
+                    }
                     const json = await res.json();
+                    console.log('Polling response:', json);
                     setScanProgress(prev => ({
                       ...prev,
                       progress: typeof json.progress === 'number' ? json.progress : (prev?.progress || 0),
@@ -128,9 +173,13 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
                       totalModules: json.total_modules ?? prev.totalModules,
                       phase: (json.progress > 0 && (!prev?.phase || prev.phase.trim().length === 0)) ? 'Running scanners…' : (prev?.phase || ''),
                     }));
-                  } catch {}
+                  } catch (error) {
+                    console.error('Error polling for scan status:', error);
+                  }
                 }, 2000);
               }
+            } else {
+              console.log('WebSocket messages are being received, no need for polling fallback');
             }
           }, 4000);
         }
@@ -148,8 +197,10 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
       };
 
       ws.current.onmessage = (event) => {
+        console.log('WebSocket message received:', event.data);
         const message = JSON.parse(event.data);
         const { type, data, timestamp } = message; // Destructure the message
+        console.log('WebSocket message type:', type);
 
         // Mark that we are receiving WS data; if polling is running, stop it
         lastWsMessageAt.current = Date.now();
@@ -267,8 +318,8 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
         }
       };
 
-      ws.current.onclose = () => {
-        console.log('WebSocket connection closed');
+      ws.current.onclose = (event) => {
+        console.log('WebSocket onclose event fired - code:', event.code, 'reason:', event.reason, 'wasClean:', event.wasClean);
         // If socket closes during an active scan, enable polling fallback immediately
         if (isScanning) {
           if (pollingTimer.current == null) {
@@ -291,7 +342,8 @@ export const ScanProvider: React.FC<ScanProviderProps> = ({ children }) => {
       };
 
       ws.current.onerror = (err) => {
-        console.error('WebSocket error:', err);
+        console.error('WebSocket onerror event fired:', err);
+        console.log('WebSocket readyState:', ws.current?.readyState);
         setError('A real-time connection error occurred.');
         // Don't stop the scan on transient WS errors; switch to polling fallback
         if (pollingTimer.current == null) {

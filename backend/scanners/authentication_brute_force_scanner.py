@@ -1,11 +1,11 @@
-﻿from datetime import datetime
+from datetime import datetime
 from typing import List, Dict, Any
 from backend.utils import get_http_client
 import asyncio
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
 from backend.scanners.base_scanner import BaseScanner
-from backend.types.models import ScanInput, Severity, OwaspCategory
+from backend.config_types.models import ScanInput, Severity, OwaspCategory
 import logging
 
 logger = logging.getLogger(__name__)

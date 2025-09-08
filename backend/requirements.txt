@@ -35,5 +35,7 @@ vulture
 watchdog
 yara-python
 zstandard
-python-Wappalyzer 
-setuptools
+python-Wappalyzer
+setuptools<81
+# Additional dependencies for enhanced scanning capabilities
+json5

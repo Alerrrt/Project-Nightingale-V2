@@ -1,6 +1,6 @@
-﻿from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod
 from typing import List, Dict, Any
-from backend.types.models import ScanInput, Finding
+from backend.config_types.models import ScanInput, Finding
 
 class BaseScanner(ABC):
     def __init__(self):

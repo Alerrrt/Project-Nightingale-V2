@@ -20,6 +20,7 @@ import SecurityPostureChart from './components/SecurityPostureChart';
 import './posture-summary.css';
 import HeroLanding from './components/HeroLanding';
 import SiteSnippetCard from './components/SiteSnippetCard';
+import { checkBackendReady } from './api/scanApi';
 
 // Helper for timeout
 function timeoutPromise(ms: number) {
@@ -86,6 +87,8 @@ const App: React.FC = () => {
     author: string;
     version: string;
   }>>({});
+  const [backendReady, setBackendReady] = useState(false);
+  const [readyChecked, setReadyChecked] = useState(false);
 
   useEffect(() => {
     if (prevIsScanning.current && !isScanning && scanId) {
@@ -111,6 +114,10 @@ const App: React.FC = () => {
       }
     }
     fetchAndSetDefaultScanners();
+  }, []);
+
+  useEffect(() => {
+    checkBackendReady().then(setBackendReady).finally(() => setReadyChecked(true));
   }, []);
 
   const handleScanToggle = async (scanType: 'full_scan' | 'quick_scan' | 'custom_scan' | 'stop' = 'full_scan') => {
@@ -143,8 +150,9 @@ const App: React.FC = () => {
         const scanPromise = scanApi.startScan({ target: targetInput, scan_type: scanType, options });
         const res = await Promise.race([
           scanPromise,
-          timeoutPromise(120_000)
+          timeoutPromise(300_000) // Increased to 5 minutes to allow for longer scans
         ]);
+        console.log('App.tsx: Setting scan state - scanId:', res.scan_id, 'isScanning: true');
         setScanId(res.scan_id);
         setIsScanning(true);
         setHasSubmittedUrl(true);
@@ -165,7 +173,7 @@ const App: React.FC = () => {
           if (scanId) {
             try { await scanApi.stopScan(scanId); } catch {}
           }
-          showToast('Scan timed out after 120 seconds.', 'error');
+          showToast('Scan timed out after 5 minutes. The scan may still be running in the background.', 'error');
         } else {
           const message = err instanceof Error ? err.message : 'Failed to start scan.';
           showToast(message, 'error');
@@ -245,6 +253,13 @@ const App: React.FC = () => {
     });
     return Object.values(groups).sort((a, b) => b.cvss - a.cvss);
   }, [generalVulnerabilities]);
+
+  if (!readyChecked) {
+    return <div>Loading backend...</div>;
+  }
+  if (!backendReady) {
+    return <div>Backend not ready. Please try again later.</div>;
+  }
 
   return (
     <div className="min-h-screen bg-background text-text font-sans">

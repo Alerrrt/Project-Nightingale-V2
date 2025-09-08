@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 import logging
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Any
@@ -6,7 +6,7 @@ from datetime import datetime
 from backend.utils.logging_config import get_context_logger
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.resource_monitor import ResourceMonitor
-from backend.types.models import ScanInput
+from backend.config_types.models import ScanInput
 
 logger = get_context_logger(__name__)
 

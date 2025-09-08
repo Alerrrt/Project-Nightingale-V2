@@ -52,3 +52,9 @@ export async function fetchScannersList() {
   if (!res.ok) throw new Error('Failed to fetch scanners list');
   return res.json();
 }
+
+export async function checkBackendReady(): Promise<boolean> {
+  const res = await fetch('/api/ready');
+  const data = await res.json();
+  return data.ready === true;
+}

@@ -1,11 +1,11 @@
-﻿import asyncio
+import asyncio
 import logging
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 from backend.utils.logging_config import get_context_logger
 from backend.utils.resource_monitor import ResourceMonitor
-from backend.types.models import ScanInput, Finding # Import Finding from centralized models
+from backend.config_types.models import ScanInput, Finding # Import Finding from centralized models
 
 logger = get_context_logger(__name__)
 

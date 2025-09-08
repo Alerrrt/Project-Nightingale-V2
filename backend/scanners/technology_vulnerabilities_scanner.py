@@ -1,7 +1,7 @@
-﻿import logging
+import logging
 logger = logging.getLogger(__name__)
 from backend.scanners.base_scanner import BaseScanner
-from backend.types.models import ScanInput, Severity
+from backend.config_types.models import ScanInput, Severity
 from typing import List, Dict
 from .technology_fingerprint_scanner import TechnologyFingerprintScanner
 from backend.utils.enrichment import EnrichmentService

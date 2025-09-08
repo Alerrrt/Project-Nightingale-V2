@@ -27,7 +27,7 @@
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3002:3002"
+      - "3004:3004"
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -35,7 +35,7 @@
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
       - HOST=0.0.0.0
-      - PORT=3002
+      - PORT=3004
       - VITE_API_URL=http://backend:9000
     depends_on:
       backend:

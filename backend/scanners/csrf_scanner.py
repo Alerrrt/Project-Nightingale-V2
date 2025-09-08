@@ -1,9 +1,9 @@
-﻿from datetime import datetime
+from datetime import datetime
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
 from backend.scanners.base_scanner import BaseScanner
 from typing import List, Dict
-from backend.types.models import ScanInput, Severity, OwaspCategory
+from backend.config_types.models import ScanInput, Severity, OwaspCategory
 from backend.utils import get_http_client
 import re
 import logging

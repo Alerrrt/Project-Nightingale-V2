@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 import json
 from typing import List, Optional, Any, Dict, Type, Callable
 import importlib.util
@@ -11,7 +11,7 @@ from backend.utils.logging_config import get_context_logger
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.resource_monitor import ResourceMonitor
 
-from backend.types.models import Finding, ScanInput, PluginConfig, Severity, OwaspCategory, RequestLog, ModuleStatus # Import all necessary models
+from backend.config_types.models import Finding, ScanInput, PluginConfig, Severity, OwaspCategory, RequestLog, ModuleStatus # Import all necessary models
 from pydantic import validate_call
 
 logger = get_context_logger(__name__)

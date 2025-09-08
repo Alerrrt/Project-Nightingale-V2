@@ -16,28 +16,28 @@ try:
     # Optional settings integration
     from backend.config import settings as _app_settings
     _DEFAULT_BLOCK_PRIVATE = bool(getattr(_app_settings, 'BLOCK_PRIVATE_NETWORKS', False))
-    _DEFAULT_HTTP_MAX_RETRIES = int(getattr(_app_settings, 'HTTP_MAX_RETRIES', 2))
-    _DEFAULT_HTTP_BACKOFF_BASE = float(getattr(_app_settings, 'HTTP_BACKOFF_BASE_SECONDS', 0.2))
-    _DEFAULT_HTTP_BACKOFF_MAX = float(getattr(_app_settings, 'HTTP_BACKOFF_MAX_SECONDS', 5.0))
-    _DEFAULT_HTTP_PER_HOST_INTERVAL_MS = int(getattr(_app_settings, 'HTTP_PER_HOST_MIN_INTERVAL_MS', 10))
+    _DEFAULT_HTTP_MAX_RETRIES = int(getattr(_app_settings, 'HTTP_MAX_RETRIES', 3))  # Increased from 2 to 3
+    _DEFAULT_HTTP_BACKOFF_BASE = float(getattr(_app_settings, 'HTTP_BACKOFF_BASE_SECONDS', 0.1))  # Reduced from 0.2 to 0.1
+    _DEFAULT_HTTP_BACKOFF_MAX = float(getattr(_app_settings, 'HTTP_BACKOFF_MAX_SECONDS', 2.0))  # Reduced from 5.0 to 2.0
+    _DEFAULT_HTTP_PER_HOST_INTERVAL_MS = int(getattr(_app_settings, 'HTTP_PER_HOST_MIN_INTERVAL_MS', 0))  # Reduced from 2 to 0
     _DEFAULT_ALLOWED_HOSTS = list(getattr(_app_settings, 'HTTP_ALLOWED_HOSTS', []) or [])
     _DEFAULT_BLOCKED_HOSTS = list(getattr(_app_settings, 'HTTP_BLOCKED_HOSTS', []) or [])
     _DEFAULT_MAX_RESPONSE_BYTES = int(getattr(_app_settings, 'HTTP_MAX_RESPONSE_BYTES', 0))
     _DEFAULT_ACCEPT_LANGUAGE = str(getattr(_app_settings, 'HTTP_ACCEPT_LANGUAGE', 'en-US,en;q=0.9'))
-    _DEFAULT_BUCKET_MAX_TOKENS = int(getattr(_app_settings, 'HTTP_BUCKET_MAX_TOKENS', 0))
-    _DEFAULT_BUCKET_REFILL_PER_SEC = float(getattr(_app_settings, 'HTTP_BUCKET_REFILL_PER_SEC', 0.0))
+    _DEFAULT_BUCKET_MAX_TOKENS = int(getattr(_app_settings, 'HTTP_BUCKET_MAX_TOKENS', 100))  # Increased from 40 to 100
+    _DEFAULT_BUCKET_REFILL_PER_SEC = float(getattr(_app_settings, 'HTTP_BUCKET_REFILL_PER_SEC', 50.0))  # Increased from 20.0 to 50.0
 except Exception:
     _DEFAULT_BLOCK_PRIVATE = False
-    _DEFAULT_HTTP_MAX_RETRIES = 2
-    _DEFAULT_HTTP_BACKOFF_BASE = 0.2
-    _DEFAULT_HTTP_BACKOFF_MAX = 5.0
-    _DEFAULT_HTTP_PER_HOST_INTERVAL_MS = 50
+    _DEFAULT_HTTP_MAX_RETRIES = 3
+    _DEFAULT_HTTP_BACKOFF_BASE = 0.05  # Reduced to 0.05 for faster retries
+    _DEFAULT_HTTP_BACKOFF_MAX = 1.0  # Reduced to 1.0 for faster retries
+    _DEFAULT_HTTP_PER_HOST_INTERVAL_MS = 0  # No delay between requests
     _DEFAULT_ALLOWED_HOSTS = []
     _DEFAULT_BLOCKED_HOSTS = []
     _DEFAULT_MAX_RESPONSE_BYTES = 0
     _DEFAULT_ACCEPT_LANGUAGE = 'en-US,en;q=0.9'
-    _DEFAULT_BUCKET_MAX_TOKENS = 0
-    _DEFAULT_BUCKET_REFILL_PER_SEC = 0.0
+    _DEFAULT_BUCKET_MAX_TOKENS = 200  # Increased to 200 for more concurrent requests
+    _DEFAULT_BUCKET_REFILL_PER_SEC = 100.0  # Increased to 100.0 for faster token refill
 
 logger = logging.getLogger(__name__)
 
@@ -94,10 +94,10 @@ class SharedHTTPClient:
     """Shared HTTP client with connection pooling, caching, and request deduplication."""
     
     def __init__(self, 
-                  max_connections: int = 400,
-                  max_keepalive_connections: int = 120,
-                 keepalive_expiry: float = 30.0,
-                 cache_max_size: int = 1000,
+                  max_connections: int = 1000,  # Increased from 600 to 1000 for more concurrent connections
+                  max_keepalive_connections: int = 400,  # Increased from 200 to 400 for better connection reuse
+                 keepalive_expiry: float = 120.0,  # Increased from 60.0 to 120.0 for longer connection reuse
+                 cache_max_size: int = 5000,  # Increased from 2000 to 5000 for better cache hit rate
                  cache_default_ttl: int = 300,
                  # Retry configuration
                  default_max_retries: int = _DEFAULT_HTTP_MAX_RETRIES,
@@ -204,6 +204,10 @@ class SharedHTTPClient:
                                   json_payload: Optional[Any] = None,
                                   data: Optional[Any] = None) -> Optional[Any]:
         """Check if identical request is already in progress and wait for result."""
+        # Fast path: only deduplicate GET/HEAD requests for better performance
+        if method.upper() not in ['GET', 'HEAD']:
+            return None
+            
         request_id = self._make_request_id(method, url, headers, body, params, json_payload, data)
         
         async with self._request_lock:
@@ -478,6 +482,9 @@ class SharedHTTPClient:
             next_allowed = self._host_next_available.get(host, 0.0)
             if now < next_allowed:
                 wait_for = next_allowed - now
+                # Skip very small waits for performance
+                if wait_for < 0.005:  # Skip waits under 5ms
+                    return
                 try:
                     self._metrics["throttle_waits"] += 1
                 except Exception:
@@ -501,16 +508,28 @@ class SharedHTTPClient:
             host = ''
         if not host:
             return
+            
+        # Check if this is a critical scanner host that should get priority
+        is_critical_host = any(critical in host for critical in [
+            'security', 'auth', 'login', 'api', 'admin', 'dashboard'
+        ])
+            
         now = time.time()
         async with self._host_lock:
             tokens, last_refill = self._host_buckets.get(host, (float(self._bucket_max_tokens), now))
             # Refill
             elapsed = max(0.0, now - last_refill)
             tokens = min(float(self._bucket_max_tokens), tokens + elapsed * self._bucket_refill_per_sec)
+            
+            # For critical hosts, ensure we always have at least 2 tokens available
+            if is_critical_host and tokens < 2.0:
+                tokens = 2.0
+                
             if tokens < 1.0:
                 # Need to wait until at least 1 token is available
                 needed = 1.0 - tokens
-                wait_for = needed / self._bucket_refill_per_sec
+                # Reduce wait time by 50% for faster scanning
+                wait_for = (needed / self._bucket_refill_per_sec) * 0.5
                 try:
                     self._metrics["throttle_waits"] += 1
                 except Exception:
@@ -520,8 +539,10 @@ class SharedHTTPClient:
                 # Refill after sleep
                 elapsed = max(0.0, now - (last_refill + elapsed))
                 tokens = min(float(self._bucket_max_tokens), tokens + elapsed * self._bucket_refill_per_sec)
-            # Consume one token
-            tokens = max(0.0, tokens - 1.0)
+            
+            # Consume tokens (less for critical hosts)
+            token_cost = 0.5 if is_critical_host else 1.0
+            tokens = max(0.0, tokens - token_cost)
             self._host_buckets[host] = (tokens, now)
     
     async def get(self, url: str, **kwargs) -> httpx.Response:

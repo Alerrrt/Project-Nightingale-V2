@@ -1,0 +1,678 @@
+{
+  "id": "quick_scan_20250903_160433",
+  "target": "http://example.com",
+  "type": "quick_scan",
+  "status": "completed",
+  "start_time": "2025-09-03T16:04:33.010900",
+  "results": [
+    {
+      "id": "5c5da84a-1247-439e-ba31-d62769102f06",
+      "title": "Missing Strict-Transport-Security Header",
+      "severity": "High",
+      "description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+      "short_description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+      "remediation": "Add the Strict-Transport-Security header with value: max-age=31536000; includeSubDomains; preload",
+      "countermeasures": "Add the Strict-Transport-Security header with value: max-age=31536000; includeSubDomains; preload",
+      "location": "http://example.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": null\n}",
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "4bcda691-98f5-4fe1-aa36-fc30f4b93191",
+      "title": "Missing X-Content-Type-Options Header",
+      "severity": "Medium",
+      "description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+      "short_description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+      "remediation": "Add the X-Content-Type-Options header with value: nosniff",
+      "countermeasures": "Add the X-Content-Type-Options header with value: nosniff",
+      "location": "http://example.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-Content-Type-Options\",\n  \"recommended_value\": \"nosniff\",\n  \"current_value\": null\n}",
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "37cae48d-4f29-497f-9d60-a485a1a3fafe",
+      "title": "Missing X-Frame-Options Header",
+      "severity": "Medium",
+      "description": "The X-Frame-Options header is missing. Prevents clickjacking attacks",
+      "short_description": "The X-Frame-Options header is missing. Prevents clickjacking attacks",
+      "remediation": "Add the X-Frame-Options header with value: DENY",
+      "countermeasures": "Add the X-Frame-Options header with value: DENY",
+      "location": "http://example.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-Frame-Options\",\n  \"recommended_value\": \"DENY\",\n  \"current_value\": null\n}",
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "dc348954-4630-41c3-b0a8-5ef46dda9c28",
+      "title": "Missing X-XSS-Protection Header",
+      "severity": "Low",
+      "description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+      "short_description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+      "remediation": "Add the X-XSS-Protection header with value: 1; mode=block",
+      "countermeasures": "Add the X-XSS-Protection header with value: 1; mode=block",
+      "location": "http://example.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": null\n}",
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "371a524a-6d19-44f4-b432-c9238e0fa751",
+      "title": "Missing Content-Security-Policy Header",
+      "severity": "High",
+      "description": "The Content-Security-Policy header is missing. Controls resource loading",
+      "short_description": "The Content-Security-Policy header is missing. Controls resource loading",
+      "remediation": "Add the Content-Security-Policy header with value: default-src 'self'",
+      "countermeasures": "Add the Content-Security-Policy header with value: default-src 'self'",
+      "location": "http://example.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": null\n}",
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "5e905b20-0225-41ab-8545-603bcc8bdefd",
+      "title": "Missing Referrer-Policy Header",
+      "severity": "Low",
+      "description": "The Referrer-Policy header is missing. Controls referrer information",
+      "short_description": "The Referrer-Policy header is missing. Controls referrer information",
+      "remediation": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+      "countermeasures": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+      "location": "http://example.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}",
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "72c5c18d-5b27-423b-aa1f-f28f1ac7801f",
+      "title": "Missing Permissions-Policy Header",
+      "severity": "Medium",
+      "description": "The Permissions-Policy header is missing. Controls browser features",
+      "short_description": "The Permissions-Policy header is missing. Controls browser features",
+      "remediation": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+      "countermeasures": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+      "location": "http://example.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}",
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "83507264-ecbe-49bd-866f-17888c0bd209",
+      "title": "Missing Cross-Origin-Opener-Policy Header",
+      "severity": "Medium",
+      "description": "The Cross-Origin-Opener-Policy header is missing. Helps isolate browsing context (COOP)",
+      "short_description": "The Cross-Origin-Opener-Policy header is missing. Helps isolate browsing context (COOP)",
+      "remediation": "Add the Cross-Origin-Opener-Policy header with value: same-origin",
+      "countermeasures": "Add the Cross-Origin-Opener-Policy header with value: same-origin",
+      "location": "http://example.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "f05e4360-824e-4f14-ad4b-02d641c3658c",
+      "title": "Missing Cross-Origin-Embedder-Policy Header",
+      "severity": "Medium",
+      "description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+      "short_description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+      "remediation": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+      "countermeasures": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+      "location": "http://example.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": null\n}",
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "2a4fcee8-f557-4e05-aa23-9b5091531f0a",
+      "title": "Missing Cross-Origin-Resource-Policy Header",
+      "severity": "Low",
+      "description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+      "short_description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+      "remediation": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+      "countermeasures": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+      "location": "http://example.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    },
+    {
+      "id": "a48f3895-a16d-4e81-b10c-433a6b5dbbe4",
+      "title": "Missing X-Permitted-Cross-Domain-Policies Header",
+      "severity": "Low",
+      "description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+      "short_description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+      "remediation": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+      "countermeasures": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+      "location": "http://example.com",
+      "cwe": "N/A",
+      "cve": "N/A",
+      "confidence": 75,
+      "category": "A05:2021 - Security Misconfiguration",
+      "impact": "N/A",
+      "cvss": 0.0,
+      "evidence": "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}",
+      "scanner": "security_headers_analyzer",
+      "references": [
+        {
+          "type": "CWE",
+          "id": "N/A",
+          "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+        }
+      ],
+      "classifier": {}
+    }
+  ],
+  "errors": [],
+  "sub_scans": {
+    "quick_scan_20250903_160433_security_headers_analyzer_016904": {
+      "name": "security_headers_analyzer",
+      "status": "completed",
+      "results": [
+        {
+          "id": "5c5da84a-1247-439e-ba31-d62769102f06",
+          "title": "Missing Strict-Transport-Security Header",
+          "severity": "High",
+          "description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+          "short_description": "The Strict-Transport-Security header is missing. Enforces HTTPS connections",
+          "remediation": "Add the Strict-Transport-Security header with value: max-age=31536000; includeSubDomains; preload",
+          "countermeasures": "Add the Strict-Transport-Security header with value: max-age=31536000; includeSubDomains; preload",
+          "location": "http://example.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Strict-Transport-Security\",\n  \"recommended_value\": \"max-age=31536000; includeSubDomains; preload\",\n  \"current_value\": null\n}",
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "4bcda691-98f5-4fe1-aa36-fc30f4b93191",
+          "title": "Missing X-Content-Type-Options Header",
+          "severity": "Medium",
+          "description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+          "short_description": "The X-Content-Type-Options header is missing. Prevents MIME type sniffing",
+          "remediation": "Add the X-Content-Type-Options header with value: nosniff",
+          "countermeasures": "Add the X-Content-Type-Options header with value: nosniff",
+          "location": "http://example.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-Content-Type-Options\",\n  \"recommended_value\": \"nosniff\",\n  \"current_value\": null\n}",
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "37cae48d-4f29-497f-9d60-a485a1a3fafe",
+          "title": "Missing X-Frame-Options Header",
+          "severity": "Medium",
+          "description": "The X-Frame-Options header is missing. Prevents clickjacking attacks",
+          "short_description": "The X-Frame-Options header is missing. Prevents clickjacking attacks",
+          "remediation": "Add the X-Frame-Options header with value: DENY",
+          "countermeasures": "Add the X-Frame-Options header with value: DENY",
+          "location": "http://example.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-Frame-Options\",\n  \"recommended_value\": \"DENY\",\n  \"current_value\": null\n}",
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "dc348954-4630-41c3-b0a8-5ef46dda9c28",
+          "title": "Missing X-XSS-Protection Header",
+          "severity": "Low",
+          "description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+          "short_description": "The X-XSS-Protection header is missing. Legacy header; prefer CSP instead. Some browsers ignore this.",
+          "remediation": "Add the X-XSS-Protection header with value: 1; mode=block",
+          "countermeasures": "Add the X-XSS-Protection header with value: 1; mode=block",
+          "location": "http://example.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-XSS-Protection\",\n  \"recommended_value\": \"1; mode=block\",\n  \"current_value\": null\n}",
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "371a524a-6d19-44f4-b432-c9238e0fa751",
+          "title": "Missing Content-Security-Policy Header",
+          "severity": "High",
+          "description": "The Content-Security-Policy header is missing. Controls resource loading",
+          "short_description": "The Content-Security-Policy header is missing. Controls resource loading",
+          "remediation": "Add the Content-Security-Policy header with value: default-src 'self'",
+          "countermeasures": "Add the Content-Security-Policy header with value: default-src 'self'",
+          "location": "http://example.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Content-Security-Policy\",\n  \"recommended_value\": \"default-src 'self'\",\n  \"current_value\": null\n}",
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "5e905b20-0225-41ab-8545-603bcc8bdefd",
+          "title": "Missing Referrer-Policy Header",
+          "severity": "Low",
+          "description": "The Referrer-Policy header is missing. Controls referrer information",
+          "short_description": "The Referrer-Policy header is missing. Controls referrer information",
+          "remediation": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+          "countermeasures": "Add the Referrer-Policy header with value: strict-origin-when-cross-origin",
+          "location": "http://example.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Referrer-Policy\",\n  \"recommended_value\": \"strict-origin-when-cross-origin\",\n  \"current_value\": null\n}",
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "72c5c18d-5b27-423b-aa1f-f28f1ac7801f",
+          "title": "Missing Permissions-Policy Header",
+          "severity": "Medium",
+          "description": "The Permissions-Policy header is missing. Controls browser features",
+          "short_description": "The Permissions-Policy header is missing. Controls browser features",
+          "remediation": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+          "countermeasures": "Add the Permissions-Policy header with value: geolocation=(), microphone=(), camera=()",
+          "location": "http://example.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Permissions-Policy\",\n  \"recommended_value\": \"geolocation=(), microphone=(), camera=()\",\n  \"current_value\": null\n}",
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "83507264-ecbe-49bd-866f-17888c0bd209",
+          "title": "Missing Cross-Origin-Opener-Policy Header",
+          "severity": "Medium",
+          "description": "The Cross-Origin-Opener-Policy header is missing. Helps isolate browsing context (COOP)",
+          "short_description": "The Cross-Origin-Opener-Policy header is missing. Helps isolate browsing context (COOP)",
+          "remediation": "Add the Cross-Origin-Opener-Policy header with value: same-origin",
+          "countermeasures": "Add the Cross-Origin-Opener-Policy header with value: same-origin",
+          "location": "http://example.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Cross-Origin-Opener-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "f05e4360-824e-4f14-ad4b-02d641c3658c",
+          "title": "Missing Cross-Origin-Embedder-Policy Header",
+          "severity": "Medium",
+          "description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+          "short_description": "The Cross-Origin-Embedder-Policy header is missing. Requires cross-origin resources to grant permission (COEP)",
+          "remediation": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+          "countermeasures": "Add the Cross-Origin-Embedder-Policy header with value: require-corp",
+          "location": "http://example.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Cross-Origin-Embedder-Policy\",\n  \"recommended_value\": \"require-corp\",\n  \"current_value\": null\n}",
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "2a4fcee8-f557-4e05-aa23-9b5091531f0a",
+          "title": "Missing Cross-Origin-Resource-Policy Header",
+          "severity": "Low",
+          "description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+          "short_description": "The Cross-Origin-Resource-Policy header is missing. Controls cross-origin resource sharing (CORP)",
+          "remediation": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+          "countermeasures": "Add the Cross-Origin-Resource-Policy header with value: same-origin",
+          "location": "http://example.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"Cross-Origin-Resource-Policy\",\n  \"recommended_value\": \"same-origin\",\n  \"current_value\": null\n}",
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        },
+        {
+          "id": "a48f3895-a16d-4e81-b10c-433a6b5dbbe4",
+          "title": "Missing X-Permitted-Cross-Domain-Policies Header",
+          "severity": "Low",
+          "description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+          "short_description": "The X-Permitted-Cross-Domain-Policies header is missing. Prevents Adobe cross-domain policy abuse",
+          "remediation": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+          "countermeasures": "Add the X-Permitted-Cross-Domain-Policies header with value: none",
+          "location": "http://example.com",
+          "cwe": "N/A",
+          "cve": "N/A",
+          "confidence": 75,
+          "category": "A05:2021 - Security Misconfiguration",
+          "impact": "N/A",
+          "cvss": 0.0,
+          "evidence": "{\n  \"header\": \"X-Permitted-Cross-Domain-Policies\",\n  \"recommended_value\": \"none\",\n  \"current_value\": null\n}",
+          "scanner": "security_headers_analyzer",
+          "references": [
+            {
+              "type": "CWE",
+              "id": "N/A",
+              "url": "https://cwe.mitre.org/data/definitions/N/A.html"
+            }
+          ],
+          "classifier": {}
+        }
+      ],
+      "errors": [],
+      "priority": "CRITICAL",
+      "start_time": "2025-09-03T16:04:33.025461",
+      "execution_time": 30.005661964416504,
+      "end_time": "2025-09-03T16:05:03.030135"
+    },
+    "quick_scan_20250903_160433_cors_misconfiguration_scanner_016904": {
+      "name": "cors_misconfiguration_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-09-03T16:04:33.029460",
+      "end_time": "2025-09-03T16:05:03.038664"
+    },
+    "quick_scan_20250903_160433_csrf_token_checker_018427": {
+      "name": "csrf_token_checker",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "CRITICAL",
+      "start_time": "2025-09-03T16:04:33.032455",
+      "end_time": "2025-09-03T16:05:03.007686"
+    },
+    "quick_scan_20250903_160433_clickjacking_screenshotter_019464": {
+      "name": "clickjacking_screenshotter",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-09-03T16:04:33.035453",
+      "end_time": "2025-09-03T16:05:03.015395"
+    },
+    "quick_scan_20250903_160433_js_scanner_021458": {
+      "name": "js_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-09-03T16:04:33.037458",
+      "end_time": "2025-09-03T16:05:03.034655"
+    },
+    "quick_scan_20250903_160433_robots_txt_sitemap_crawl_scanner_021458": {
+      "name": "robots_txt_sitemap_crawl_scanner",
+      "status": "failed",
+      "results": [],
+      "errors": [
+        "Scanner terminated unexpectedly"
+      ],
+      "priority": "MEDIUM",
+      "start_time": "2025-09-03T16:04:33.040453",
+      "end_time": "2025-09-03T16:05:03.040663"
+    }
+  },
+  "progress": 100.0,
+  "total_modules": 6,
+  "completed_modules": 6,
+  "deadline": 1756895853.0109,
+  "job_key": "quick_scan:http://example.com:ALL",
+  "performance_metrics": {
+    "http_cache_stats": {
+      "cache_size": 1,
+      "active_requests": 2,
+      "max_connections": 1000,
+      "max_keepalive": 400,
+      "retries": 0,
+      "throttle_waits": 0,
+      "ssrf_blocks": 0
+    },
+    "scanner_timing": {
+      "security_headers_analyzer": 30.005661964416504
+    },
+    "resource_usage": {}
+  },
+  "timing_data": {
+    "start_time": 1756895673.0109,
+    "estimated_completion": null,
+    "scanner_estimates": {},
+    "last_progress_update": 1756895703.040663
+  },
+  "end_time": "2025-09-03T16:05:03.043175",
+  "total_findings": 11
+}

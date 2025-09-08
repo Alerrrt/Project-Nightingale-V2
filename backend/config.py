@@ -1,7 +1,19 @@
-﻿from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List
 from pydantic import BaseModel, Field
-from backend.types.scanner_config import ScannerRegistryConfig
 from pydantic_settings import BaseSettings
+
+# Import scanner config - handle both relative and absolute imports
+try:
+    from .config_types.scanner_config import ScannerRegistryConfig
+except ImportError:
+    try:
+        from config_types.scanner_config import ScannerRegistryConfig
+    except ImportError:
+        # Fallback for when running as script
+        import sys
+        import os
+        sys.path.append(os.path.dirname(__file__))
+        from types.scanner_config import ScannerRegistryConfig
 
 class AppConfig(BaseModel):
     """Application configuration loaded from environment variables."""
@@ -72,27 +84,29 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5173",
         "http://localhost:3002",
         "http://127.0.0.1:3002",
+        "http://localhost:3003",
+        "http://127.0.0.1:3003",
     ]
     
     # Scanner Settings
-    MAX_CONCURRENT_SCANS: int = 50
-    SCAN_TIMEOUT: int = 3600  # 1 hour
-    MAX_RETRIES: int = 3
+    MAX_CONCURRENT_SCANS: int = 75  # Increased from 50
+    SCAN_TIMEOUT: int = 1800  # Reduced from 3600 (1 hour) to 1800 (30 minutes)
+    MAX_RETRIES: int = 2  # Reduced from 3 to 2 for faster completion
     
     # Resource Limits
-    MAX_CPU_PERCENT: int = 80
+    MAX_CPU_PERCENT: int = 85  # Increased from 80
     MAX_MEMORY_MB: int = 1024
-    MAX_NETWORK_CONNECTIONS: int = 1000
-    PER_HOST_MAX_CONCURRENCY: int = 6
+    MAX_NETWORK_CONNECTIONS: int = 1500  # Increased from 1000
+    PER_HOST_MAX_CONCURRENCY: int = 12  # Increased from 6
 
     # WebSocket/Realtime Settings
     WS_MAX_REQUESTS_PER_MINUTE: int = 100
     WS_TIME_WINDOW_SECONDS: int = 60
 
     # Scanner Orchestration Settings
-    SCANNER_TIMEOUT_SECONDS: int = 180
+    SCANNER_TIMEOUT_SECONDS: int = 120  # Reduced from 180 to 120 seconds
     # Enforce a strict total scan deadline; user requirement is 180s max
-    GLOBAL_SCAN_HARD_CAP_SECONDS: int = 180
+    GLOBAL_SCAN_HARD_CAP_SECONDS: int = 180  # Keeping this at 180 as it's a user requirement
 
     # Scanner Registry
     SCANNER_PRUNING_ENABLED: bool = False
@@ -115,4 +129,4 @@ class Settings(BaseSettings):
         env_file = ".env"
         extra = "allow"
 
-settings = Settings() 
+settings = Settings()

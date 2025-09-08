@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 import uuid
 from typing import List, Optional, Dict, Any
 from datetime import datetime
@@ -10,7 +10,7 @@ from backend.utils.logging_config import get_context_logger
 import logging
 
 from .base_scanner import BaseScanner
-from ..types.models import ScanInput, Severity, OwaspCategory
+from ..config_types.models import ScanInput, Severity, OwaspCategory
 
 logger = logging.getLogger(__name__)
 

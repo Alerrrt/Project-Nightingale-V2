@@ -1,11 +1,12 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import asyncio
 import uuid
 from typing import List, Optional, Dict, Any
 import logging
+import httpx
 
 from .base_scanner import BaseScanner
-from ..types.models import ScanInput, Severity, OwaspCategory
+from ..config_types.models import ScanInput, Severity, OwaspCategory
 from backend.scanners.scanner_registry import ScannerRegistry
 from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
@@ -147,4 +148,4 @@ class BackupAndSensitiveFileFinderScanner(BaseScanner):
         return { "type": "error", "severity": Severity.INFO, "title": "Backup and Sensitive File Finder Error", "description": description, "location": "Scanner", "cwe": "N/A", "remediation": "N/A", "confidence": 0, "cvss": 0 }
 
 def register(scanner_registry: ScannerRegistry) -> None:
-    scanner_registry.register("backup_sensitive_file_finder", BackupAndSensitiveFileFinderScanner) 
+    scanner_registry.register("backup_sensitive_file_finder", BackupAndSensitiveFileFinderScanner)

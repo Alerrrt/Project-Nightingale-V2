@@ -1,4 +1,4 @@
-﻿from typing import List, Dict, Any
+from typing import List, Dict, Any
 from datetime import datetime
 import logging
 
@@ -8,7 +8,7 @@ from backend.utils.circuit_breaker import circuit_breaker
 from backend.utils.logging_config import get_context_logger
 
 from .base_scanner import BaseScanner
-from ..types.models import ScanInput, Severity, OwaspCategory
+from ..config_types.models import ScanInput, Severity, OwaspCategory
 
 logger = logging.getLogger(__name__)
 

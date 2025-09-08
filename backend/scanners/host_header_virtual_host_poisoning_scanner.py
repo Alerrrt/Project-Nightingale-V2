@@ -1,5 +1,6 @@
-﻿import asyncio
+import asyncio
 import uuid
+import httpx
 from typing import List, Optional, Dict, Any
 from backend.utils import get_http_client
 from urllib.parse import urlparse
@@ -9,7 +10,7 @@ from backend.utils.logging_config import get_context_logger
 import logging
 
 from backend.scanners.base_scanner import BaseScanner
-from ..types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
+from ..config_types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
 
 logger = logging.getLogger(__name__)
 

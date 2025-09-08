@@ -1,6 +1,6 @@
-﻿from typing import List, Dict, Any
+from typing import List, Dict, Any
 
-from backend.types.models import Finding, Severity, OwaspCategory
+from backend.config_types.models import Finding, Severity, OwaspCategory
 
 
 def classify_finding(finding: Finding) -> Finding:

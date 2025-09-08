@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 import uuid
 import httpx
 import json
@@ -14,7 +14,7 @@ from backend.utils.logging_config import get_context_logger
 import logging
 
 from .base_scanner import BaseScanner
-from ..types.models import ScanInput, Severity, OwaspCategory
+from ..config_types.models import ScanInput, Severity, OwaspCategory
 from .js_scanner_utils import run_retire_js
 
 logger = logging.getLogger(__name__)

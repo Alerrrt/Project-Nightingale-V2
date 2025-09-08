@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 import uuid
 import re
 from typing import List, Dict, Any
@@ -11,7 +11,7 @@ import logging
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
-from backend.types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
+from backend.config_types.models import ScanInput, Finding, Severity, OwaspCategory, RequestLog
 
 logger = get_context_logger(__name__)
 

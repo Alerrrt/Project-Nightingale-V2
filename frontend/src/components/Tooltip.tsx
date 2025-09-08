@@ -18,27 +18,30 @@ const Tooltip: React.FC<TooltipProps> = ({ content, children, position = 'top', 
     right: 'left-full top-1/2 -translate-y-1/2 ml-2',
   };
 
+  // Use inline elements to avoid inserting block-level elements (like div)
+  // inside places such as <p> which causes hydration/DOM nesting errors.
   return (
-    <div
-      className="relative flex items-center"
+    <span
+      className="relative inline-flex items-center"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {children}
       <AnimatePresence>
         {isHovered && (
-          <motion.div
+          <motion.span
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
             transition={{ duration: 0.2 }}
             className={`absolute z-20 w-max max-w-xs p-2 text-xs font-semibold text-background bg-primary rounded-md shadow-lg ${positionClasses[position]} ${className}`}
+            role="tooltip"
           >
             {content}
-          </motion.div>
+          </motion.span>
         )}
       </AnimatePresence>
-    </div>
+    </span>
   );
 };
 

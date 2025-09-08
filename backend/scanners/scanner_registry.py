@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 import logging
 import importlib
 import pkgutil
@@ -9,21 +9,13 @@ from functools import lru_cache
 from dataclasses import dataclass, field
 from threading import Lock
 from backend.scanners.base_scanner import BaseScanner
-from backend.types.scanner_config import ScannerRegistryConfig, ScannerConfig, ScannerIntensity
+from backend.config_types.scanner_config import ScannerRegistryConfig, ScannerConfig, ScannerIntensity
 from backend.utils.logging_config import get_context_logger
 from backend.utils.resource_monitor import ResourceMonitor
 from backend.config import AppConfig
+from backend.config_types.scanner_config import ScannerRegistryConfig
 
 logger = get_context_logger(__name__)
-
-@dataclass
-class ScannerRegistryConfig:
-    """Configuration for scanner registry."""
-    default_timeout: int = 30
-    default_max_retries: int = 3
-    batch_size: int = 5
-    max_concurrent_scans: int = 10
-    resource_limits: Dict[str, float] = field(default_factory=dict)
 
 class ScannerRegistry:
     """
@@ -47,6 +39,9 @@ class ScannerRegistry:
     def __init__(self, config: Optional[AppConfig] = None):
         if not self._initialized:
             with self._lock:
+                # Initialize lazy loading attributes
+                self._lazy_modules = []
+                self._loaded_modules = set()
                 if not self._initialized:
                     self._config = config or AppConfig.load_from_env()
                     self._resource_monitor = ResourceMonitor(self._config.resource_limits)
@@ -100,33 +95,101 @@ class ScannerRegistry:
         import inspect as _inspect
         try:
             if _inspect.isabstract(scanner_class):
-                logger.warning(f"Skipping abstract scanner: {scanner_class.__name__}")
+                # Skip abstract scanners silently
                 return
             # Ensure _perform_scan overridden
             if getattr(scanner_class, '_perform_scan', None) is getattr(BaseScanner, '_perform_scan', None):
-                logger.warning(f"Skipping scanner without _perform_scan implementation: {scanner_class.__name__}")
+                # Skip scanners without implementation silently
                 return
         except Exception:
             pass
         
+        # Only log overwrites at debug level
         if scanner_name in self._scanners:
-            logger.warning(f"Overwriting existing scanner registration: {scanner_name}")
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f"Overwriting existing scanner registration: {scanner_name}")
         
         self._scanners[scanner_name] = scanner_class
         self._enabled_scanners_cache = None  # Invalidate cache
-        logger.info(
-            "Scanner registered",
-            extra={
-                "scanner_name": scanner_name,
-                "class": scanner_class.__name__
-            }
-        )
+        # Only log at debug level to reduce noise
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(
+                "Scanner registered",
+                extra={
+                    "scanner_name": scanner_name,
+                    "class": scanner_class.__name__
+                }
+            )
 
     def get_scanner(self, scanner_name: str):
-        """Return the scanner class by name or None if missing."""
+        """Return the scanner class by name or None if missing.
+        Implements lazy loading - will attempt to load the module if scanner not found.
+        """
+        # Check if already loaded
         scanner = self._scanners.get(scanner_name)
+        if scanner is not None:
+            return scanner
+            
+        # Try lazy loading if not found
+        if hasattr(self, '_lazy_modules') and self._lazy_modules:
+            # First check if the scanner_name might be a module name
+            if scanner_name in self._lazy_modules and scanner_name not in self._loaded_modules:
+                try:
+                    # Import the module
+                    module = importlib.import_module(f'backend.scanners.{scanner_name}')
+                    self._loaded_modules.add(scanner_name)
+                    
+                    # Find scanner classes
+                    scanner_classes = [obj for name, obj in inspect.getmembers(module, inspect.isclass) 
+                                     if issubclass(obj, BaseScanner) and obj != BaseScanner]
+                    
+                    for scanner_class in scanner_classes:
+                        name = scanner_class.__name__
+                        # Register with class name
+                        class_scanner_name = name.lower().replace('scanner', '')
+                        self.register(class_scanner_name, scanner_class)
+                        # Register with module name
+                        self.register(scanner_name, scanner_class)
+                        
+                    # Check if we loaded the requested scanner
+                    scanner = self._scanners.get(scanner_name)
+                    if scanner is not None:
+                        return scanner
+                except Exception as e:
+                    logger.error(f"Error lazy-loading scanner module: {scanner_name}", exc_info=True)
+            
+            # If not found by module name, try all unloaded modules
+            for module_name in self._lazy_modules:
+                if module_name in self._loaded_modules:
+                    continue
+                    
+                try:
+                    # Import the module
+                    module = importlib.import_module(f'backend.scanners.{module_name}')
+                    self._loaded_modules.add(module_name)
+                    
+                    # Find scanner classes
+                    scanner_classes = [obj for name, obj in inspect.getmembers(module, inspect.isclass) 
+                                     if issubclass(obj, BaseScanner) and obj != BaseScanner]
+                    
+                    for scanner_class in scanner_classes:
+                        name = scanner_class.__name__
+                        # Register with class name
+                        class_scanner_name = name.lower().replace('scanner', '')
+                        self.register(class_scanner_name, scanner_class)
+                        # Register with module name
+                        self.register(module_name, scanner_class)
+                        
+                    # Check if we loaded the requested scanner
+                    scanner = self._scanners.get(scanner_name)
+                    if scanner is not None:
+                        return scanner
+                except Exception as e:
+                    logger.error(f"Error lazy-loading scanner module: {module_name}", exc_info=True)
+        
+        # If still not found after lazy loading attempts
         if scanner is None:
-            logger.error(f"Scanner '{scanner_name}' not found")
+            logger.error(f"Scanner '{scanner_name}' not found after lazy loading attempt")
         return scanner
     def _create_error_finding(self, description: str) -> dict:
         # Deprecated: Not used anymore to avoid returning non-class from get_scanner
@@ -160,9 +223,10 @@ class ScannerRegistry:
     def get_enhanced_scanner_metadata(self) -> Dict[str, dict]:
         """
         Get enhanced metadata for all registered scanners with detailed OWASP and vulnerability information.
+        De-duplicates aliases that map to the same scanner class and prefers canonical snake_case names.
         """
         metadata = {}
-        
+
         # Comprehensive scanner metadata mapping
         scanner_details = {
             'authentication_scanner': {
@@ -294,17 +358,41 @@ class ScannerRegistry:
                 'intensity': 'Medium'
             }
         }
-        
+
+        # Group names by underlying class to detect aliases (e.g., class-name vs module-name)
+        class_to_names: Dict[Type[BaseScanner], List[str]] = {}
         for name, scanner_class in self._scanners.items():
-            # Get base metadata from scanner class
-            md = getattr(scanner_class, 'metadata', {}) or {}
-            
-            # Get detailed information from our mapping
-            details = scanner_details.get(name, {})
-            
-            # Combine and normalize
+            class_to_names.setdefault(scanner_class, []).append(name)
+
+        # Maintain a preferred-name set to preserve rich details mapping
+        preferred_names = set(scanner_details.keys())
+
+        def choose_preferred(names: List[str]) -> str:
+            # 1) exact preferred names first (aligns with engine usage and details mapping)
+            for n in names:
+                if n in preferred_names:
+                    return n
+            # 2) prefer snake_case names (contain underscores), with descriptive suffixes
+            snake = [n for n in names if "_" in n]
+            if snake:
+                ranked = sorted(
+                    snake,
+                    key=lambda n: (
+                        0 if n.endswith(("_scanner", "_analyzer", "_checker")) else 1,
+                        -len(n)
+                    )
+                )
+                return ranked[0]
+            # 3) fallback to the longest name
+            return max(names, key=len)
+
+        # Build deduplicated metadata keyed by the preferred alias
+        for cls, names in class_to_names.items():
+            key = choose_preferred(names)
+            md = getattr(cls, 'metadata', {}) or {}
+            details = scanner_details.get(key, {})
             normalized = {
-                'name': details.get('name', md.get('name', scanner_class.__name__)),
+                'name': details.get('name', md.get('name', cls.__name__)),
                 'description': details.get('description', md.get('description', '')),
                 'owasp_category': details.get('owasp_category', str(md.get('owasp_category', 'Unknown'))),
                 'vulnerability_types': details.get('vulnerability_types', []),
@@ -313,18 +401,19 @@ class ScannerRegistry:
                 'author': md.get('author', 'Project Nightingale Team'),
                 'version': md.get('version', '1.0.0'),
             }
-            
-            metadata[name] = normalized
-            
+            metadata[key] = normalized
+
         return metadata
 
+    @lru_cache(maxsize=1)
     def get_enabled_scanners(self) -> List[str]:
         """
-        Get a list of enabled scanner names.
+        Get a list of enabled scanner names with caching for better performance.
         """
         if self._enabled_scanners_cache is not None:
             return self._enabled_scanners_cache
 
+        # Batch process all scanner configs at once to reduce overhead
         enabled = []
         for scanner_name in self._scanners:
             config = self.get_scanner_config(scanner_name)
@@ -334,49 +423,106 @@ class ScannerRegistry:
         self._enabled_scanners_cache = enabled
         return enabled
 
-    async def load_scanners(self):
-        """Load all available scanners."""
+    async def load_scanners(self, lazy_load=True, preload_essential=True):
+        """Load all available scanners with optimized performance.
+        
+        Args:
+            lazy_load: If True, only register scanner module names for lazy loading later.
+                      If False, load all scanner modules immediately.
+            preload_essential: If True and lazy_load is True, preload essential scanners
+                             for faster startup while keeping others lazy loaded.
+        """
         try:
             scanners_dir = os.path.dirname(os.path.abspath(__file__))
             logger.info(f"Loading scanners from directory: {scanners_dir}")
-            loaded_count = 0
             
-            for filename in os.listdir(scanners_dir):
-                if filename.endswith('.py') and not filename.startswith('__'):
-                    module_name = filename[:-3]  # Remove .py extension
-                    logger.info(f"Processing scanner module: {module_name}")
-                    try:
-                        # Import module
-                        module = importlib.import_module(f'backend.scanners.{module_name}')
-                        logger.info(f"Successfully imported module: {module_name}")
-                        
-                        # Find scanner classes in the module
-                        for name, obj in inspect.getmembers(module):
-                            logger.info(f"Checking object: {name} (type: {type(obj)})")
-                            if (inspect.isclass(obj) and 
-                                issubclass(obj, BaseScanner) and 
-                                obj != BaseScanner):
+            # Get all scanner modules at once
+            scanner_modules = [filename[:-3] for filename in os.listdir(scanners_dir) 
+                              if filename.endswith('.py') and not filename.startswith('__')]
+            logger.info(f"Found {len(scanner_modules)} potential scanner modules")
+            
+            # Define essential scanners that should be loaded immediately for faster startup
+            essential_scanners = {
+                "security_headers_analyzer",
+                "cors_misconfiguration_scanner", 
+                "xss_scanner",
+                "sql_injection_scanner",
+                "technology_fingerprint_scanner"
+            }
+            
+            if lazy_load:
+                # Register all modules for potential lazy loading
+                self._lazy_modules = scanner_modules
+                logger.info(f"Registered {len(scanner_modules)} scanner modules for lazy loading")
+                
+                # Preload essential scanners if requested
+                if preload_essential:
+                    preloaded_count = 0
+                    for module_name in scanner_modules:
+                        if module_name in essential_scanners:
+                            try:
+                                # Import essential module
+                                module = importlib.import_module(f'backend.scanners.{module_name}')
+                                self._loaded_modules.add(module_name)
                                 
-                                logger.info(f"Found scanner class: {name}")
-                                # Primary name from class: e.g., CorsMisconfigurationScanner -> corsmisconfiguration
-                                scanner_name = name.lower().replace('scanner', '')
-                                self.register(scanner_name, obj)
-                                # Also register an alias using the module filename: e.g., cors_misconfiguration_scanner
-                                try:
-                                    if module_name not in self._scanners:
-                                        self.register(module_name, obj)
-                                except Exception:
-                                    # Non-fatal if alias already exists
-                                    pass
-                                loaded_count += 1
-                                logger.info(f"Registered scanner: {scanner_name} and {module_name}")
+                                # Find scanner classes in the module
+                                scanner_classes = [obj for name, obj in inspect.getmembers(module, inspect.isclass) 
+                                                if issubclass(obj, BaseScanner) and obj != BaseScanner]
                                 
-                    except Exception as e:
-                        logger.error(
-                            f"Error loading scanner module: {module_name}",
-                            extra={"error": str(e)},
-                            exc_info=True
-                        )
+                                for scanner_class in scanner_classes:
+                                    name = scanner_class.__name__
+                                    # Primary name from class
+                                    scanner_name = name.lower().replace('scanner', '')
+                                    self.register(scanner_name, scanner_class)
+                                    # Also register an alias using the module filename
+                                    try:
+                                        if module_name not in self._scanners:
+                                            self.register(module_name, scanner_class)
+                                    except Exception:
+                                        # Non-fatal if alias already exists
+                                        pass
+                                    preloaded_count += 1
+                            except Exception as e:
+                                logger.error(f"Error preloading essential scanner: {module_name}", exc_info=True)
+                    
+                    logger.info(f"Preloaded {preloaded_count} essential scanners for faster startup")
+                return
+            
+            # Traditional eager loading if lazy_load is False
+            loaded_count = 0
+            for module_name in scanner_modules:
+                try:
+                    # Import module
+                    module = importlib.import_module(f'backend.scanners.{module_name}')
+                    self._loaded_modules.add(module_name)
+                    
+                    # Find scanner classes in the module - only check classes, not every object
+                    scanner_classes = [obj for name, obj in inspect.getmembers(module, inspect.isclass) 
+                                     if issubclass(obj, BaseScanner) and obj != BaseScanner]
+                    
+                    for scanner_class in scanner_classes:
+                        name = scanner_class.__name__
+                        # Primary name from class: e.g., CorsMisconfigurationScanner -> corsmisconfiguration
+                        scanner_name = name.lower().replace('scanner', '')
+                        self.register(scanner_name, scanner_class)
+                        # Also register an alias using the module filename
+                        try:
+                            if module_name not in self._scanners:
+                                self.register(module_name, scanner_class)
+                        except Exception:
+                            # Non-fatal if alias already exists
+                            pass
+                        loaded_count += 1
+                    
+                    if scanner_classes:
+                        logger.debug(f"Registered {len(scanner_classes)} scanners from module: {module_name}")
+                    
+                except Exception as e:
+                    logger.error(
+                        f"Error loading scanner module: {module_name}",
+                        extra={"error": str(e)},
+                        exc_info=True
+                    )
             
             logger.info(
                 "Scanners loaded",
@@ -387,43 +533,46 @@ class ScannerRegistry:
             )
 
             from backend.config import settings
-            # Prune to industry-standard allowlist to avoid duplicates/unwanted modules
-            allowed: Set[str] = {
-                # Core OWASP families and essentials (module filenames or aliases)
-                "authentication_scanner",
-                "broken_access_control_scanner",
-                "sql_injection_scanner",
-                "xss_scanner",
-                "server_side_request_forgery_scanner",
-                "security_headers_analyzer",
-                "cors_misconfiguration_scanner",
-                "csrf_scanner",
-                "csrf_token_checker",
-                "directory_file_enumeration_scanner",
-                "open_redirect_scanner",
-                "ssl_tls_configuration_audit_scanner",
-                "technology_fingerprint_scanner",
-                "technology_vulnerabilities_scanner",
-                "subdomain_dns_enumeration_scanner",
-                "rate_limiting_bruteforce_scanner",
-            }
-            # Keep any alias registered under class-name form if it maps to an allowed module
-            to_keep: Dict[str, Type[BaseScanner]] = {}
-            for key, cls in list(self._scanners.items()):
-                if key in allowed:
-                    to_keep[key] = cls
-            # Preserve class-name alias if its module alias is kept
-            for key, cls in list(self._scanners.items()):
-                module_alias = getattr(cls, "__module__", "").split(".")[-1]
-                if module_alias in allowed:
-                    to_keep[key] = cls
-            if getattr(settings, 'SCANNER_PRUNING_ENABLED', False):
+            # Only perform pruning if not using lazy loading
+            if not lazy_load and getattr(settings, 'SCANNER_PRUNING_ENABLED', False):
+                # Prune to industry-standard allowlist to avoid duplicates/unwanted modules
+                allowed: Set[str] = {
+                    # Core OWASP families and essentials (module filenames or aliases)
+                    "authentication_scanner",
+                    "broken_access_control_scanner",
+                    "sql_injection_scanner",
+                    "xss_scanner",
+                    "server_side_request_forgery_scanner",
+                    "security_headers_analyzer",
+                    "cors_misconfiguration_scanner",
+                    "csrf_scanner",
+                    "csrf_token_checker",
+                    "directory_file_enumeration_scanner",
+                    "open_redirect_scanner",
+                    "ssl_tls_configuration_audit_scanner",
+                    "technology_fingerprint_scanner",
+                    "technology_vulnerabilities_scanner",
+                    "subdomain_dns_enumeration_scanner",
+                    "rate_limiting_bruteforce_scanner",
+                }
+                # Keep any alias registered under class-name form if it maps to an allowed module
+                to_keep: Dict[str, Type[BaseScanner]] = {}
+                for key, cls in list(self._scanners.items()):
+                    if key in allowed:
+                        to_keep[key] = cls
+                # Preserve class-name alias if its module alias is kept
+                for key, cls in list(self._scanners.items()):
+                    module_alias = getattr(cls, "__module__", "").split(".")[-1]
+                    if module_alias in allowed:
+                        to_keep[key] = cls
+                
                 removed = set(self._scanners.keys()) - set(to_keep.keys())
                 self._scanners = to_keep
                 if removed:
                     logger.info("Pruned scanners", extra={"removed": sorted(list(removed)), "kept": sorted(list(self._scanners.keys()))})
             else:
-                logger.info("Scanner pruning disabled; keeping all discovered scanners")
+                if not lazy_load:
+                    logger.info("Scanner pruning disabled; keeping all discovered scanners")
             
         except Exception as e:
             logger.error("Error loading scanners", exc_info=True)
@@ -490,4 +639,4 @@ class ScannerRegistry:
 
     def get_scanners(self) -> List[str]:
         """Get list of available scanner names."""
-        return list(self._scanners.keys()) 
+        return list(self._scanners.keys())

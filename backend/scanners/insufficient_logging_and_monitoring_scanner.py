@@ -1,4 +1,4 @@
-﻿import asyncio
+import asyncio
 from typing import List, Dict, Any
 from datetime import datetime
 import logging
@@ -9,7 +9,7 @@ from backend.utils import get_http_client
 
 from backend.scanners.base_scanner import BaseScanner
 from backend.scanners.scanner_registry import ScannerRegistry
-from backend.types.models import ScanInput, Severity, OwaspCategory
+from backend.config_types.models import ScanInput, Severity, OwaspCategory
 
 logger = logging.getLogger(__name__)
 
